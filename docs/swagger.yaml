@@ -1,0 +1,2511 @@
+basePath: /api/v1/wallet
+definitions:
+  resp.AccountDetailListResp:
+    properties:
+      items:
+        description: 帐号详情
+        items:
+          $ref: '#/definitions/resp.AccountDetailResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
+  resp.AccountDetailResp:
+    properties:
+      currency_id:
+        description: 币种id
+        type: integer
+      decimals:
+        description: 小数点位数
+        type: integer
+      income:
+        description: 本期收入
+        type: number
+      name:
+        description: 名称
+        type: string
+      spend:
+        description: 上期支出
+        type: number
+      symbol:
+        description: 币种标识
+        type: string
+      type:
+        description: 明细类型  账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级
+        type: integer
+      updated_at:
+        description: 时间
+        type: string
+    type: object
+  resp.AccountInfoResp:
+    properties:
+      balance:
+        description: 余额
+        type: number
+      currency_id:
+        description: 币种id
+        type: integer
+      decimals:
+        description: 小数点位数
+        type: integer
+      name:
+        description: 名称
+        type: string
+      symbol:
+        description: 币种标识
+        type: string
+    type: object
+  resp.AccountUserDetailInfoResp:
+    properties:
+      balance:
+        description: 现余额
+        type: number
+      email:
+        description: 邮件
+        type: string
+      id:
+        description: 明细id
+        type: integer
+      income:
+        description: 入账
+        type: number
+      last_balance:
+        description: 之前余额
+        type: number
+      name:
+        description: 用户帐号
+        type: string
+      spend:
+        description: 支出
+        type: number
+      symbol:
+        description: 币种
+        type: string
+      uid:
+        description: 用户id
+        type: integer
+      update_at:
+        description: 时间
+        type: string
+    type: object
+  resp.AccountUserDetailListResp:
+    properties:
+      items:
+        description: 帐号详情
+        items:
+          $ref: '#/definitions/resp.AccountUserDetailInfoResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
+  resp.AdminWithdrawalDetailResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      customer_status:
+        description: 客服审核状态 0：审核中;1：审核通过;2：审核不通过
+        type: integer
+      financial_status:
+        description: 财务审核状态 0：审核中;1：审核通过;2：审核不通过
+        type: integer
+      id:
+        description: 用户的id
+        type: integer
+      order_id:
+        description: 订单id
+        type: string
+      status:
+        description: 状态 0已提交,1待审核,2审核中,3通过,4不通过,5取消
+        type: integer
+      symbol:
+        description: 代币代号
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      value:
+        description: 金额
+        type: number
+    type: object
+  resp.BasePageResp:
+    properties:
+      count:
+        description: 数量
+        type: integer
+      currentPage:
+        description: 当前页数
+        type: integer
+      pageSize:
+        description: 每页数据条数
+        type: integer
+      totalPage:
+        description: 总页数
+        type: integer
+    type: object
+  resp.CompanyStreamInfoResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      balance:
+        description: 现余额
+        type: number
+      email:
+        description: 邮件
+        type: string
+      id:
+        description: 明细id
+        type: integer
+      income:
+        description: 入账
+        type: number
+      last_balance:
+        description: 之前余额
+        type: number
+      name:
+        description: 用户帐号
+        type: string
+      order_id:
+        description: 订单号
+        type: string
+      spend:
+        description: 支出
+        type: number
+      symbol:
+        description: 币种
+        type: string
+      uid:
+        description: 用户id
+        type: integer
+      update_at:
+        description: 时间
+        type: string
+    type: object
+  resp.CompanyStreamListResp:
+    properties:
+      items:
+        description: 帐号详情
+        items:
+          $ref: '#/definitions/resp.CompanyStreamInfoResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
+  resp.CurrencyQuoteInfoResp:
+    properties:
+      base_currency:
+        description: 基础货币
+        type: string
+      code:
+        description: 标示
+        type: string
+      id:
+        description: id
+        type: integer
+      price:
+        description: 金额
+        type: number
+      quote_currency:
+        description: 基础货币
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+    type: object
+  resp.CurrencyQuoteListResp:
+    properties:
+      items:
+        description: 帐号详情
+        items:
+          $ref: '#/definitions/resp.CurrencyQuoteInfoResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
+  resp.ReadAllDepositDetailInfoResp:
+    properties:
+      name:
+        description: 用户名
+        type: string
+      order_id:
+        description: 订单id
+        type: integer
+      source:
+        description: 来源 0：充值1：后台充值
+        type: integer
+      status:
+        description: 状态 0确认中,1已确定
+        type: integer
+      symbol:
+        description: 代币代号
+        type: string
+      transaction_hash:
+        description: hash
+        type: string
+      type:
+        description: 标识 coin,token
+        type: string
+      uid:
+        description: 用户id
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      value:
+        description: 金额
+        type: number
+    type: object
+  resp.ReadAllDepositDetailResp:
+    properties:
+      items:
+        description: 数据
+        items:
+          $ref: '#/definitions/resp.ReadAllDepositDetailInfoResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
+  resp.ReadBlockChainListResp:
+    properties:
+      chain_code:
+        description: 链标识
+        type: string
+      id:
+        description: 链id
+        type: integer
+      name:
+        description: 链名称
+        type: string
+    type: object
+  resp.ReadCoinDepositInfoResp:
+    properties:
+      coin_id:
+        description: 代币id
+        type: integer
+      currency_id:
+        description: 币种id
+        type: integer
+      min_withdrawal:
+        description: 小于该金额不能提
+        type: number
+      money:
+        description: 可提现金额
+        type: number
+      symbol:
+        description: 币种代号
+        type: string
+      type:
+        description: 标识 coin,token
+        type: string
+      withdrawal_fee:
+        description: 提现手续费
+        type: number
+      withdrawal_fee_type:
+        description: 手续费类型 fixed 按百分百比,percent 固定收取
+        type: string
+    type: object
+  resp.ReadCoinInfoResp:
+    properties:
+      abi:
+        type: string
+      block_chain_id:
+        description: 区块链名称
+        type: string
+      coin_id:
+        description: 代币id
+        type: integer
+      confirm_count:
+        description: 充值入帐的区块链确认数
+        type: integer
+      contract_address:
+        description: 合约地址:如该是type=token，这里必须输入
+        type: string
+      currency_id:
+        description: 货币id
+        type: integer
+      min_deposit:
+        description: 最小充值金额，小于该金额不入账
+        type: number
+      min_withdrawal:
+        description: 小于该金额不能提
+        type: number
+      name:
+        description: 币种名称
+        type: string
+      status:
+        description: 状态
+        type: integer
+      symbol:
+        description: 币种代号
+        type: string
+      type:
+        description: 标识 coin,token
+        type: string
+      withdrawal_fee:
+        description: 提现手续费
+        type: number
+      withdrawal_fee_type:
+        description: 手续费类型 fixed 按百分百比,percent 固定收取
+        type: string
+    type: object
+  resp.ReadCoinListResp:
+    properties:
+      block_chain_id:
+        description: 区块链名称
+        type: string
+      chain_code:
+        description: 链代号
+        type: string
+      chain_name:
+        description: 链名称
+        type: string
+      coin_id:
+        description: 币种id
+        type: integer
+      confirm_count:
+        description: 充值入帐的区块链确认数
+        type: integer
+      contract_address:
+        description: 合约地址:如该是type=token，这里必须输入
+        type: string
+      currency_decimals:
+        description: 代币小数点
+        type: integer
+      currency_id:
+        description: 代币id
+        type: integer
+      currency_name:
+        description: 代币名称
+        type: string
+      min_deposit:
+        description: 最小充值金额，小于该金额不入账
+        type: number
+      min_withdrawal:
+        description: 小于该金额不能提
+        type: number
+      name:
+        description: 币种名称
+        type: string
+      status:
+        description: 状态
+        type: integer
+      symbol:
+        description: 币种代号
+        type: string
+      type:
+        description: 标识 coin,token
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      withdrawal_fee:
+        description: 提现手续费
+        type: number
+      withdrawal_fee_type:
+        description: 手续费类型 fixed 按百分百比,percent 固定收取
+        type: string
+    type: object
+  resp.ReadCurrencyListResp:
+    properties:
+      currency_id:
+        description: 币种id
+        type: integer
+      decimals:
+        description: 小数点
+        type: integer
+      money:
+        description: 可用金额
+        type: number
+      name:
+        description: 名字
+        type: string
+      status:
+        description: 状态：0开启;1:停用;2:删除
+        type: integer
+      symbol:
+        description: 唯一标识
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+    type: object
+  resp.ReadCurrencyTransferListResp:
+    properties:
+      list:
+        description: 可兑换列表
+        items:
+          $ref: '#/definitions/resp.ReadCurrencyListResp'
+        type: array
+      transfer:
+        description: 兑换目标列表
+        items:
+          $ref: '#/definitions/resp.ReadCurrencyListResp'
+        type: array
+    type: object
+  resp.ReadDepositAddrListResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      block_chain_id:
+        description: 区块链名称
+        type: string
+      chain_code:
+        description: 链代号
+        type: string
+      chain_name:
+        description: 链名称
+        type: string
+      deposit_addr_id:
+        description: 充值地址
+        type: integer
+      status:
+        description: 状态：0开启;1:停用;2:删除
+        type: integer
+      type:
+        description: 标识 coin,token
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+    type: object
+  resp.ReadDepositAddrResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      block_chain_id:
+        description: 区块链id
+        type: integer
+      deposit_addr_id:
+        description: 充值地址
+        type: integer
+    type: object
+  resp.ReadDepositDetailInfoResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      block_count:
+        description: 确认次数
+        type: integer
+      status:
+        description: 状态 0确认中,1已确定
+        type: integer
+      symbol:
+        description: 代币代号
+        type: string
+      type:
+        description: 标识 coin,token
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      value:
+        description: 金额
+        type: number
+    type: object
+  resp.ReadDepositDetailResp:
+    properties:
+      items:
+        description: 帐号详情
+        items:
+          $ref: '#/definitions/resp.ReadDepositDetailInfoResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
+  resp.ReadOrderSymbolByChainResp:
+    properties:
+      chain_code:
+        description: 链标识
+        type: string
+      coin_id:
+        description: 代币id
+        type: integer
+      id:
+        description: 链id
+        type: integer
+      name:
+        description: 链名称
+        type: string
+    type: object
+  resp.WithdrawalAddrResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      chain_code:
+        description: 链code
+        type: string
+      chain_name:
+        description: 链name
+        type: string
+      currency_name:
+        description: 货币名称
+        type: string
+      name:
+        description: 地址名称
+        type: string
+      withdrawal_addr_id:
+        description: 地址id
+        type: integer
+    type: object
+  resp.WithdrawalDetailAdminResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      customer_status:
+        description: 客服审核状态 0：审核中;1：审核通过;2：审核不通过
+        type: integer
+      email:
+        description: 邮箱
+        type: string
+      financial_status:
+        description: 财务审核状态 0：审核中;1：审核通过;2：审核不通过
+        type: integer
+      id:
+        description: 明细id
+        type: integer
+      name:
+        description: 帐号
+        type: string
+      order_id:
+        description: 订单id
+        type: string
+      status:
+        description: 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消
+        type: integer
+      symbol:
+        description: 代币代号
+        type: string
+      uid:
+        description: 用户id
+        type: integer
+      updated_at:
+        description: 更新时间
+        type: string
+      value:
+        description: 金额
+        type: number
+    type: object
+  resp.WithdrawalDetailAllListResp:
+    properties:
+      items:
+        description: 帐号详情
+        items:
+          $ref: '#/definitions/resp.WithdrawalDetailAdminResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
+  resp.WithdrawalDetailListResp:
+    properties:
+      items:
+        description: 帐号详情
+        items:
+          $ref: '#/definitions/resp.WithdrawalDetailResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
+  resp.WithdrawalDetailResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      poundage:
+        description: 手续费
+        type: number
+      status:
+        description: 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消
+        type: integer
+      symbol:
+        description: 代币代号
+        type: string
+      type:
+        description: 标识 coin,token
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      value:
+        description: 金额
+        type: number
+    type: object
+info:
+  contact: {}
+  description: 测试
+  license: {}
+  title: 测试
+  version: 0.0.1
+paths:
+  /account/change:
+    post:
+      description: 兑换代币
+      parameters:
+      - description: 代币id
+        in: formData
+        name: currency_id
+        required: true
+        type: integer
+      - description: 兑换id
+        in: formData
+        name: change_id
+        required: true
+        type: integer
+      - description: 转账金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      - description: 转账比例
+        in: formData
+        name: ratio
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 兑换代币接口
+      tags:
+      - Account 钱包帐号
+  /account/detail:
+    get:
+      description: 钱包明
+      parameters:
+      - description: 页面条数
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountDetailListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 钱包明接口
+      tags:
+      - Account 钱包帐号
+  /account/info:
+    get:
+      description: 钱包详情
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountInfoResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 钱包详情接口
+      tags:
+      - Account 钱包帐号
+  /account/share/bonus:
+    post:
+      description: 节点分红入账
+      parameters:
+      - description: 金额
+        in: formData
+        name: money
+        required: true
+        type: integer
+      - description: 币种标示
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 节点分红入账接口
+      tags:
+      - Account 钱包帐号
+  /account/tfor/info:
+    get:
+      description: 钱包TFOR详情
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountInfoResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 钱包TFOR详情接口
+      tags:
+      - Account 钱包帐号
+  /account/transfer:
+    post:
+      description: 转账动态usdd
+      parameters:
+      - description: 转账金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      - description: 币种标识
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 转账动态usdd接口
+      tags:
+      - Account 钱包帐号
+  /account/withdrawal:
+    post:
+      description: 提现货币
+      parameters:
+      - description: 金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      - description: 代币id
+        in: formData
+        name: coin_id
+        required: true
+        type: integer
+      - description: 币种id
+        in: formData
+        name: currency_id
+        required: true
+        type: integer
+      - description: 提现地址id
+        in: formData
+        name: withdrawal_addr_id
+        required: true
+        type: integer
+      - description: 支付密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 提现货币接口
+      tags:
+      - Account 钱包帐号
+  /admin/account/company/addr/create:
+    post:
+      description: 创建公司地址
+      parameters:
+      - description: symbol
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 创建公司地址接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/company/addr/status:
+    post:
+      description: 更新公司出金/归集地址状态
+      parameters:
+      - description: id
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: 状态（0开启1禁止）
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新公司出金/归集地址状态接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/company/addr/update:
+    post:
+      description: 更新公司出金/归集地址
+      parameters:
+      - description: id
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: 地址
+        in: formData
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新公司出金/归集地址接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/company/deposit/list:
+    get:
+      description: 公司充值流水
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.CompanyStreamListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 公司充值流水接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/company/deposit_addr/join:
+    post:
+      description: 新增公司提现地址
+      parameters:
+      - description: 币种id
+        in: formData
+        name: currency_id
+        required: true
+        type: integer
+      - description: 地址
+        in: formData
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 新增公司提现地址接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/company/deposit_addr/list:
+    get:
+      description: 公司归集地址
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索币种
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.CompanyStreamListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 公司归集地址接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/company/withdrawal/list:
+    get:
+      description: 公司提现流水
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.CompanyStreamListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 公司提现流水接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/company/withdrawal_addr/join:
+    post:
+      description: 新增公司提现地址
+      parameters:
+      - description: 币种id
+        in: formData
+        name: currency_id
+        required: true
+        type: integer
+      - description: 地址
+        in: formData
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 新增公司充值地址接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/company/withdrawal_addr/list:
+    get:
+      description: 公司出金地址
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索币种
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.CompanyStreamListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 公司出金地址接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/user/deposit-list:
+    get:
+      description: 用户充值流水列表
+      parameters:
+      - description: 长度
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountUserDetailListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取用户充值流水接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/user/list:
+    get:
+      description: 用户钱包列表
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountUserDetailListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户钱包列表接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/user/order-list:
+    get:
+      description: 用户代币装换
+      parameters:
+      - description: 长度
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号名
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountUserDetailListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取用户代币装换流水接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/withdrawal/customer:
+    post:
+      description: 提现客服审核
+      parameters:
+      - description: 明细id
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: 客服id
+        in: formData
+        name: customer_id
+        required: true
+        type: integer
+      - description: 状态1：通过；2：不通过
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 提现客户审核接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/withdrawal/detail:
+    get:
+      description: 提币详情
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AdminWithdrawalDetailResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 提币详情接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/withdrawal/financial:
+    post:
+      description: 提现财务审核
+      parameters:
+      - description: 明细id
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: 财务id
+        in: formData
+        name: financial_id
+        required: true
+        type: integer
+      - description: 状态1：通过；2：不通过
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 提现财务审核接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/withdrawal/list:
+    get:
+      description: 用户提币订单列表
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.WithdrawalDetailAllListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户提币订单列表接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/currency/quote/create:
+    post:
+      description: 创建货币汇率
+      parameters:
+      - description: 基础货币symbol
+        in: formData
+        name: base_currency
+        required: true
+        type: string
+      - description: 报价货币symbol
+        in: formData
+        name: quote_currency
+        required: true
+        type: string
+      - description: 金额
+        in: formData
+        name: price
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 创建货币汇率接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/currency/quote/list:
+    get:
+      description: 获取汇率分页
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索标示
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.CurrencyQuoteListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取汇率分页接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/currency/quote/update:
+    post:
+      description: 更新货币汇率
+      parameters:
+      - description: 汇率id
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: 金额
+        in: formData
+        name: price
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新货币汇率接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/currency/quote_history/list:
+    get:
+      description: 获取汇率历史记录分页
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索标示
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.CurrencyQuoteListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取汇率历史记录分页接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/operate/recharge/audio:
+    post:
+      description: 删除充值
+      parameters:
+      - description: 充值id
+        in: formData
+        name: id
+        required: true
+        type: string
+      - description: 财务id
+        in: formData
+        name: financial_id
+        required: true
+        type: integer
+      - description: 状态1：通过；2：不通过
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 删除充值接口
+      tags:
+      - Account 后台运营-充值
+  /admin/operate/recharge/join:
+    post:
+      description: 添加充值
+      parameters:
+      - description: 用户id
+        in: formData
+        name: uid
+        required: true
+        type: string
+      - description: 币种标示
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      - description: 金额
+        in: formData
+        name: money
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 添加充值接口
+      tags:
+      - Account 后台运营-充值
+  /admin/operate/recharge/list:
+    get:
+      description: 充值列表
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索用户
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadAllDepositDetailResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 充值列表接口
+      tags:
+      - Account 后台运营-充值
+  /admin/operate/recharge/remove:
+    post:
+      description: 删除充值
+      parameters:
+      - description: 充值id
+        in: formData
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 删除充值接口
+      tags:
+      - Account 后台运营-充值
+  /chain/add:
+    post:
+      description: 增加链
+      parameters:
+      - description: 链标识
+        in: formData
+        name: chain_code
+        required: true
+        type: integer
+      - description: 名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 增加链接口
+      tags:
+      - BlockChain 链
+  /chain/list:
+    get:
+      description: 读取链列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadBlockChainListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取链列表接口
+      tags:
+      - BlockChain 链
+  /chain/remove:
+    post:
+      description: 删除链
+      parameters:
+      - description: 链id
+        in: query
+        name: chain_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 删除链接口
+      tags:
+      - BlockChain 链
+  /chain/symbol:
+    get:
+      description: 根据symbol获取链
+      parameters:
+      - description: 链标识
+        in: formData
+        name: symbol
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadOrderSymbolByChainResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据symbol获取链接口
+      tags:
+      - BlockChain 链
+  /chain/update:
+    post:
+      description: 更新链
+      parameters:
+      - description: 链id
+        in: formData
+        name: chain_id
+        required: true
+        type: integer
+      - description: 链标识
+        in: formData
+        name: chain_code
+        required: true
+        type: string
+      - description: 名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新链接口
+      tags:
+      - BlockChain 链
+  /coin/add:
+    post:
+      description: 增加代币
+      parameters:
+      - description: 币种id
+        in: formData
+        name: currency_id
+        required: true
+        type: integer
+      - description: 代币代号
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      - description: 代币名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 链id
+        in: query
+        name: block_chain_id
+        required: true
+        type: integer
+      - description: 币类型（coin,token）
+        in: formData
+        name: type
+        required: true
+        type: string
+      - description: 确认数
+        in: formData
+        name: confirm_count
+        required: true
+        type: integer
+      - description: 最小充值金额
+        in: formData
+        name: min_deposit
+        required: true
+        type: number
+      - description: 最小提现金额
+        in: formData
+        name: min_withdrawal
+        required: true
+        type: number
+      - description: 提现手续费
+        in: formData
+        name: withdrawal_fee
+        required: true
+        type: number
+      - description: 手续费类型 1：百分比;2：固定类型
+        in: formData
+        name: withdrawal_fee_type
+        required: true
+        type: integer
+      - description: 合约地址 如该是type=token，这里必须输入
+        in: formData
+        name: contract_address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 增加代币接口
+      tags:
+      - Coin 代币功能
+  /coin/deposit:
+    get:
+      description: 读取代币提现信息
+      parameters:
+      - description: 代币id
+        in: query
+        name: coin_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadCoinDepositInfoResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取代币提现信息接口
+      tags:
+      - Coin 代币功能
+  /coin/info:
+    get:
+      description: 读取代币
+      parameters:
+      - description: 代币id
+        in: query
+        name: coin_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadCoinInfoResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取代币接口
+      tags:
+      - Coin 代币功能
+  /coin/list:
+    get:
+      description: 读取代币列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadCoinListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取代币列表接口
+      tags:
+      - Coin 代币功能
+  /coin/remove:
+    post:
+      description: 删除代币
+      parameters:
+      - description: 代币id
+        in: formData
+        name: coin_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 删除代币接口
+      tags:
+      - Coin 代币功能
+  /coin/status:
+    post:
+      description: 更新代币状态
+      parameters:
+      - description: 代币id
+        in: formData
+        name: coin_id
+        required: true
+        type: integer
+      - description: 状态:0开启;1关闭
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新代币状态接口
+      tags:
+      - Coin 代币功能
+  /coin/update:
+    post:
+      description: 更新代币
+      parameters:
+      - description: 币种id
+        in: formData
+        name: currency_id
+        required: true
+        type: integer
+      - description: 代币id
+        in: formData
+        name: coin_id
+        required: true
+        type: integer
+      - description: 代币代号
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      - description: 代币名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 链id
+        in: formData
+        name: block_chain_id
+        required: true
+        type: integer
+      - description: 币类型（coin,token）
+        in: formData
+        name: type
+        required: true
+        type: string
+      - description: 确认数
+        in: formData
+        name: confirm_count
+        required: true
+        type: integer
+      - description: 最小充值金额
+        in: formData
+        name: min_deposit
+        required: true
+        type: number
+      - description: 最小提现金额
+        in: formData
+        name: min_withdrawal
+        required: true
+        type: number
+      - description: 提现手续费
+        in: formData
+        name: withdrawal_fee
+        required: true
+        type: number
+      - description: 手续费类型 1：百分比;2：固定类型
+        in: formData
+        name: withdrawal_fee_type
+        required: true
+        type: integer
+      - description: 合约地址 如该是type=token，这里必须输入
+        in: formData
+        name: contract_address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新代币接口
+      tags:
+      - Coin 代币功能
+  /currency/add:
+    post:
+      description: 增加币种
+      parameters:
+      - description: 币种标识
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: 币种名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 小数点数
+        in: query
+        name: decimals
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 增加币种接口
+      tags:
+      - currency 币种功能
+  /currency/list:
+    get:
+      description: 读取币种列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadCurrencyListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取币种列表接口
+      tags:
+      - currency 币种功能
+  /currency/quote:
+    get:
+      description: 货币报价
+      parameters:
+      - description: 报价货币
+        in: query
+        name: quote_currency
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.CurrencyQuoteInfoResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 货币报价接口
+      tags:
+      - currency 币种功能
+  /currency/remove:
+    post:
+      description: 删除币种
+      parameters:
+      - description: 币种id
+        in: query
+        name: currency_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 删除币种接口
+      tags:
+      - currency 币种功能
+  /currency/status:
+    post:
+      description: 更新币种状态
+      parameters:
+      - description: 币种id
+        in: formData
+        name: currency_id
+        required: true
+        type: string
+      - description: 状态:0开启;1关闭
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新币种状态接口
+      tags:
+      - currency 币种功能
+  /currency/transfer_list:
+    get:
+      description: 读取兑换币种列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadCurrencyTransferListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取兑换币种列表接口
+      tags:
+      - currency 币种功能
+  /currency/update:
+    post:
+      description: 更新币种
+      parameters:
+      - description: 币种id
+        in: query
+        name: currency_id
+        required: true
+        type: string
+      - description: 币种标识
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: 币种名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 小数点数
+        in: query
+        name: decimals
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新币种接口
+      tags:
+      - currency 币种功能
+  /deposit/detail:
+    get:
+      description: 读取充值详情
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadDepositDetailResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取充值详情接口
+      tags:
+      - DepositAdd 钱包地址
+  /deposit/info:
+    get:
+      description: 读取提币地址
+      parameters:
+      - description: 链id
+        in: formData
+        name: block_chain_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadDepositAddrResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取充值地址接口
+      tags:
+      - DepositAdd 钱包地址
+  /deposit/join:
+    post:
+      description: 写入充值记录列表
+      parameters:
+      - description: 地址
+        in: formData
+        name: address
+        required: true
+        type: string
+      - description: 充值金额
+        in: formData
+        name: value
+        required: true
+        type: string
+      - description: 充值区块高度
+        in: formData
+        name: block_number
+        required: true
+        type: string
+      - description: 区块确认数
+        in: formData
+        name: block_count
+        required: true
+        type: string
+      - description: 事务
+        in: formData
+        name: transaction_hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 写入充值记录接口
+      tags:
+      - DepositAdd 钱包地址
+  /deposit/list:
+    get:
+      description: 读取钱包地址列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadDepositAddrListResp'
+      summary: 读取钱包地址列表接口
+      tags:
+      - DepositAdd 钱包地址
+  /deposit/top_up:
+    post:
+      description: 充值
+      parameters:
+      - description: 地址
+        in: formData
+        name: address
+        required: true
+        type: string
+      - description: 充值费用
+        in: formData
+        name: money
+        required: true
+        type: number
+      - description: 确认数
+        in: formData
+        name: block_number
+        required: true
+        type: integer
+      - description: 数量
+        in: formData
+        name: block_count
+        required: true
+        type: integer
+      - description: 订单
+        in: formData
+        name: transaction_hash
+        required: true
+        type: string
+      - description: 币种标识
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      - description: 类型
+        in: formData
+        name: type
+        required: true
+        type: string
+      - description: 校验
+        in: formData
+        name: hash
+        required: true
+        type: string
+      - description: 合约地址
+        in: formData
+        name: contract_address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 充值接口 code=101119 入账成功
+      tags:
+      - DepositAdd 钱包地址
+  /user/pay/is_init:
+    get:
+      description: 使用jwt命令牌
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      summary: 判断是否设置支付密码接口
+      tags:
+      - 支付密码
+  /user/pay/reset-paypwd:
+    post:
+      description: 使用jwt命令牌
+      parameters:
+      - description: 用户邮箱
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: 新密码
+        in: query
+        name: password
+        required: true
+        type: string
+      - description: 验证码
+        in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      summary: 重置支付密码
+      tags:
+      - 支付密码
+  /user/pay/send-email_util:
+    post:
+      description: 使用jwt命令牌
+      parameters:
+      - description: 用户邮箱
+        in: query
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      summary: 修改支付密码时发送邮箱验证码接口
+      tags:
+      - 支付密码
+  /user/pay/set-paypwd:
+    post:
+      description: 使用jwt命令牌
+      parameters:
+      - description: 用户支付密码
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      summary: 设置支付密码接口
+      tags:
+      - 支付密码
+  /user/pay/update:
+    post:
+      description: 更新支付密码
+      parameters:
+      - description: 支付密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新支付密码接口
+      tags:
+      - User 用户
+  /withdrawal/addr/add:
+    post:
+      description: 创建提现地址
+      parameters:
+      - description: 链id
+        in: formData
+        name: block_chain_id
+        required: true
+        type: integer
+      - description: 币种id
+        in: formData
+        name: currency_id
+        required: true
+        type: integer
+      - description: 地址
+        in: formData
+        name: address
+        required: true
+        type: string
+      - description: 名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 创建提现地址接口
+      tags:
+      - Withdrawal 提现功能
+  /withdrawal/addr/list:
+    get:
+      description: 读取提币地址列表
+      parameters:
+      - description: 链id
+        in: query
+        name: block_chain_id
+        required: true
+        type: integer
+      - description: 币种id
+        in: query
+        name: currency_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.WithdrawalAddrResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 读取提币地址列表接口
+      tags:
+      - Withdrawal 提现功能
+  /withdrawal/addr/remove:
+    post:
+      description: 删除提现地址
+      parameters:
+      - description: 提现地址id
+        in: query
+        name: withdrawal_addr_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 删除提现地址接口
+      tags:
+      - Withdrawal 提现功能
+  /withdrawal/addr/update:
+    post:
+      description: 更新提现地址
+      parameters:
+      - description: 提现地址id
+        in: formData
+        name: withdrawal_addr_id
+        required: true
+        type: integer
+      - description: 地址
+        in: formData
+        name: address
+        required: true
+        type: string
+      - description: 名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 更新提现地址接口
+      tags:
+      - Withdrawal 提现功能
+  /withdrawal/callback:
+    post:
+      description: 提现回调
+      parameters:
+      - description: app_id
+        in: formData
+        name: app_id
+        required: true
+        type: string
+      - description: order_id
+        in: formData
+        name: order_id
+        required: true
+        type: string
+      - description: transaction_hash
+        in: formData
+        name: transaction_hash
+        required: true
+        type: string
+      - description: block_number
+        in: formData
+        name: block_number
+        required: true
+        type: string
+      - description: from_address
+        in: formData
+        name: from_address
+        required: true
+        type: string
+      - description: to_address
+        in: formData
+        name: to_address
+        required: true
+        type: string
+      - description: symbol
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      - description: contract_address
+        in: formData
+        name: contract_address
+        required: true
+        type: string
+      - description: value
+        in: formData
+        name: value
+        required: true
+        type: string
+      - description: code
+        in: formData
+        name: code
+        required: true
+        type: string
+      - description: message
+        in: formData
+        name: message
+        required: true
+        type: string
+      - description: hash
+        in: formData
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 提现回调接口
+      tags:
+      - Withdrawal 提现功能
+  /withdrawal/detail:
+    get:
+      description: 获取提现明细
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.WithdrawalDetailListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取提现明细接口
+      tags:
+      - Withdrawal 提现功能
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

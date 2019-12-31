@@ -1,0 +1,3774 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "测试",
+        "title": "测试",
+        "contact": {},
+        "license": {},
+        "version": "0.0.1"
+    },
+    "basePath": "/api/v1/wallet",
+    "paths": {
+        "/account/change": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "兑换代币",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "兑换代币接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "代币id",
+                        "name": "currency_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "兑换id",
+                        "name": "change_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "转账金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "转账比例",
+                        "name": "ratio",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/account/detail": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "钱包明",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "钱包明接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页面条数",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountDetailListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "钱包详情",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "钱包详情接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountInfoResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/share/bonus": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "节点分红入账",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "节点分红入账接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标示",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/account/tfor/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "钱包TFOR详情",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "钱包TFOR详情接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountInfoResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/transfer": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "转账动态usdd",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "转账动态usdd接口",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "转账金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标识",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/account/withdrawal": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "提现货币",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "提现货币接口",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "代币id",
+                        "name": "coin_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "提现地址id",
+                        "name": "withdrawal_addr_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "支付密码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/account/company/addr/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建公司地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "创建公司地址接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "symbol",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/account/company/addr/status": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新公司出金/归集地址状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "更新公司出金/归集地址状态接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态（0开启1禁止）",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/account/company/addr/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新公司出金/归集地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "更新公司出金/归集地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "地址",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/account/company/deposit/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "公司充值流水",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "公司充值流水接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索帐号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.CompanyStreamListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/account/company/deposit_addr/join": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "新增公司提现地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "新增公司提现地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "地址",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/account/company/deposit_addr/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "公司归集地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "公司归集地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索币种",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.CompanyStreamListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/account/company/withdrawal/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "公司提现流水",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "公司提现流水接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索帐号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.CompanyStreamListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/account/company/withdrawal_addr/join": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "新增公司提现地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "新增公司充值地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "地址",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/account/company/withdrawal_addr/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "公司出金地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "公司出金地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索币种",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.CompanyStreamListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/account/user/deposit-list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户充值流水列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "获取用户充值流水接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索帐号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountUserDetailListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/account/user/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户钱包列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "用户钱包列表接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索帐号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountUserDetailListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/account/user/order-list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户代币装换",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "获取用户代币装换流水接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索帐号名",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountUserDetailListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/account/withdrawal/customer": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "提现客服审核",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "提现客户审核接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "明细id",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "客服id",
+                        "name": "customer_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态1：通过；2：不通过",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/account/withdrawal/detail": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "提币详情",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "提币详情接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AdminWithdrawalDetailResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/account/withdrawal/financial": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "提现财务审核",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "提现财务审核接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "明细id",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "财务id",
+                        "name": "financial_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态1：通过；2：不通过",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/account/withdrawal/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户提币订单列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "用户提币订单列表接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索帐号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.WithdrawalDetailAllListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/currency/quote/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建货币汇率",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "创建货币汇率接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "基础货币symbol",
+                        "name": "base_currency",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "报价货币symbol",
+                        "name": "quote_currency",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "price",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/currency/quote/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取汇率分页",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "获取汇率分页接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索标示",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.CurrencyQuoteListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/currency/quote/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新货币汇率",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "更新货币汇率接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "汇率id",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "price",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/currency/quote_history/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取汇率历史记录分页",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "获取汇率历史记录分页接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索标示",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.CurrencyQuoteListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/operate/recharge/audio": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除充值",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台运营-充值"
+                ],
+                "summary": "删除充值接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "充值id",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "财务id",
+                        "name": "financial_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态1：通过；2：不通过",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/operate/recharge/join": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "添加充值",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台运营-充值"
+                ],
+                "summary": "添加充值接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "uid",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标示",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "money",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/admin/operate/recharge/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "充值列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台运营-充值"
+                ],
+                "summary": "充值列表接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索用户",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadAllDepositDetailResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/operate/recharge/remove": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除充值",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台运营-充值"
+                ],
+                "summary": "删除充值接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "充值id",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/chain/add": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "增加链",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BlockChain 链"
+                ],
+                "summary": "增加链接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "链标识",
+                        "name": "chain_code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/chain/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取链列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BlockChain 链"
+                ],
+                "summary": "读取链列表接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadBlockChainListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/chain/remove": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除链",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BlockChain 链"
+                ],
+                "summary": "删除链接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "链id",
+                        "name": "chain_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/chain/symbol": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "根据symbol获取链",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BlockChain 链"
+                ],
+                "summary": "根据symbol获取链接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "链标识",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadOrderSymbolByChainResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/chain/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新链",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BlockChain 链"
+                ],
+                "summary": "更新链接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "链id",
+                        "name": "chain_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "链标识",
+                        "name": "chain_code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/coin/add": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "增加代币",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Coin 代币功能"
+                ],
+                "summary": "增加代币接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "代币代号",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "代币名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "链id",
+                        "name": "block_chain_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币类型（coin,token）",
+                        "name": "type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "确认数",
+                        "name": "confirm_count",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "最小充值金额",
+                        "name": "min_deposit",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "最小提现金额",
+                        "name": "min_withdrawal",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "提现手续费",
+                        "name": "withdrawal_fee",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "手续费类型 1：百分比;2：固定类型",
+                        "name": "withdrawal_fee_type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "合约地址 如该是type=token，这里必须输入",
+                        "name": "contract_address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/coin/deposit": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取代币提现信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Coin 代币功能"
+                ],
+                "summary": "读取代币提现信息接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "代币id",
+                        "name": "coin_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadCoinDepositInfoResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/coin/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取代币",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Coin 代币功能"
+                ],
+                "summary": "读取代币接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "代币id",
+                        "name": "coin_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadCoinInfoResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/coin/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取代币列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Coin 代币功能"
+                ],
+                "summary": "读取代币列表接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadCoinListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/coin/remove": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除代币",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Coin 代币功能"
+                ],
+                "summary": "删除代币接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "代币id",
+                        "name": "coin_id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/coin/status": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新代币状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Coin 代币功能"
+                ],
+                "summary": "更新代币状态接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "代币id",
+                        "name": "coin_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态:0开启;1关闭",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/coin/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新代币",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Coin 代币功能"
+                ],
+                "summary": "更新代币接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "代币id",
+                        "name": "coin_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "代币代号",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "代币名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "链id",
+                        "name": "block_chain_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币类型（coin,token）",
+                        "name": "type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "确认数",
+                        "name": "confirm_count",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "最小充值金额",
+                        "name": "min_deposit",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "最小提现金额",
+                        "name": "min_withdrawal",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "提现手续费",
+                        "name": "withdrawal_fee",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "手续费类型 1：百分比;2：固定类型",
+                        "name": "withdrawal_fee_type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "合约地址 如该是type=token，这里必须输入",
+                        "name": "contract_address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/currency/add": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "增加币种",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency 币种功能"
+                ],
+                "summary": "增加币种接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "币种标识",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "小数点数",
+                        "name": "decimals",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/currency/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取币种列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency 币种功能"
+                ],
+                "summary": "读取币种列表接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadCurrencyListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/currency/quote": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "货币报价",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency 币种功能"
+                ],
+                "summary": "货币报价接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "报价货币",
+                        "name": "quote_currency",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.CurrencyQuoteInfoResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/currency/remove": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除币种",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency 币种功能"
+                ],
+                "summary": "删除币种接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/currency/status": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新币种状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency 币种功能"
+                ],
+                "summary": "更新币种状态接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态:0开启;1关闭",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/currency/transfer_list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取兑换币种列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency 币种功能"
+                ],
+                "summary": "读取兑换币种列表接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadCurrencyTransferListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/currency/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新币种",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency 币种功能"
+                ],
+                "summary": "更新币种接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标识",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "小数点数",
+                        "name": "decimals",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/deposit/detail": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取充值详情",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DepositAdd 钱包地址"
+                ],
+                "summary": "读取充值详情接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadDepositDetailResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/deposit/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取提币地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DepositAdd 钱包地址"
+                ],
+                "summary": "读取充值地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "链id",
+                        "name": "block_chain_id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadDepositAddrResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/deposit/join": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "写入充值记录列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DepositAdd 钱包地址"
+                ],
+                "summary": "写入充值记录接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "地址",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "充值金额",
+                        "name": "value",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "充值区块高度",
+                        "name": "block_number",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "区块确认数",
+                        "name": "block_count",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "事务",
+                        "name": "transaction_hash",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/deposit/list": {
+            "get": {
+                "description": "读取钱包地址列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DepositAdd 钱包地址"
+                ],
+                "summary": "读取钱包地址列表接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadDepositAddrListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/deposit/top_up": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "充值",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DepositAdd 钱包地址"
+                ],
+                "summary": "充值接口 code=101119 入账成功",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "地址",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "充值费用",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "确认数",
+                        "name": "block_number",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "数量",
+                        "name": "block_count",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "订单",
+                        "name": "transaction_hash",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标识",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "类型",
+                        "name": "type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "校验",
+                        "name": "hash",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "合约地址",
+                        "name": "contract_address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/user/pay/is_init": {
+            "get": {
+                "description": "使用jwt命令牌",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "支付密码"
+                ],
+                "summary": "判断是否设置支付密码接口",
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/user/pay/reset-paypwd": {
+            "post": {
+                "description": "使用jwt命令牌",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "支付密码"
+                ],
+                "summary": "重置支付密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户邮箱",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新密码",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "验证码",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/user/pay/send-email_util": {
+            "post": {
+                "description": "使用jwt命令牌",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "支付密码"
+                ],
+                "summary": "修改支付密码时发送邮箱验证码接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户邮箱",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/user/pay/set-paypwd": {
+            "post": {
+                "description": "使用jwt命令牌",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "支付密码"
+                ],
+                "summary": "设置支付密码接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户支付密码",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/user/pay/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新支付密码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User 用户"
+                ],
+                "summary": "更新支付密码接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "支付密码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/withdrawal/addr/add": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建提现地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdrawal 提现功能"
+                ],
+                "summary": "创建提现地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "链id",
+                        "name": "block_chain_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "地址",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/withdrawal/addr/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "读取提币地址列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdrawal 提现功能"
+                ],
+                "summary": "读取提币地址列表接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "链id",
+                        "name": "block_chain_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "币种id",
+                        "name": "currency_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.WithdrawalAddrResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/withdrawal/addr/remove": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除提现地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdrawal 提现功能"
+                ],
+                "summary": "删除提现地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "提现地址id",
+                        "name": "withdrawal_addr_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/withdrawal/addr/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新提现地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdrawal 提现功能"
+                ],
+                "summary": "更新提现地址接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "提现地址id",
+                        "name": "withdrawal_addr_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "地址",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/withdrawal/callback": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "提现回调",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdrawal 提现功能"
+                ],
+                "summary": "提现回调接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "app_id",
+                        "name": "app_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "order_id",
+                        "name": "order_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "transaction_hash",
+                        "name": "transaction_hash",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "block_number",
+                        "name": "block_number",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "from_address",
+                        "name": "from_address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "to_address",
+                        "name": "to_address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "symbol",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "contract_address",
+                        "name": "contract_address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "value",
+                        "name": "value",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "code",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "message",
+                        "name": "message",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "hash",
+                        "name": "hash",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/withdrawal/detail": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取提现明细",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdrawal 提现功能"
+                ],
+                "summary": "获取提现明细接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.WithdrawalDetailListResp"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "resp.AccountDetailListResp": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "帐号详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.AccountDetailResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
+        "resp.AccountDetailResp": {
+            "type": "object",
+            "properties": {
+                "currency_id": {
+                    "description": "币种id",
+                    "type": "integer"
+                },
+                "decimals": {
+                    "description": "小数点位数",
+                    "type": "integer"
+                },
+                "income": {
+                    "description": "本期收入",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "spend": {
+                    "description": "上期支出",
+                    "type": "number"
+                },
+                "symbol": {
+                    "description": "币种标识",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "明细类型  账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "时间",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.AccountInfoResp": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "description": "余额",
+                    "type": "number"
+                },
+                "currency_id": {
+                    "description": "币种id",
+                    "type": "integer"
+                },
+                "decimals": {
+                    "description": "小数点位数",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "symbol": {
+                    "description": "币种标识",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.AccountUserDetailInfoResp": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "description": "现余额",
+                    "type": "number"
+                },
+                "email": {
+                    "description": "邮件",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "明细id",
+                    "type": "integer"
+                },
+                "income": {
+                    "description": "入账",
+                    "type": "number"
+                },
+                "last_balance": {
+                    "description": "之前余额",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "用户帐号",
+                    "type": "string"
+                },
+                "spend": {
+                    "description": "支出",
+                    "type": "number"
+                },
+                "symbol": {
+                    "description": "币种",
+                    "type": "string"
+                },
+                "uid": {
+                    "description": "用户id",
+                    "type": "integer"
+                },
+                "update_at": {
+                    "description": "时间",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.AccountUserDetailListResp": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "帐号详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.AccountUserDetailInfoResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
+        "resp.AdminWithdrawalDetailResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "customer_status": {
+                    "description": "客服审核状态 0：审核中;1：审核通过;2：审核不通过",
+                    "type": "integer"
+                },
+                "financial_status": {
+                    "description": "财务审核状态 0：审核中;1：审核通过;2：审核不通过",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "用户的id",
+                    "type": "integer"
+                },
+                "order_id": {
+                    "description": "订单id",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 0已提交,1待审核,2审核中,3通过,4不通过,5取消",
+                    "type": "integer"
+                },
+                "symbol": {
+                    "description": "代币代号",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "金额",
+                    "type": "number"
+                }
+            }
+        },
+        "resp.BasePageResp": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "description": "数量",
+                    "type": "integer"
+                },
+                "currentPage": {
+                    "description": "当前页数",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页数据条数",
+                    "type": "integer"
+                },
+                "totalPage": {
+                    "description": "总页数",
+                    "type": "integer"
+                }
+            }
+        },
+        "resp.CompanyStreamInfoResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "balance": {
+                    "description": "现余额",
+                    "type": "number"
+                },
+                "email": {
+                    "description": "邮件",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "明细id",
+                    "type": "integer"
+                },
+                "income": {
+                    "description": "入账",
+                    "type": "number"
+                },
+                "last_balance": {
+                    "description": "之前余额",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "用户帐号",
+                    "type": "string"
+                },
+                "order_id": {
+                    "description": "订单号",
+                    "type": "string"
+                },
+                "spend": {
+                    "description": "支出",
+                    "type": "number"
+                },
+                "symbol": {
+                    "description": "币种",
+                    "type": "string"
+                },
+                "uid": {
+                    "description": "用户id",
+                    "type": "integer"
+                },
+                "update_at": {
+                    "description": "时间",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.CompanyStreamListResp": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "帐号详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.CompanyStreamInfoResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
+        "resp.CurrencyQuoteInfoResp": {
+            "type": "object",
+            "properties": {
+                "base_currency": {
+                    "description": "基础货币",
+                    "type": "string"
+                },
+                "code": {
+                    "description": "标示",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "金额",
+                    "type": "number"
+                },
+                "quote_currency": {
+                    "description": "基础货币",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.CurrencyQuoteListResp": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "帐号详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.CurrencyQuoteInfoResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
+        "resp.ReadAllDepositDetailInfoResp": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "用户名",
+                    "type": "string"
+                },
+                "order_id": {
+                    "description": "订单id",
+                    "type": "integer"
+                },
+                "source": {
+                    "description": "来源 0：充值1：后台充值",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态 0确认中,1已确定",
+                    "type": "integer"
+                },
+                "symbol": {
+                    "description": "代币代号",
+                    "type": "string"
+                },
+                "transaction_hash": {
+                    "description": "hash",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "标识 coin,token",
+                    "type": "string"
+                },
+                "uid": {
+                    "description": "用户id",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "金额",
+                    "type": "number"
+                }
+            }
+        },
+        "resp.ReadAllDepositDetailResp": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.ReadAllDepositDetailInfoResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
+        "resp.ReadBlockChainListResp": {
+            "type": "object",
+            "properties": {
+                "chain_code": {
+                    "description": "链标识",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "链id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "链名称",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReadCoinDepositInfoResp": {
+            "type": "object",
+            "properties": {
+                "coin_id": {
+                    "description": "代币id",
+                    "type": "integer"
+                },
+                "currency_id": {
+                    "description": "币种id",
+                    "type": "integer"
+                },
+                "min_withdrawal": {
+                    "description": "小于该金额不能提",
+                    "type": "number"
+                },
+                "money": {
+                    "description": "可提现金额",
+                    "type": "number"
+                },
+                "symbol": {
+                    "description": "币种代号",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "标识 coin,token",
+                    "type": "string"
+                },
+                "withdrawal_fee": {
+                    "description": "提现手续费",
+                    "type": "number"
+                },
+                "withdrawal_fee_type": {
+                    "description": "手续费类型 fixed 按百分百比,percent 固定收取",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReadCoinInfoResp": {
+            "type": "object",
+            "properties": {
+                "abi": {
+                    "type": "string"
+                },
+                "block_chain_id": {
+                    "description": "区块链名称",
+                    "type": "string"
+                },
+                "coin_id": {
+                    "description": "代币id",
+                    "type": "integer"
+                },
+                "confirm_count": {
+                    "description": "充值入帐的区块链确认数",
+                    "type": "integer"
+                },
+                "contract_address": {
+                    "description": "合约地址:如该是type=token，这里必须输入",
+                    "type": "string"
+                },
+                "currency_id": {
+                    "description": "货币id",
+                    "type": "integer"
+                },
+                "min_deposit": {
+                    "description": "最小充值金额，小于该金额不入账",
+                    "type": "number"
+                },
+                "min_withdrawal": {
+                    "description": "小于该金额不能提",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "币种名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "integer"
+                },
+                "symbol": {
+                    "description": "币种代号",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "标识 coin,token",
+                    "type": "string"
+                },
+                "withdrawal_fee": {
+                    "description": "提现手续费",
+                    "type": "number"
+                },
+                "withdrawal_fee_type": {
+                    "description": "手续费类型 fixed 按百分百比,percent 固定收取",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReadCoinListResp": {
+            "type": "object",
+            "properties": {
+                "block_chain_id": {
+                    "description": "区块链名称",
+                    "type": "string"
+                },
+                "chain_code": {
+                    "description": "链代号",
+                    "type": "string"
+                },
+                "chain_name": {
+                    "description": "链名称",
+                    "type": "string"
+                },
+                "coin_id": {
+                    "description": "币种id",
+                    "type": "integer"
+                },
+                "confirm_count": {
+                    "description": "充值入帐的区块链确认数",
+                    "type": "integer"
+                },
+                "contract_address": {
+                    "description": "合约地址:如该是type=token，这里必须输入",
+                    "type": "string"
+                },
+                "currency_decimals": {
+                    "description": "代币小数点",
+                    "type": "integer"
+                },
+                "currency_id": {
+                    "description": "代币id",
+                    "type": "integer"
+                },
+                "currency_name": {
+                    "description": "代币名称",
+                    "type": "string"
+                },
+                "min_deposit": {
+                    "description": "最小充值金额，小于该金额不入账",
+                    "type": "number"
+                },
+                "min_withdrawal": {
+                    "description": "小于该金额不能提",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "币种名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "integer"
+                },
+                "symbol": {
+                    "description": "币种代号",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "标识 coin,token",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "withdrawal_fee": {
+                    "description": "提现手续费",
+                    "type": "number"
+                },
+                "withdrawal_fee_type": {
+                    "description": "手续费类型 fixed 按百分百比,percent 固定收取",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReadCurrencyListResp": {
+            "type": "object",
+            "properties": {
+                "currency_id": {
+                    "description": "币种id",
+                    "type": "integer"
+                },
+                "decimals": {
+                    "description": "小数点",
+                    "type": "integer"
+                },
+                "money": {
+                    "description": "可用金额",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "名字",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态：0开启;1:停用;2:删除",
+                    "type": "integer"
+                },
+                "symbol": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReadCurrencyTransferListResp": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "description": "可兑换列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.ReadCurrencyListResp"
+                    }
+                },
+                "transfer": {
+                    "description": "兑换目标列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.ReadCurrencyListResp"
+                    }
+                }
+            }
+        },
+        "resp.ReadDepositAddrListResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "block_chain_id": {
+                    "description": "区块链名称",
+                    "type": "string"
+                },
+                "chain_code": {
+                    "description": "链代号",
+                    "type": "string"
+                },
+                "chain_name": {
+                    "description": "链名称",
+                    "type": "string"
+                },
+                "deposit_addr_id": {
+                    "description": "充值地址",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态：0开启;1:停用;2:删除",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "标识 coin,token",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReadDepositAddrResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "block_chain_id": {
+                    "description": "区块链id",
+                    "type": "integer"
+                },
+                "deposit_addr_id": {
+                    "description": "充值地址",
+                    "type": "integer"
+                }
+            }
+        },
+        "resp.ReadDepositDetailInfoResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "block_count": {
+                    "description": "确认次数",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态 0确认中,1已确定",
+                    "type": "integer"
+                },
+                "symbol": {
+                    "description": "代币代号",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "标识 coin,token",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "金额",
+                    "type": "number"
+                }
+            }
+        },
+        "resp.ReadDepositDetailResp": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "帐号详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.ReadDepositDetailInfoResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
+        "resp.ReadOrderSymbolByChainResp": {
+            "type": "object",
+            "properties": {
+                "chain_code": {
+                    "description": "链标识",
+                    "type": "string"
+                },
+                "coin_id": {
+                    "description": "代币id",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "链id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "链名称",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.WithdrawalAddrResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "chain_code": {
+                    "description": "链code",
+                    "type": "string"
+                },
+                "chain_name": {
+                    "description": "链name",
+                    "type": "string"
+                },
+                "currency_name": {
+                    "description": "货币名称",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "地址名称",
+                    "type": "string"
+                },
+                "withdrawal_addr_id": {
+                    "description": "地址id",
+                    "type": "integer"
+                }
+            }
+        },
+        "resp.WithdrawalDetailAdminResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "customer_status": {
+                    "description": "客服审核状态 0：审核中;1：审核通过;2：审核不通过",
+                    "type": "integer"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "financial_status": {
+                    "description": "财务审核状态 0：审核中;1：审核通过;2：审核不通过",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "明细id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "帐号",
+                    "type": "string"
+                },
+                "order_id": {
+                    "description": "订单id",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消",
+                    "type": "integer"
+                },
+                "symbol": {
+                    "description": "代币代号",
+                    "type": "string"
+                },
+                "uid": {
+                    "description": "用户id",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "金额",
+                    "type": "number"
+                }
+            }
+        },
+        "resp.WithdrawalDetailAllListResp": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "帐号详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.WithdrawalDetailAdminResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
+        "resp.WithdrawalDetailListResp": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "帐号详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.WithdrawalDetailResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
+        "resp.WithdrawalDetailResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "poundage": {
+                    "description": "手续费",
+                    "type": "number"
+                },
+                "status": {
+                    "description": "状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消",
+                    "type": "integer"
+                },
+                "symbol": {
+                    "description": "代币代号",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "标识 coin,token",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "金额",
+                    "type": "number"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

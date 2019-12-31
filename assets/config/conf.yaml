@@ -1,0 +1,28 @@
+appname: wallet
+httpport: :8080
+runmode: debug
+logs:
+  path: logs
+  name: info
+  suffix: info
+mongo:
+  addr: 127.0.0.1:27017
+mysql:
+  addr: root:Go11P35@tcp(192.168.8.126:3306)/wallet?charset=utf8&parseTime=true&loc=Asia%2FShanghai
+  prefix: wt_
+deposit:
+  addr : {"ethereum": "/api/v1/blockchain-pay/ethereum/address"}
+  srekey: 123456
+consul:
+  config:
+    address: 192.168.8.126:8500
+  register:
+    id: wallet.tfor
+    name: wallet.tfor
+    port: 9092
+    tags: ["wallet.tfor"]
+    address: 192.168.8.126
+jwt:
+  signkey: 1233444
+  admin_signkey: 1233444
+

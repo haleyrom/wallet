@@ -1,0 +1,24 @@
+*.temp
+*.tmp
+*.exe
+*.exe~
+*.pprof
+*.log
+.DS_Store
+.idea/
+/cache/*
+
+# Binaries for programs and plugins
+*.dll
+*.so
+*.dylib
+
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+./docs
+.idea/*
+
