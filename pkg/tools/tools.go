@@ -61,6 +61,7 @@ func GenerateSign(param map[string]interface{}, secret string) string {
 		}
 		sign += fmt.Sprintf("%s=%v&", k, param[k])
 	}
+	fmt.Println(sign + fmt.Sprintf("hash=%s", secret))
 	md5HashInBytes := md5.Sum([]byte(sign + fmt.Sprintf("hash=%s", secret)))
 	md5HashInString := hex.EncodeToString(md5HashInBytes[:])
 	return strings.ToUpper(md5HashInString)
