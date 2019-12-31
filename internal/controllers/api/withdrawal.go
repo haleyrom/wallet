@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -273,7 +272,6 @@ func WithdrawalCallback(c *gin.Context) {
 		core.GResp.Success(c, resp.EmptyData())
 		return
 	}
-	fmt.Println(1,"=====")
 
 	if err := detail.GetOrderIdBySubmitInfo(o); err != nil {
 		o.Rollback()

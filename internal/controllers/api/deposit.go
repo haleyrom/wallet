@@ -214,7 +214,7 @@ func TopUpDeposit(c *gin.Context) {
 
 	if err := coin.GetOrderSymbolTypeByCoin(o); err != nil {
 		o.Rollback()
-		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		core.GResp.Success(c, resp.EmptyData())
 		return
 	}
 

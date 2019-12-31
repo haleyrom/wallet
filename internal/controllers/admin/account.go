@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -13,6 +12,7 @@ import (
 	"github.com/spf13/viper"
 	"net/http"
 	"time"
+	"fmt"
 )
 
 // AccountUserList 用户钱包列表
@@ -265,55 +265,58 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 		return
 	}
 
-	// TODO: 等待调试提币接口
-	consul_service, err := consul.ConsulGetServer("blockchain-pay.tfor")
-	if err != nil {
-		o.Callback()
-		core.GResp.Failure(c, err)
-		return
-	}
+	if detail.FinancialStatus == 1 {
 
-	coin := models.NewCoin()
-	coin.Symbol = detail.Symbol
-	contract_address, err := coin.GetConTractAddress(o)
-	if err != nil {
-		o.Callback()
-		core.GResp.Failure(c, err)
-		return
-	}
+		// TODO: 等待调试提币接口
+		consul_service, err := consul.ConsulGetServer("blockchain-pay.tfor")
+		if err != nil {
+			o.Callback()
+			core.GResp.Failure(c, err)
+			return
+		}
 
-	company_addr := models.NewCompanyAddr()
-	company_addr.Symbol, company_addr.Code = detail.Symbol, models.CodeWithdrawal
-	address, err := company_addr.GetOrderSymbolByAddress(o)
-	if err != nil {
-		o.Callback()
-		core.GResp.Failure(c, resp.CodeNotCompanyAddress, err)
-		return
-	}
+		coin := models.NewCoin()
+		coin.Symbol = detail.Symbol
+		contract_address, err := coin.GetConTractAddress(o)
+		if err != nil {
+			o.Callback()
+			core.GResp.Failure(c, err)
+			return
+		}
 
-	url := fmt.Sprintf("%s%s", consul_service, "/api/v1/blockchain-pay/ethtereum/withdrawal")
+		company_addr := models.NewCompanyAddr()
+		company_addr.Symbol, company_addr.Code = detail.Symbol, models.CodeWithdrawal
+		address, err := company_addr.GetOrderSymbolByAddress(o)
+		if err != nil {
+			o.Callback()
+			core.GResp.Failure(c, resp.CodeNotCompanyAddress, err)
+			return
+		}
 
-	data := map[string]interface{}{
-		"app_id":           viper.GetString("appname"),
-		"order_id":         detail.OrderId,
-		"symbol":           detail.Symbol,
-		"contract_address": contract_address,
-		"from_address":     address,
-		"to_address":       detail.Address,
-		"value":            fmt.Sprintf("%.2f", detail.Value),
-	}
-	result, err := tools.HttpPost(data, url, viper.GetString("deposit.Srekey"))
-	if err != nil || result.Code != http.StatusOK {
+		url := fmt.Sprintf("%s%s", consul_service, "/api/v1/blockchain-pay/ethtereum/withdrawal")
 
-		detail.Status, detail.Remark = models.WithdrawalStatusNoThrough, result.Msg
+		data := map[string]interface{}{
+			"app_id":           viper.GetString("appname"),
+			"order_id":         detail.OrderId,
+			"symbol":           detail.Symbol,
+			"contract_address": contract_address,
+			"from_address":     address,
+			"to_address":       detail.Address,
+			"value":            fmt.Sprintf("%.2f", detail.Value),
+		}
+		result, err := tools.HttpPost(data, url, viper.GetString("deposit.Srekey"))
+		if err != nil || result.Code != http.StatusOK {
+			detail.Status, detail.Remark = models.WithdrawalStatusNoThrough, result.Msg
+			_ = detail.UpdateRemark(o)
+			o.Commit()
+			core.GResp.CustomFailure(c, errors.Errorf("%s", result.Msg))
+			return
+		}
+
+		detail.Status, detail.Remark = models.WithdrawalStatusSubmit, result.Msg
 		_ = detail.UpdateRemark(o)
-		o.Commit()
-		core.GResp.CustomFailure(c, errors.Errorf("%s", result.Msg))
-		return
 	}
 
-	detail.Status, detail.Remark = models.WithdrawalStatusSubmit, result.Msg
-	_ = detail.UpdateRemark(o)
 
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
