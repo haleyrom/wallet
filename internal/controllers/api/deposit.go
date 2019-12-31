@@ -255,8 +255,8 @@ func TopUpDeposit(c *gin.Context) {
 
 	var confirm bool
 	// 判断是否已经存在订单
-	err := detail.IsTransactionHash(o)
-	fmt.Println(detail.TransactionHash, "=======")
+	err := detail.IsKey(o)
+	fmt.Println(detail.TransactionHash, "=======", p.BlockCount)
 	if err != nil {
 		// 是否到确认数量
 		if coin.ConfirmCount <= block_count {
