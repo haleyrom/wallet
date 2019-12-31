@@ -29,7 +29,7 @@ type DepositDetail struct {
 	FinancialId     uint    `gorm:"column:financial_id;index;default:0;comment:'财务id'"`     // 财务id
 	FinancialRemark string  `gorm:"column:financial_remark;comment:'财务备注'"`                 // 财务备注
 	Deleted         int8    `gorm:"column:deleted;default:0;comment:'删除状态（0不删除1删除）'"`       // 删除状态（0不删除1删除）
-	Key string `gorm:"column:key;default:0;comment:'key'"` //
+	Key string `gorm:"column:key;default:0;unique_index;comment:'key'"` //
 }
 
 const (

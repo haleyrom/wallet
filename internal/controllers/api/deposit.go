@@ -1,6 +1,8 @@
 package api
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -231,6 +233,8 @@ func TopUpDeposit(c *gin.Context) {
 	money, _ := strconv.ParseFloat(p.Money, 64)
 	block_number, _ := strconv.Atoi(p.BlockNumber)
 	block_count, _ := strconv.Atoi(p.BlockCount)
+	h := md5.New()
+	h.Write([]byte(fmt.Sprintf("%s%s",p.Address,p.TransactionHash)))
 	// 入提现地址
 	detail := &models.DepositDetail{
 		Uid:             addr.Uid,
@@ -245,6 +249,7 @@ func TopUpDeposit(c *gin.Context) {
 		Type:            p.Type,
 		Status:          models.DepositStatusNotBooked,
 		ContractAddress: p.ContractAddress,
+		Key:hex.EncodeToString(h.Sum(nil)),
 	}
 
 	var confirm bool
