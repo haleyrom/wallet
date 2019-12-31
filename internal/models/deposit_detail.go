@@ -19,7 +19,7 @@ type DepositDetail struct {
 	Value           float64 `gorm:"column:value;default:0;comment:'充值金额'"`                  // 充值金额
 	BlockNumber     int     `gorm:"column:block_number;default:0;comment:'充值区块高度'"`         // 充值区块高度
 	BlockCount      int     `gorm:"column:block_count;default:0;comment:'区块确认数'"`           // 当区块确认数达到最小确认时，入账。
-	TransactionHash string  `gorm:"size:255;column:transaction_hash;comment:'事务hash'"`      // 事务hash
+	TransactionHash string  `gorm:"size:255;column:transaction_hash;unique_index;comment:'事务hash'"`      // 事务hash
 	Symbol          string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                 // 代币代号
 	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                    // 标识 coin,token
 	Status          int8    `gorm:"size:3;column:status;default:0;comment:'入账状态'"`          // 入账状态：0未入账,1已入账。

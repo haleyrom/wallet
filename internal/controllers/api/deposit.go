@@ -214,7 +214,7 @@ func TopUpDeposit(c *gin.Context) {
 
 	if err := coin.GetOrderSymbolTypeByCoin(o); err != nil {
 		o.Rollback()
-		core.GResp.Success(c, resp.EmptyData())
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
 		return
 	}
 
@@ -223,7 +223,7 @@ func TopUpDeposit(c *gin.Context) {
 	}
 	if err := addr.GetAddressByInfo(o); err != nil {
 		o.Rollback()
-		core.GResp.Success(c, resp.EmptyData())
+		core.GResp.Success(c, resp.CodeNotAddr)
 		return
 	}
 
