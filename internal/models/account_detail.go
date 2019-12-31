@@ -34,6 +34,7 @@ func NewAccountDetail() *AccountDetail {
 
 // CreateAccountDetail  创建账本明细
 func (a *AccountDetail) CreateAccountDetail(o *gorm.DB) error {
+	fmt.Println(a,"=========================")
 	return o.Create(a).Error
 }
 
