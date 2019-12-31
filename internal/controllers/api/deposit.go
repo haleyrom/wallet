@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -246,6 +247,7 @@ func TopUpDeposit(c *gin.Context) {
 		ContractAddress: p.ContractAddress,
 	}
 
+	fmt.Println(p,"=======")
 	var confirm bool
 	// 判断是否已经存在订单
 	if 	err := detail.IsTransactionHash(o);err != nil {
