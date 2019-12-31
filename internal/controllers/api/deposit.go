@@ -276,6 +276,7 @@ func TopUpDeposit(c *gin.Context) {
 			return
 		}
 	}
+	fmt.Println("--------------")
 
 	if coin.ConfirmCount <= block_count && confirm == true {
 		// 入账 判断账本
