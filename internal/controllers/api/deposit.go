@@ -247,17 +247,17 @@ func TopUpDeposit(c *gin.Context) {
 		ContractAddress: p.ContractAddress,
 	}
 
-	fmt.Println(p,"=======")
 	var confirm bool
 	// 判断是否已经存在订单
 	err := detail.IsTransactionHash(o)
-	fmt.Println(err,"====",detail)
+	fmt.Println(detail,err,"============")
 	if 	err != nil {
 		// 是否到确认数量
 		if coin.ConfirmCount <= block_count {
 			confirm = true
 			detail.Status = models.DepositStatusBooked
 		}
+
 		if err := detail.CreateDepositDetail(o); err != nil {
 			o.Rollback()
 			core.GResp.Failure(c, err)
