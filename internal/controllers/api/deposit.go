@@ -255,9 +255,7 @@ func TopUpDeposit(c *gin.Context) {
 
 	var confirm bool
 	// 判断是否已经存在订单
-	err := detail.IsKey(o)
-	fmt.Println(detail.TransactionHash, "=======", p.BlockCount)
-	if err != nil {
+	if err := detail.IsKey(o); err != nil {
 		// 是否到确认数量
 		if coin.ConfirmCount <= block_count {
 			confirm = true
@@ -265,9 +263,8 @@ func TopUpDeposit(c *gin.Context) {
 		}
 
 		if err := detail.CreateDepositDetail(o); err != nil {
-			fmt.Println(err, "+++++++")
 			o.Rollback()
-			core.GResp.Success(c, resp.EmptyData())
+			core.GResp.Failure(c, err)
 			return
 		}
 	} else {
@@ -283,7 +280,6 @@ func TopUpDeposit(c *gin.Context) {
 			return
 		}
 	}
-	fmt.Println("--------------")
 
 	if coin.ConfirmCount <= block_count && confirm == true {
 		// 入账 判断账本
