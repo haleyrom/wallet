@@ -223,7 +223,7 @@ func TopUpDeposit(c *gin.Context) {
 	}
 	if err := addr.GetAddressByInfo(o); err != nil {
 		o.Rollback()
-		core.GResp.Failure(c, resp.CodeNotAddr)
+		core.GResp.Success(c, resp.EmptyData())
 		return
 	}
 
