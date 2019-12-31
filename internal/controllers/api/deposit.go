@@ -258,7 +258,7 @@ func TopUpDeposit(c *gin.Context) {
 			detail.Status = models.DepositStatusBooked
 		}
 
-		if err := detail.CreateDepositDetail(o); err != nil {
+		if err := detail.CreateDepositDetail(core.Orm.New()); err != nil {
 			o.Rollback()
 			core.GResp.Failure(c, err)
 			return
