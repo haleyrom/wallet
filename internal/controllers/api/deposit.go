@@ -234,7 +234,8 @@ func TopUpDeposit(c *gin.Context) {
 	block_number, _ := strconv.Atoi(p.BlockNumber)
 	block_count, _ := strconv.Atoi(p.BlockCount)
 	h := md5.New()
-	h.Write([]byte(fmt.Sprintf("%s%s",p.Address,p.TransactionHash)))
+	h.Write([]byte(fmt.Sprintf("%s%s", p.Address, p.TransactionHash)))
+
 	// 入提现地址
 	detail := &models.DepositDetail{
 		Uid:             addr.Uid,
@@ -249,14 +250,13 @@ func TopUpDeposit(c *gin.Context) {
 		Type:            p.Type,
 		Status:          models.DepositStatusNotBooked,
 		ContractAddress: p.ContractAddress,
-		Key:hex.EncodeToString(h.Sum(nil)),
+		Key:             hex.EncodeToString(h.Sum(nil)),
 	}
 
 	var confirm bool
 	// 判断是否已经存在订单
 	err := detail.IsTransactionHash(o)
-	fmt.Println(detail,err,"============")
-	if 	err != nil {
+	if err != nil {
 		// 是否到确认数量
 		if coin.ConfirmCount <= block_count {
 			confirm = true
@@ -265,7 +265,7 @@ func TopUpDeposit(c *gin.Context) {
 
 		if err := detail.CreateDepositDetail(core.Orm.New()); err != nil {
 			o.Rollback()
-			core.GResp.Failure(c, err)
+			core.GResp.Success(c, resp.EmptyData())
 			return
 		}
 	} else {
