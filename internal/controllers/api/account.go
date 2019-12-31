@@ -99,8 +99,7 @@ func AccountTransfer(c *gin.Context) {
 	}
 
 	account := models.NewAccount()
-	account.CurrencyId = currency.ID
-	account.Uid = p.Base.Uid
+	account.CurrencyId,account.Uid = currency.ID,p.Base.Uid
 	// 判断是否存在账本
 	if err := account.IsExistAccount(o); err != nil {
 		o.Callback()
