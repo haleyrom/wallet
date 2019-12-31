@@ -124,7 +124,7 @@ func AccountTransfer(c *gin.Context) {
 	detail := models.NewAccountDetail()
 	detail.Uid, detail.Type = p.Base.Uid, resp.AccountDetailInto
 	detail.AccountId, detail.LastBalance = account.ID, balance
-	detail.Spend, detail.Balance = p.Money, account.Balance
+	detail.Spend, detail.Balance = p.Money, account.Balance-p.Money
 	if err := detail.CreateAccountDetail(o); err != nil {
 		o.Callback()
 		core.GResp.Failure(c, err)
