@@ -41,14 +41,13 @@ func HttpInterceptor(j *jwt.JWT) gin.HandlerFunc {
 			err error
 		)
 
+		token := c.Request.Header.Get(HttpHeadToken)
+		logrus.Infof("request url: %s, ContentType: %s, token: %s, body: %v", c.Request.URL, c.Request.Method, token, c.Request.Body)
 		// NotHandlerToken 不拦截token
 		if _, ok := NotHandlerToken[c.Request.RequestURI]; ok == true {
 			c.Next()
 			return
 		}
-		token := c.Request.Header.Get(HttpHeadToken)
-
-		logrus.Infof("request url: %s, ContentType: %s, token: %s, body: %v", c.Request.URL, c.Request.Method, token, c.Request.Body)
 
 		if len(token) > core.DefaultNilNum {
 			claims := &jwt.CustomClaims{}

@@ -266,7 +266,6 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 	}
 
 	if detail.FinancialStatus == 1 {
-
 		// TODO: 等待调试提币接口
 		consul_service, err := consul.ConsulGetServer("blockchain-pay.tfor")
 		if err != nil {

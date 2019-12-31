@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -249,9 +248,7 @@ func TopUpDeposit(c *gin.Context) {
 
 	var confirm bool
 	// 判断是否已经存在订单
-	err := detail.IsTransactionHash(o)
-	fmt.Println(detail,"=======")
-	if err != nil {
+	if 	err := detail.IsTransactionHash(o);err != nil {
 		// 是否到确认数量
 		if coin.ConfirmCount <= block_count {
 			confirm = true
