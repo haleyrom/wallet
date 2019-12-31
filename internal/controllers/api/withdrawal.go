@@ -258,7 +258,6 @@ func WithdrawalCallback(c *gin.Context) {
 	o := core.Orm.New().Begin()
 	detail := models.NewWithdrawalDetail()
 	detail.OrderId = p.OrderId
-	fmt.Println(p.Code,"=====")
 	switch p.Code {
 	case "105005":
 	case "105006":
@@ -281,7 +280,6 @@ func WithdrawalCallback(c *gin.Context) {
 		core.GResp.CustomFailure(c, err)
 		return
 	}
-	fmt.Println(2,"=====")
 
 	detail.Status, detail.TransactionHash = models.WithdrawalAudioStatusOk, p.TransactionHash
 	if err := detail.UpdateStatus(o); err != nil {
@@ -289,7 +287,6 @@ func WithdrawalCallback(c *gin.Context) {
 		core.GResp.CustomFailure(c, err)
 		return
 	}
-	fmt.Println(3,"=====")
 
 	account := models.NewAccount()
 	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
@@ -298,8 +295,6 @@ func WithdrawalCallback(c *gin.Context) {
 		core.GResp.CustomFailure(c, err)
 		return
 	}
-
-	fmt.Println(4,"=====")
 
 	// 入账金额
 	money := detail.Value + detail.Poundage
@@ -311,7 +306,6 @@ func WithdrawalCallback(c *gin.Context) {
 		LastBalance: account.BlockedBalance,
 		Spend:       money,
 	}
-	fmt.Println(5,"=====")
 
 	if err := block_detail.CreateBlockDetail(o); err != nil {
 		o.Callback()
@@ -332,7 +326,6 @@ func WithdrawalCallback(c *gin.Context) {
 		core.GResp.CustomFailure(c, err)
 		return
 	}
-	fmt.Println(6,"=====")
 
 	// 入账
 	if err := account.UpdateWithdrawalBalance(o, money, money, core.OperateToOut, core.OperateToOut); err != nil {
