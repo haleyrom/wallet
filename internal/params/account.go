@@ -10,14 +10,14 @@ type AccountTFORInfoParam BaseBindParam
 type AccountTransferParam struct {
 	Base   *BaseParam `json:"claims" form:"claims"`
 	Symbol string     `json:"symbol" form:"symbol"  binding:"required"`
-	Money  float64    `json:"money" form:"money"  binding:"required"`
+	Money  float64    `json:"money" form:"money"  binding:"required;gt=0"`
 }
 
 // AccountChangeParam 账本转账本参数
 type AccountChangeParam struct {
 	Base       *BaseParam `json:"claims" form:"claims"`
 	CurrencyId uint       `json:"currency_id" form:"currency_id"  binding:"required"`
-	Money      float64    `json:"money" form:"money"  binding:"required"`
+	Money      float64    `json:"money" form:"money"  binding:"required;gt=0"`
 	ChangeId   uint       `json:"change_id" form:"change_id" binding:"required"`
 	Ratio      string     `json:"ratio" form:"ratio" binding:"required"`
 }
@@ -32,7 +32,7 @@ type AccountDetailParam struct {
 // AccountShareBonusParam 节点分红
 type AccountShareBonusParam struct {
 	Base   *BaseParam `json:"claims" form:"claims"`
-	Money  float64    `json:"money" form:"money"  binding:"required"`
+	Money  float64    `json:"money" form:"money"  binding:"required;gt=0"`
 	Symbol string     `json:"symbol" form:"symbol"  binding:"required"`
 }
 
@@ -40,7 +40,7 @@ type AccountShareBonusParam struct {
 type AccountWithdrawalParam struct {
 	Base             *BaseParam `json:"claims" form:"claims"`
 	Password         string     `json:"password" form:"password" binding:"required"`
-	Money            float64    `json:"money" form:"money"  binding:"required"`
+	Money            float64    `json:"money" form:"money"  binding:"required;gt=0"`
 	CurrencyId       uint       `json:"currency_id" form:"currency_id"  binding:"required"`
 	CoinId           uint       `json:"coin_id" form:"coin_id"  binding:"required"`
 	WithdrawalAddrId uint       `json:"withdrawal_addr_id" form:"withdrawal_addr_id" binding:"required"`
