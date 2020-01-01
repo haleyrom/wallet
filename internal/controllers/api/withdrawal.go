@@ -277,12 +277,11 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	//if err := detail.GetOrderIdBySubmitInfo(o); err != nil {
-	//	o.Rollback()
-	//	core.GResp.CustomFailure(c, err)
-	//	return
-	//}
-	//
+	if err := detail.GetOrderIdBySubmitInfo(o); err != nil {
+		o.Rollback()
+		core.GResp.CustomFailure(c, err)
+		return
+	}
 
 	detail.BlockCount, _ = strconv.Atoi(p.BlockCount)
 	detail.Status, detail.TransactionHash = models.WithdrawalStatusOk, p.TransactionHash
