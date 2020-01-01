@@ -250,7 +250,7 @@ func TopUpDeposit(c *gin.Context) {
 		Type:            p.Type,
 		Status:          models.DepositStatusNotBooked,
 		ContractAddress: p.ContractAddress,
-		Key:             hex.EncodeToString(h.Sum(nil)),
+		Md5Keys:         hex.EncodeToString(h.Sum(nil)),
 	}
 
 	var confirm bool

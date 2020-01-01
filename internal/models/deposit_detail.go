@@ -29,7 +29,7 @@ type DepositDetail struct {
 	FinancialId     uint    `gorm:"column:financial_id;index;default:0;comment:'财务id'"`      // 财务id
 	FinancialRemark string  `gorm:"column:financial_remark;comment:'财务备注'"`                  // 财务备注
 	Deleted         int8    `gorm:"column:deleted;default:0;comment:'删除状态（0不删除1删除）'"`        // 删除状态（0不删除1删除）
-	Key             string  `gorm:"column:key;default:0;unique_index;comment:'key'"`         //
+	Md5Keys         string  `gorm:"column:md5key;default:0;unique_index;comment:'md5key'"`   //
 }
 
 const (
@@ -69,7 +69,7 @@ func (d *DepositDetail) IsTransactionHash(o *gorm.DB) error {
 
 // IsKey 判断
 func (d *DepositDetail) IsKey(o *gorm.DB) error {
-	return o.Table(GetDepositDetailTable()).Where("key = ? and deleted = ?", d.Key, DepositStatusNotDeleted).First(d).Error
+	return o.Table(GetDepositDetailTable()).Where("md5key = ? and deleted = ?", d.Md5Keys, DepositStatusNotDeleted).First(d).Error
 }
 
 // IsDepositBooked 判断是否充值
