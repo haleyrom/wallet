@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -257,6 +258,7 @@ func WithdrawalCallback(c *gin.Context) {
 	o := core.Orm.New().Begin()
 	detail := models.NewWithdrawalDetail()
 	detail.OrderId = p.OrderId
+	fmt.Println(p.Code, "-------------------------")
 	switch p.Code {
 	case "105005":
 	case "105006":
