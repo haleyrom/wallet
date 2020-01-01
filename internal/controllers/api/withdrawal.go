@@ -11,6 +11,7 @@ import (
 	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/spf13/viper"
+	"strconv"
 )
 
 // ReadWithdrawalAddrList  读取提币地址列表
@@ -283,6 +284,7 @@ func WithdrawalCallback(c *gin.Context) {
 	//}
 	//
 
+	detail.BlockCount, _ = strconv.Atoi(p.BlockCount)
 	detail.Status, detail.TransactionHash = models.WithdrawalStatusOk, p.TransactionHash
 	if err := detail.UpdateStatus(o); err != nil {
 		o.Rollback()
