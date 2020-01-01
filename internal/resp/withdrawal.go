@@ -41,6 +41,7 @@ type WithdrawalDetailAdminResp struct {
 	FinancialStatus int8    `json:"financial_status"` // 财务审核状态 0：审核中;1：审核通过;2：审核不通过
 	UpdatedAt       string  `json:"updated_at"`       // 更新时间
 	OrderId         string  `json:"order_id"`         // 订单id
+	Remark          string  `json:"remark"`           // 备注
 }
 
 // WithdrawalDetailAllListResp 提现详情列表

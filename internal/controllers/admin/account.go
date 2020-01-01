@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -8,11 +9,11 @@ import (
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
+	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"net/http"
 	"time"
-	"fmt"
 )
 
 // AccountUserList 用户钱包列表
@@ -205,20 +206,43 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 		return
 	}
 
-	o := core.Orm.New()
+	o := core.Orm.New().Begin()
 	detail := models.NewWithdrawalDetail()
 	detail.ID = p.Id
-	if err := detail.IsAudioCustomer(o); err != nil || detail.CustomerStatus > models.WithdrawalAudioStatusAwait {
+	if err := detail.IsAudioCustomer(o); err != nil {
+		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
 	}
 
-	detail.CustomerStatus = p.Status
-	detail.CustomerId = p.CustomerId
-	if err := detail.UpdateCustomerStatus(o); err != nil {
-		core.GResp.Failure(c, err)
-		return
+	detail.CustomerStatus, detail.CustomerId = p.Status, p.CustomerId
+
+	// 审核成功
+	if detail.CustomerStatus == models.WithdrawalAudioStatusOk {
+		// 同时审核成功进行处理
+		if detail.FinancialStatus == models.WithdrawalAudioStatusOk {
+			// 调取提现接口
+			msg, err := WithdrawalAudioOK(o, detail)
+			// 提交成功
+			if err != nil {
+				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
+				_ = detail.UpdateRemark(o)
+				_ = WithdrawalAudioRefund(o, detail)
+				o.Commit()
+				core.GResp.CustomFailure(c, err)
+				return
+			} else {
+				detail.Status = models.WithdrawalStatusSubmit
+			}
+		}
+	} else {
+		// 退款
+		_ = WithdrawalAudioRefund(o, detail)
+		detail.Status = models.WithdrawalStatusNoThrough
 	}
+	_ = detail.UpdateRemark(o)
+
+	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
 	return
 }
@@ -259,67 +283,103 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 	}
 
 	detail.FinancialStatus, detail.FinancialId = p.Status, p.FinancialId
-	if err := detail.UpdateFinancialStatus(o); err != nil {
-		o.Callback()
-		core.GResp.Failure(c, err)
-		return
+
+	// 审核成功
+	if detail.FinancialStatus == models.WithdrawalAudioStatusOk {
+		// 同时审核成功进行处理
+		if detail.CustomerStatus == models.WithdrawalAudioStatusOk {
+			// 调取提现接口
+			msg, err := WithdrawalAudioOK(o, detail)
+			// 提交成功
+			if err != nil {
+				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
+				_ = detail.UpdateRemark(o)
+				_ = WithdrawalAudioRefund(o, detail)
+				o.Commit()
+				core.GResp.CustomFailure(c, err)
+				return
+			}
+			detail.Status = models.WithdrawalStatusSubmit
+		}
+
+	} else {
+		// 退款
+		_ = WithdrawalAudioRefund(o, detail)
+		detail.Status = models.WithdrawalStatusNoThrough
 	}
-
-	if detail.FinancialStatus == 1 {
-		// TODO: 等待调试提币接口
-		consul_service, err := consul.ConsulGetServer("blockchain-pay.tfor")
-		if err != nil {
-			o.Callback()
-			core.GResp.Failure(c, err)
-			return
-		}
-
-		coin := models.NewCoin()
-		coin.Symbol = detail.Symbol
-		contract_address, err := coin.GetConTractAddress(o)
-		if err != nil {
-			o.Callback()
-			core.GResp.Failure(c, err)
-			return
-		}
-
-		company_addr := models.NewCompanyAddr()
-		company_addr.Symbol, company_addr.Code = detail.Symbol, models.CodeWithdrawal
-		address, err := company_addr.GetOrderSymbolByAddress(o)
-		if err != nil {
-			o.Callback()
-			core.GResp.Failure(c, resp.CodeNotCompanyAddress, err)
-			return
-		}
-
-		url := fmt.Sprintf("%s%s", consul_service, "/api/v1/blockchain-pay/ethtereum/withdrawal")
-
-		data := map[string]interface{}{
-			"app_id":           viper.GetString("appname"),
-			"order_id":         detail.OrderId,
-			"symbol":           detail.Symbol,
-			"contract_address": contract_address,
-			"from_address":     address,
-			"to_address":       detail.Address,
-			"value":            fmt.Sprintf("%.2f", detail.Value),
-		}
-		result, err := tools.HttpPost(data, url, viper.GetString("deposit.Srekey"))
-		if err != nil || result.Code != http.StatusOK {
-			detail.Status, detail.Remark = models.WithdrawalStatusNoThrough, result.Msg
-			_ = detail.UpdateRemark(o)
-			o.Commit()
-			core.GResp.CustomFailure(c, errors.Errorf("%s", result.Msg))
-			return
-		}
-
-		detail.Status, detail.Remark = models.WithdrawalStatusSubmit, result.Msg
-		_ = detail.UpdateRemark(o)
-	}
-
+	_ = detail.UpdateRemark(o)
 
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
 	return
+}
+
+// WithdrawalAudioRefund 提现退款
+func WithdrawalAudioRefund(o *gorm.DB, detail *models.WithdrawalDetail) error {
+	money := detail.Value + detail.Poundage
+
+	account := models.NewAccount()
+	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
+
+	_ = account.IsExistAccount(o)
+	// 冻结
+	block_detail := models.BlockDetail{
+		Uid:         detail.Uid,
+		AccountId:   detail.AccountId,
+		Balance:     account.BlockedBalance - money,
+		LastBalance: account.BlockedBalance,
+		Spend:       money,
+	}
+
+	if err := block_detail.CreateBlockDetail(o); err != nil {
+		return err
+	}
+
+	// 入账
+	if err := account.UpdateBlockBalance(o, core.OperateToOut, money); err != nil {
+		return err
+	}
+	return nil
+}
+
+// WithdrawalAudioOK 提现处理
+func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, error) {
+	// TODO: 等待调试提币接口
+	consul_service, err := consul.ConsulGetServer("blockchain-pay.tfor")
+	if err != nil {
+		return core.DefaultNilString, err
+	}
+
+	coin := models.NewCoin()
+	coin.Symbol = detail.Symbol
+	contract_address, err := coin.GetConTractAddress(o)
+	if err != nil {
+		return core.DefaultNilString, err
+	}
+
+	company_addr := models.NewCompanyAddr()
+	company_addr.Symbol, company_addr.Code = detail.Symbol, models.CodeWithdrawal
+	address, err := company_addr.GetOrderSymbolByAddress(o)
+	if err != nil {
+		return core.DefaultNilString, resp.CodeNotCompanyAddress
+	}
+
+	url := fmt.Sprintf("%s%s", consul_service, "/api/v1/blockchain-pay/ethtereum/withdrawal")
+
+	data := map[string]interface{}{
+		"app_id":           viper.GetString("appname"),
+		"order_id":         detail.OrderId,
+		"symbol":           detail.Symbol,
+		"contract_address": contract_address,
+		"from_address":     address,
+		"to_address":       detail.Address,
+		"value":            fmt.Sprintf("%.2f", detail.Value),
+	}
+	result, err := tools.HttpPost(data, url, viper.GetString("deposit.Srekey"))
+	if err != nil || result.Code != http.StatusOK {
+		return core.DefaultNilString, errors.Errorf("%s", result.Msg)
+	}
+	return result.Msg, nil
 }
 
 // CompanyDepositList 公司充值流水

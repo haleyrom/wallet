@@ -76,7 +76,7 @@ func (w *WithdrawalDetail) CreateWithdrawalDetail(o *gorm.DB) error {
 // GetPageList 获取分页列表
 func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.WithdrawalDetailListResp, error) {
 	data := resp.WithdrawalDetailListResp{}
-	rows, err := o.Raw(fmt.Sprintf("SELECT address,value,symbol,poundage,status,type,updated_at FROM %s  where uid = ? ORDER BY id desc LIMIT ?,?", GetWithdrawalDetailTable()), w.Uid, (page-1)*pageSize, pageSize).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT address,value,symbol,poundage,status,type,updated_at FROM %s  where uid = ? and status = ? ORDER BY id desc LIMIT ?,?", GetWithdrawalDetailTable()), w.Uid, WithdrawalStatusCancel, (page-1)*pageSize, pageSize).Rows()
 	defer rows.Close()
 
 	if err == nil {
@@ -105,7 +105,7 @@ func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.Wit
 // GetAllPageList 获取全部分页列表
 func (w *WithdrawalDetail) GetAllPageList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.WithdrawalDetailAllListResp, error) {
 	data := resp.WithdrawalDetailAllListResp{}
-	sql := fmt.Sprintf("select detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,detail.value,detail.updated_at FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
+	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,detail.value,detail.updated_at FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 
 	if start_time > 0 && end_timer > 0 {
@@ -184,9 +184,11 @@ func (w *WithdrawalDetail) UpdateRemark(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).
 		Where("id = ? ", w.ID).
 		Update(map[string]interface{}{
-			"status":     w.Status,
-			"updated_at": time.Now(),
-			"remark":     w.Remark,
+			"customer_status":  w.CustomerStatus,
+			"financial_status": w.FinancialStatus,
+			"status":           w.Status,
+			"updated_at":       time.Now(),
+			"remark":           w.Remark,
 		}).Error
 }
 
@@ -217,4 +219,16 @@ func (w *WithdrawalDetail) UpdateStatus(o *gorm.DB) error {
 func (w *WithdrawalDetail) GetOrderIdBySubmitInfo(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).
 		Where("order_id = ? and financial_status = ? and customer_status = ? and status = ?", w.OrderId, WithdrawalAudioStatusOk, WithdrawalAudioStatusOk, WithdrawalStatusSubmit).Find(w).Error
+}
+
+// WithdrawalStatusCancel 订单取消
+func (w *WithdrawalDetail) WithdrawalStatusCancel(o *gorm.DB) error {
+	return o.Table(GetWithdrawalDetailTable()).
+		Where("id = ?  and status < ?", w.ID, WithdrawalStatusCancel).
+		Update(map[string]interface{}{
+			"customer_status":  WithdrawalStatusNoThrough,
+			"financial_status": WithdrawalStatusNoThrough,
+			"updated_at":       time.Now(),
+			"status":           WithdrawalStatusCancel,
+		}).Error
 }
