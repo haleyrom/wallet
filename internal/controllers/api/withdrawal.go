@@ -251,6 +251,7 @@ func WithdrawalCallback(c *gin.Context) {
 	jsonStr, _ := json.Marshal(p)
 	_ = json.Unmarshal(jsonStr, &data)
 	if hash := tools.GenerateSign(data, viper.GetString("deposit.Srekey")); hash != p.Hash {
+		fmt.Println(hash, "===========")
 		core.GResp.CustomFailure(c, resp.CodeErrSign)
 		return
 	}
