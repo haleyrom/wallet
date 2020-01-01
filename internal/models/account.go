@@ -43,9 +43,14 @@ func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, 
 	defer rows.Close()
 
 	if err == nil {
-		var item resp.AccountInfoResp
+		var (
+			item  resp.AccountInfoResp
+			money float64
+		)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
+				_, _ = fmt.Sscanf(item.Balance, "%e", &money)
+				fmt.Println(item, item.Balance, money, fmt.Sprintf("%.f", money))
 				data = append(data, item)
 			}
 		}
