@@ -209,6 +209,7 @@ func (w *WithdrawalDetail) UpdateStatus(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).
 		Where("id = ? and financial_status = ? and customer_status = ?", w.ID, WithdrawalAudioStatusOk, WithdrawalAudioStatusOk).
 		Update(map[string]interface{}{
+			"block_count":      w.BlockCount,
 			"transaction_hash": w.TransactionHash,
 			"updated_at":       time.Now(),
 			"status":           w.Status,
