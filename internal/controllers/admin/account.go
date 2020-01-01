@@ -214,9 +214,14 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
 	}
+	// 财务拒绝不处理
+	if detail.FinancialStatus > models.WithdrawalAudioStatusAwait {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeAlreadyAudio)
+		return
+	}
 
 	detail.CustomerStatus, detail.CustomerId = p.Status, p.CustomerId
-
 	// 审核成功
 	if detail.CustomerStatus == models.WithdrawalAudioStatusOk {
 		// 同时审核成功进行处理
@@ -238,7 +243,7 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 	} else {
 		// 退款
 		_ = WithdrawalAudioRefund(o, detail)
-		detail.Status = models.WithdrawalStatusNoThrough
+		detail.Status, detail.CustomerStatus = models.WithdrawalStatusNoThrough, models.WithdrawalAudioStatusFailure
 	}
 	_ = detail.UpdateRemark(o)
 
@@ -272,18 +277,20 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 	o := core.Orm.New().Begin()
 	detail := models.NewWithdrawalDetail()
 	detail.ID = p.Id
-	if err := detail.IsAudioCustomer(o); err != nil || detail.CustomerStatus == models.WithdrawalAudioStatusAwait {
-		o.Callback()
-		core.GResp.Failure(c, resp.CodeCustomerNotAudio)
+	if err := detail.IsAudioCustomer(o); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
-	} else if detail.FinancialStatus > models.WithdrawalAudioStatusAwait {
-		o.Callback()
+	}
+
+	// 客服拒绝不处理
+	if detail.CustomerStatus > models.WithdrawalAudioStatusAwait {
+		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
 	}
 
 	detail.FinancialStatus, detail.FinancialId = p.Status, p.FinancialId
-
 	// 审核成功
 	if detail.FinancialStatus == models.WithdrawalAudioStatusOk {
 		// 同时审核成功进行处理
@@ -301,11 +308,10 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 			}
 			detail.Status = models.WithdrawalStatusSubmit
 		}
-
 	} else {
 		// 退款
 		_ = WithdrawalAudioRefund(o, detail)
-		detail.Status = models.WithdrawalStatusNoThrough
+		detail.Status, detail.FinancialStatus = models.WithdrawalStatusNoThrough, models.WithdrawalAudioStatusFailure
 	}
 	_ = detail.UpdateRemark(o)
 
