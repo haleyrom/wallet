@@ -238,7 +238,12 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
 				detail.CustomerStatus = models.WithdrawalAudioStatusAwait
 				_ = detail.UpdateRemark(o)
-				_ = WithdrawalAudioRefund(o, detail)
+				// 退款
+				if err = WithdrawalAudioRefund(o, detail); err != nil {
+					o.Rollback()
+					core.GResp.CustomFailure(c, err)
+					return
+				}
 				o.Commit()
 				core.GResp.CustomFailure(c, err)
 				return
@@ -250,7 +255,11 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 		}
 	} else {
 		// 退款
-		_ = WithdrawalAudioRefund(o, detail)
+		if err := WithdrawalAudioRefund(o, detail); err != nil {
+			o.Rollback()
+			core.GResp.CustomFailure(c, err)
+			return
+		}
 		detail.Status, detail.CustomerStatus = models.WithdrawalStatusNoThrough, models.WithdrawalAudioStatusFailure
 	}
 	_ = detail.UpdateRemark(o)
@@ -314,7 +323,12 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
 				detail.FinancialStatus = models.WithdrawalAudioStatusAwait
 				_ = detail.UpdateRemark(o)
-				_ = WithdrawalAudioRefund(o, detail)
+
+				if err = WithdrawalAudioRefund(o, detail); err != nil {
+					o.Rollback()
+					core.GResp.CustomFailure(c, err)
+					return
+				}
 				o.Commit()
 				core.GResp.CustomFailure(c, err)
 				return
@@ -325,7 +339,11 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 		}
 	} else {
 		// 退款
-		_ = WithdrawalAudioRefund(o, detail)
+		if err := WithdrawalAudioRefund(o, detail); err != nil {
+			o.Rollback()
+			core.GResp.CustomFailure(c, err)
+			return
+		}
 		detail.Status, detail.FinancialStatus = models.WithdrawalStatusNoThrough, models.WithdrawalAudioStatusFailure
 	}
 	_ = detail.UpdateRemark(o)
@@ -343,6 +361,11 @@ func WithdrawalAudioRefund(o *gorm.DB, detail *models.WithdrawalDetail) error {
 	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
 
 	_ = account.IsExistAccount(o)
+
+	if account.BlockedBalance*100 < money*100 {
+		return resp.CodeLessMoney
+	}
+
 	// 冻结
 	block_detail := models.BlockDetail{
 		Uid:         detail.Uid,
@@ -397,8 +420,7 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, err
 		"value":            fmt.Sprintf("%.2f", detail.Value),
 	}
 	result, err := tools.HttpPost(data, url, viper.GetString("deposit.Srekey"))
-	fmt.Println(result, err)
-	if err != nil || result.Code != http.StatusOK {
+	if result == nil || err != nil || result.Code != http.StatusOK {
 		return core.DefaultNilString, errors.Errorf("%s", result.Msg)
 	}
 	return result.Msg, nil

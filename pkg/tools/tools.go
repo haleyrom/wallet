@@ -106,13 +106,11 @@ func HttpGetBase(url string, param, headers map[string]string) (*HttpRequestResp
 			req.Header.Add(key, val)
 		}
 	}
-	//http client
 	client := &http.Client{}
 	log.Printf("Go %s URL : %s \n", http.MethodGet, req.URL.String())
 	resp, err := client.Do(req)
-
 	defer resp.Body.Close()
-	if err != nil || resp.Status != strconv.Itoa(http.StatusOK) {
+	if err != nil {
 		logrus.Error("http get url : %s data : %v error:%v", url, param, err)
 		return nil, err
 	}
@@ -136,14 +134,13 @@ func HttpPostBase(url string, param map[string]interface{}) (*WalletResp, error)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-
 	defer resp.Body.Close()
-
-	if err != nil || resp.Status != strconv.Itoa(http.StatusOK) {
+	if err != nil {
 		logrus.Error("http post url : %s data : %v error:%v", url, param, err)
 		return nil, err
 	}
 	result, _ := ioutil.ReadAll(resp.Body)
+
 	data := &WalletResp{}
 	_ = json.Unmarshal([]byte(string(result)), data)
 	return data, nil

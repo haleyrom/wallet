@@ -99,7 +99,7 @@ func AccountTransfer(c *gin.Context) {
 	}
 
 	account := models.NewAccount()
-	account.CurrencyId,account.Uid = currency.ID,p.Base.Uid
+	account.CurrencyId, account.Uid = currency.ID, p.Base.Uid
 	// 判断是否存在账本
 	if err := account.IsExistAccount(o); err != nil {
 		o.Callback()
@@ -108,7 +108,7 @@ func AccountTransfer(c *gin.Context) {
 	}
 
 	// 判断是否转账
-	if (account.Balance*100 - p.Money*100) < 0 {
+	if (account.Balance*100 - account.BlockedBalance*100 - p.Money*100) < 0 {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
@@ -130,28 +130,6 @@ func AccountTransfer(c *gin.Context) {
 		core.GResp.Failure(c, err)
 		return
 	}
-
-	//  TODO： 生态USDD转换
-	//service := micro_service.NewMicroServiceHttp()
-	//service.Token = c.GetHeader("Authorization")
-	//consul_service, err := consul.ConsulGetServer("game.tfor")
-	//if err != nil {
-	//	o.Callback()
-	//	core.GResp.Failure(c, err)
-	//	return
-	//}
-	//service.Url = fmt.Sprintf("http://%s:%s/v1/ecology/create_new_warehouse", consul_service.Addr, consul_service.Port)
-	//
-	//body := map[string]string{
-	//	"coin_number": strconv.FormatFloat(p.Money, 'E', -1, 64),
-	//	"levelstr":    p.Levelstr,
-	//	"ecology_id":  p.EcologyId,
-	//}
-	//if _, err := service.HttpPost(body); err != nil {
-	//	o.Callback()
-	//	core.GResp.Failure(c, err)
-	//	return
-	//}
 
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
@@ -199,7 +177,7 @@ func AccountChange(c *gin.Context) {
 	}
 
 	//  校验金额
-	if (data[core.DefaultNilNum].Balance*100 - p.Money*100) < 0 {
+	if (data[core.DefaultNilNum].Balance*100 - data[core.DefaultNilNum].BlockedBalance*100 - p.Money*100) < 0 {
 		o.Callback()
 		core.GResp.Failure(c, errors.New("lack of balance"))
 		return
