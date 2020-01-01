@@ -143,6 +143,7 @@ func HttpPostBase(url string, param map[string]interface{}) (*WalletResp, error)
 		return nil, err
 	}
 	result, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(result)
 	data := &WalletResp{}
 	_ = json.Unmarshal([]byte(string(result)), data)
 	return data, nil
