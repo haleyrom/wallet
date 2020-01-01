@@ -76,7 +76,7 @@ func (w *WithdrawalDetail) CreateWithdrawalDetail(o *gorm.DB) error {
 // GetPageList 获取分页列表
 func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.WithdrawalDetailListResp, error) {
 	data := resp.WithdrawalDetailListResp{}
-	rows, err := o.Raw(fmt.Sprintf("SELECT address,value,symbol,poundage,status,type,updated_at FROM %s  where uid = ? and status = ? ORDER BY id desc LIMIT ?,?", GetWithdrawalDetailTable()), w.Uid, WithdrawalStatusCancel, (page-1)*pageSize, pageSize).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT address,value,symbol,poundage,status,type,updated_at FROM %s  where uid = ? and status = ? ORDER BY id desc LIMIT ?,?", GetWithdrawalDetailTable()), w.Uid, DepositStatusBooked, (page-1)*pageSize, pageSize).Rows()
 	defer rows.Close()
 
 	if err == nil {
