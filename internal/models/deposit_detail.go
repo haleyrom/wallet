@@ -69,7 +69,7 @@ func (d *DepositDetail) IsTransactionHash(o *gorm.DB) error {
 
 // IsKey 判断
 func (d *DepositDetail) IsKey(o *gorm.DB) error {
-	return o.Table(GetDepositDetailTable()).Where("key = ? and deleted = ?", d.Key, DepositStatusNotDeleted).Order("status desc").Find(d).Error
+	return o.Table(GetDepositDetailTable()).Where("key = ? and deleted = ?", d.Key, DepositStatusNotDeleted).First(d).Error
 }
 
 // IsDepositBooked 判断是否充值

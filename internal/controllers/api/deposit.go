@@ -256,32 +256,38 @@ func TopUpDeposit(c *gin.Context) {
 	var confirm bool
 	// 判断是否已经存在订单
 	if err := detail.IsKey(o); err != nil {
-		// 是否到确认数量
-		if coin.ConfirmCount <= block_count {
-			confirm = true
-			detail.Status = models.DepositStatusBooked
-		}
+		//// 是否到确认数量
+		//if coin.ConfirmCount <= block_count {
+		//	confirm = true
+		//	detail.Status = models.DepositStatusBooked
+		//}
 
-		if err := detail.CreateDepositDetail(o); err != nil {
-			o.Rollback()
-			core.GResp.Failure(c, err)
-			return
-		}
-	} else {
-		// 是否到确认数量
-		detail.BlockCount = block_count
-		if coin.ConfirmCount <= block_count && detail.Status == models.DepositStatusNotBooked {
-			confirm = true
-			detail.Status = models.DepositStatusBooked
-		}
-		if err := detail.UpdateBlockCount(o); err != nil {
-			o.Rollback()
-			core.GResp.Failure(c, err)
-			return
+		// 创建详细 成功获取id，失败说明已存在重新获取
+		if err := detail.CreateDepositDetail(core.Orm.New()); err != nil {
+			_ = detail.IsKey(o)
 		}
 	}
 
-	if coin.ConfirmCount <= block_count && confirm == true {
+	// 确认数量 小于 记录时过滤
+	if block_count <= detail.BlockCount {
+		o.Commit()
+		core.GResp.Success(c, resp.EmptyData())
+		return
+	} else if coin.ConfirmCount <= block_count && detail.Status == models.DepositStatusNotBooked {
+		// 确实数量大于记录且大于代币确实数量且状态未确认
+		confirm = true
+		detail.Status = models.DepositStatusBooked
+	}
+
+	// 更新区块数量
+	detail.BlockCount = block_count
+	if err := detail.UpdateBlockCount(o); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, err)
+		return
+	}
+
+	if confirm == true {
 		// 入账 判断账本
 		account := models.NewAccount()
 		account.Uid, account.CurrencyId = addr.Uid, coin.CurrencyId
