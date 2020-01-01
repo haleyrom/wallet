@@ -86,8 +86,8 @@ const (
 	// CodeNotCurrency  货币不存在
 	CodeNotCurrency StatusCode = 101118
 
-	// CodeDepositOk 充值成功
-	CodeDepositOk StatusCode = 101119
+	// CodeDepositErr 充值不成功
+	CodeDepositErr StatusCode = 101119
 
 	//CodeCodeError  邮箱验证码错误
 	CodeCodeError StatusCode = 101120
@@ -171,7 +171,7 @@ func init() {
 		CodeNotCoin:             "该代币不存在/不可用",
 		CodeNotChain:            "该链不存在/不可用",
 		CodeNotCurrency:         "货币不存在",
-		CodeDepositOk:           "充值成功",
+		CodeDepositErr:          "充值不成功",
 		CodeCodeError:           "邮箱验证码错误",
 		CodeAlreadyAudio:        "已审核，请勿重复操作",
 		CodeCustomerNotAudio:    "客服未审核，请耐心等待",

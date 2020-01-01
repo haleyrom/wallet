@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
@@ -226,7 +227,7 @@ func TopUpDeposit(c *gin.Context) {
 	}
 	if err := addr.GetAddressByInfo(o); err != nil {
 		o.Rollback()
-		core.GResp.Success(c, resp.CodeNotAddr)
+		core.GResp.Failure(c, resp.CodeNotAddr)
 		return
 	}
 
@@ -271,7 +272,7 @@ func TopUpDeposit(c *gin.Context) {
 	// 确认数量 小于 记录时过滤
 	if block_count <= detail.BlockCount {
 		o.Commit()
-		core.GResp.Success(c, resp.EmptyData())
+		core.GResp.Failure(c, errors.New("block count exist"))
 		return
 	} else if coin.ConfirmCount <= block_count && detail.Status == models.DepositStatusNotBooked {
 		// 确实数量大于记录且大于代币确实数量且状态未确认
@@ -313,7 +314,7 @@ func TopUpDeposit(c *gin.Context) {
 
 		if err := account.UpdateBalance(o, core.OperateToUp, money); err != nil {
 			o.Rollback()
-			core.GResp.Failure(c, resp.CodeNotAccount)
+			core.GResp.Failure(c, err)
 			return
 		}
 
@@ -333,12 +334,12 @@ func TopUpDeposit(c *gin.Context) {
 		}()
 
 		o.Commit()
-		core.GResp.CustomSuccess(c, resp.CodeDepositOk, resp.EmptyData())
+		core.GResp.Success(c, resp.EmptyData())
 		return
 	}
 
 	o.Commit()
-	core.GResp.Success(c, resp.EmptyData())
+	core.GResp.Failure(c, errors.New("deposit install ok"))
 	return
 }
 
