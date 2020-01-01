@@ -211,11 +211,16 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 	detail.ID = p.Id
 	if err := detail.IsAudioCustomer(o); err != nil {
 		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotData)
+		return
+	} else if detail.Status > models.WithdrawalStatusToAudit || detail.Status > models.WithdrawalStatusInAudit {
+		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
 	}
+
 	// 财务拒绝不处理
-	if detail.FinancialStatus > models.WithdrawalAudioStatusAwait {
+	if detail.FinancialStatus == models.WithdrawalAudioStatusFailure {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
@@ -239,6 +244,8 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 			} else {
 				detail.Status = models.WithdrawalStatusSubmit
 			}
+		} else {
+			detail.Status = models.WithdrawalStatusInAudit
 		}
 	} else {
 		// 退款
@@ -281,10 +288,14 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
+	} else if detail.Status > models.WithdrawalStatusToAudit || detail.Status > models.WithdrawalStatusInAudit {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeAlreadyAudio)
+		return
 	}
 
 	// 客服拒绝不处理
-	if detail.CustomerStatus > models.WithdrawalAudioStatusAwait {
+	if detail.CustomerStatus == models.WithdrawalAudioStatusFailure {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
@@ -307,6 +318,8 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 				return
 			}
 			detail.Status = models.WithdrawalStatusSubmit
+		} else {
+			detail.Status = models.WithdrawalStatusInAudit
 		}
 	} else {
 		// 退款
