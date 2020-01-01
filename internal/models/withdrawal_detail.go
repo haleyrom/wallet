@@ -26,6 +26,7 @@ type WithdrawalDetail struct {
 	Poundage        float64 `gorm:"column:poundage;default:0;comment:'手续费'"`                // 手续费
 	CustomerStatus  int8    `gorm:"column:customer_status;index;default:0;comment:'客服状态'"`  // 客服状态:0 待审核1：通过2：不通过
 	FinancialStatus int8    `gorm:"column:financial_status;index;default:0;comment:'财务状态'"` // 财务状态:0 待审核1：通过2：不通过
+	BlockCount      int     `gorm:"column:block_count;default:0;comment:'确认数'"`             // 充值入帐的区块链确认数
 	CustomerId      uint    `gorm:"column:customer_id;index;default:0;comment:'客服id'"`      // 客服id
 	FinancialId     uint    `gorm:"column:financial_id;index;default:0;comment:'财务id'"`     // 财务id
 	Remark          string  `gorm:"size:200;column:remark;comment:'备注'"`                    // 备注
@@ -208,6 +209,7 @@ func (w *WithdrawalDetail) UpdateStatus(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).
 		Where("id = ? and financial_status = ? and customer_status = ?", w.ID, WithdrawalAudioStatusOk, WithdrawalAudioStatusOk).
 		Update(map[string]interface{}{
+			"block_count":      w.BlockCount,
 			"transaction_hash": w.TransactionHash,
 			"updated_at":       time.Now(),
 			"status":           w.Status,

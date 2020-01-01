@@ -11,6 +11,7 @@ import (
 	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/spf13/viper"
+	"strconv"
 )
 
 // ReadWithdrawalAddrList  读取提币地址列表
@@ -251,6 +252,7 @@ func WithdrawalCallback(c *gin.Context) {
 	jsonStr, _ := json.Marshal(p)
 	_ = json.Unmarshal(jsonStr, &data)
 	if hash := tools.GenerateSign(data, viper.GetString("deposit.Srekey")); hash != p.Hash {
+		fmt.Println(hash, "===========", p.Hash)
 		core.GResp.CustomFailure(c, resp.CodeErrSign)
 		return
 	}
@@ -275,13 +277,13 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	//if err := detail.GetOrderIdBySubmitInfo(o); err != nil {
-	//	o.Rollback()
-	//	core.GResp.CustomFailure(c, err)
-	//	return
-	//}
-	//
+	if err := detail.GetOrderIdBySubmitInfo(o); err != nil {
+		o.Rollback()
+		core.GResp.CustomFailure(c, err)
+		return
+	}
 
+	detail.BlockCount, _ = strconv.Atoi(p.BlockCount)
 	detail.Status, detail.TransactionHash = models.WithdrawalStatusOk, p.TransactionHash
 	if err := detail.UpdateStatus(o); err != nil {
 		o.Rollback()

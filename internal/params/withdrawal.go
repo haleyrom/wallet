@@ -42,6 +42,7 @@ type WithdrawalCallbackParam struct {
 	AppId           string `json:"app_id" form:"app_id"`
 	OrderId         string `json:"order_id" form:"order_id"`
 	TransactionHash string `json:"transaction_hash" form:"transaction_hash"`
+	BlockCount      string `json:"block_count" form:"block_count"`
 	BlockNumber     string `json:"block_number" form:"block_number"`
 	FromAddress     string `json:"from_address" form:"from_address"`
 	ToAddress       string `json:"to_address" form:"to_address"`
