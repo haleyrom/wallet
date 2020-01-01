@@ -2,6 +2,7 @@ package consul
 
 import (
 	"fmt"
+	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -41,7 +42,7 @@ func IsWalletAddress(address string) error {
 	}
 
 	url := fmt.Sprintf("%s%s", service_url, "/api/v1/blockchain-pay/ethtereum/is-address")
-	if data, err := tools.HttpPostBase(url, data); err == nil {
+	if data, err := tools.HttpPost(data, url, core.DefaultNilString); err == nil {
 		if data.Code == http.StatusOK {
 			return nil
 		}

@@ -329,6 +329,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 					core.GResp.CustomFailure(c, err)
 					return
 				}
+
 				o.Commit()
 				core.GResp.CustomFailure(c, err)
 				return
@@ -420,12 +421,76 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, err
 		"value":            fmt.Sprintf("%.2f", detail.Value),
 	}
 
-	result, err := tools.HttpPost(data, url, viper.GetString("deposit.Srekey"))
+	result, err := tools.WithdrawalAudio(data, url, viper.GetString("deposit.Srekey"))
 	if result == nil || err != nil || result.Code != http.StatusOK {
 		return core.DefaultNilString, errors.Errorf("%s", result.Msg)
 	}
-
+	fmt.Println(detail, "=========")
+	detail.TransactionHash = result.Data.TransactionHash
+	_ = AccountInsertDetail(o, detail)
 	return result.Msg, nil
+}
+
+// AccountInsertDetail 插入钱包明细
+func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
+	detail.Status = models.WithdrawalStatusThrough
+	if err := detail.UpdateStatus(o); err != nil {
+		return err
+	}
+
+	account := models.NewAccount()
+	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
+	if err := account.GetOrderUidCurrencyIdByInfo(o); err != nil {
+		return err
+	}
+
+	// 入账金额
+	money := detail.Value + detail.Poundage
+	// 冻结支出
+	block_detail := &models.BlockDetail{
+		Uid:         detail.Uid,
+		AccountId:   detail.AccountId,
+		Balance:     account.BlockedBalance - money,
+		LastBalance: account.BlockedBalance,
+		Spend:       money,
+	}
+
+	if err := block_detail.CreateBlockDetail(o); err != nil {
+		return err
+	}
+
+	account_detail := &models.AccountDetail{
+		Uid:         detail.Uid,
+		AccountId:   detail.AccountId,
+		Balance:     account.Balance - money,
+		LastBalance: account.Balance,
+		Spend:       money,
+		Type:        resp.AccountDetailOut,
+	}
+	if err := account_detail.CreateAccountDetail(o); err != nil {
+		return err
+	}
+
+	// 入账
+	if err := account.UpdateWithdrawalBalance(o, money, money, core.OperateToOut, core.OperateToOut); err != nil {
+		return err
+	}
+
+	go func() {
+		company_stream := &models.CompanyStream{
+			Code:        models.CodeWithdrawal,
+			Uid:         account_detail.Uid,
+			AccountId:   account_detail.ID,
+			Balance:     account_detail.Balance,
+			LastBalance: account_detail.LastBalance,
+			Income:      account_detail.Income,
+			Type:        account_detail.Type,
+			Address:     detail.Address,
+			OrderId:     detail.OrderId,
+		}
+		_ = company_stream.CreateCompanyStream(core.Orm.New())
+	}()
+	return nil
 }
 
 // CompanyDepositList 公司充值流水

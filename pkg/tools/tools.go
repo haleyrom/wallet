@@ -40,6 +40,29 @@ type HttpRequestResp struct {
 	Data interface{} `json:"data"`
 }
 
+// WithdrawalAudioParam 提现回调参数解析
+type WithdrawalAudioResp struct {
+	AppId           string `json:"app_id" form:"app_id"`
+	OrderId         string `json:"order_id" form:"order_id"`
+	TransactionHash string `json:"transaction_hash" form:"transaction_hash"`
+	BlockNumber     string `json:"block_number" form:"block_number"`
+	FromAddress     string `json:"from_address" form:"from_address"`
+	ToAddress       string `json:"to_address" form:"to_address"`
+	Symbol          string `json:"symbol" form:"symbol"`
+	ContractAddress string `json:"contract_address" form:"contract_address"`
+	Value           string `json:"value" form:"value"`
+	Code            string `json:"code" form:"code"`
+	Message         string `json:"message" form:"message"`
+	Hash            string `json:"hash" form:"hash"`
+}
+
+// WithdrawalAudioDataResp 钱包返回
+type WithdrawalAudioDataResp struct {
+	Code int                 `json:"code"`
+	Msg  string              `json:"msg"`
+	Data WithdrawalAudioResp `json:"data"`
+}
+
 /**
  * @param param array 字符串数组
  * @param string 签名密钥
@@ -74,14 +97,27 @@ func RegisterWalletAddr(app_id, url, srekey string) (*WalletResp, error) {
 		"order_id": fmt.Sprintf("%s", uuid.NewV4()),
 	}
 	p["hash"] = GenerateSign(p, srekey)
-	data, err := HttpPostBase(url, p)
+	result, err := HttpPostBase(url, p)
+	data := &WalletResp{}
+	_ = json.Unmarshal([]byte(string(result)), data)
+	return data, err
+}
+
+// WithdrawalAudio 提现审核
+func WithdrawalAudio(p map[string]interface{}, url, srekey string) (*WithdrawalAudioDataResp, error) {
+	p["hash"] = GenerateSign(p, srekey)
+	result, err := HttpPostBase(url, p)
+	data := &WithdrawalAudioDataResp{}
+	_ = json.Unmarshal([]byte(string(result)), data)
 	return data, err
 }
 
 // HttpPost 请求
-func HttpPost(p map[string]interface{}, url, srekey string) (*WalletResp, error) {
+func HttpPost(p map[string]interface{}, url, srekey string) (*HttpRequestResp, error) {
 	p["hash"] = GenerateSign(p, srekey)
-	data, err := HttpPostBase(url, p)
+	result, err := HttpPostBase(url, p)
+	data := &HttpRequestResp{}
+	_ = json.Unmarshal([]byte(string(result)), data)
 	return data, err
 }
 
@@ -121,7 +157,7 @@ func HttpGetBase(url string, param, headers map[string]string) (*HttpRequestResp
 }
 
 // httpPostBase post请求基础
-func HttpPostBase(url string, param map[string]interface{}) (*WalletResp, error) {
+func HttpPostBase(url string, param map[string]interface{}) ([]byte, error) {
 	jsonStr, _ := json.Marshal(param)
 	req, err := http.NewRequest(`POST`, url, bytes.NewBuffer(jsonStr))
 	req.Header.Add(`content-type`, "application/json")
@@ -141,9 +177,9 @@ func HttpPostBase(url string, param map[string]interface{}) (*WalletResp, error)
 	}
 	result, _ := ioutil.ReadAll(resp.Body)
 
-	data := &WalletResp{}
-	_ = json.Unmarshal([]byte(string(result)), data)
-	return data, nil
+	//data := &HttpRequestResp{}
+	//_ = json.Unmarshal([]byte(string(result)), data)
+	return result, nil
 }
 
 //密码相关以及格式验证

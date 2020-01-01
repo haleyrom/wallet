@@ -275,13 +275,14 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	if err := detail.GetOrderIdBySubmitInfo(o); err != nil {
-		o.Rollback()
-		core.GResp.CustomFailure(c, err)
-		return
-	}
+	//if err := detail.GetOrderIdBySubmitInfo(o); err != nil {
+	//	o.Rollback()
+	//	core.GResp.CustomFailure(c, err)
+	//	return
+	//}
+	//
 
-	detail.Status, detail.TransactionHash = models.WithdrawalAudioStatusOk, p.TransactionHash
+	detail.Status, detail.TransactionHash = models.WithdrawalStatusOk, p.TransactionHash
 	if err := detail.UpdateStatus(o); err != nil {
 		o.Rollback()
 		core.GResp.CustomFailure(c, err)
@@ -296,53 +297,54 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
+	//
 	// 入账金额
 	money := detail.Value + detail.Poundage
-	// 冻结支出
-	block_detail := &models.BlockDetail{
-		Uid:         detail.Uid,
-		AccountId:   detail.AccountId,
-		Balance:     account.BlockedBalance - money,
-		LastBalance: account.BlockedBalance,
-		Spend:       money,
-	}
-
-	if err := block_detail.CreateBlockDetail(o); err != nil {
-		o.Callback()
-		core.GResp.CustomFailure(c, err)
-		return
-	}
-
-	account_detail := &models.AccountDetail{
-		Uid:         detail.Uid,
-		AccountId:   detail.AccountId,
-		Balance:     account.Balance - money,
-		LastBalance: account.Balance,
-		Spend:       money,
-		Type:        resp.AccountDetailOut,
-	}
-	if err := account_detail.CreateAccountDetail(o); err != nil {
-		o.Callback()
-		core.GResp.CustomFailure(c, err)
-		return
-	}
-
-	// 入账
-	if err := account.UpdateWithdrawalBalance(o, money, money, core.OperateToOut, core.OperateToOut); err != nil {
-		o.Callback()
-		core.GResp.CustomFailure(c, err)
-		return
-	}
-
+	//// 冻结支出
+	//block_detail := &models.BlockDetail{
+	//	Uid:         detail.Uid,
+	//	AccountId:   detail.AccountId,
+	//	Balance:     account.BlockedBalance - money,
+	//	LastBalance: account.BlockedBalance,
+	//	Spend:       money,
+	//}
+	//
+	//if err := block_detail.CreateBlockDetail(o); err != nil {
+	//	o.Callback()
+	//	core.GResp.CustomFailure(c, err)
+	//	return
+	//}
+	//
+	//account_detail := &models.AccountDetail{
+	//	Uid:         detail.Uid,
+	//	AccountId:   detail.AccountId,
+	//	Balance:     account.Balance - money,
+	//	LastBalance: account.Balance,
+	//	Spend:       money,
+	//	Type:        resp.AccountDetailOut,
+	//}
+	//if err := account_detail.CreateAccountDetail(o); err != nil {
+	//	o.Callback()
+	//	core.GResp.CustomFailure(c, err)
+	//	return
+	//}
+	//
+	//// 入账
+	//if err := account.UpdateWithdrawalBalance(o, money, money, core.OperateToOut, core.OperateToOut); err != nil {
+	//	o.Callback()
+	//	core.GResp.CustomFailure(c, err)
+	//	return
+	//}
+	//
 	go func() {
 		company_stream := &models.CompanyStream{
 			Code:        models.CodeWithdrawal,
-			Uid:         account_detail.Uid,
-			AccountId:   account_detail.ID,
-			Balance:     account_detail.Balance,
-			LastBalance: account_detail.LastBalance,
-			Income:      account_detail.Income,
-			Type:        account_detail.Type,
+			Uid:         detail.Uid,
+			AccountId:   detail.AccountId,
+			Balance:     account.Balance - money,
+			LastBalance: account.Balance,
+			Income:      money,
+			Type:        resp.AccountDetailOut,
 			Address:     detail.Address,
 			OrderId:     detail.OrderId,
 		}
