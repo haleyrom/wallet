@@ -213,7 +213,7 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeNotData)
 		return
-	} else if detail.Status > models.WithdrawalStatusToAudit || detail.Status > models.WithdrawalStatusInAudit {
+	} else if detail.Status < models.WithdrawalStatusToAudit || detail.Status > models.WithdrawalStatusInAudit {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
@@ -236,6 +236,7 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 			// 提交成功
 			if err != nil {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
+				detail.CustomerStatus = models.WithdrawalAudioStatusAwait
 				_ = detail.UpdateRemark(o)
 				_ = WithdrawalAudioRefund(o, detail)
 				o.Commit()
@@ -288,7 +289,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
-	} else if detail.Status > models.WithdrawalStatusToAudit || detail.Status > models.WithdrawalStatusInAudit {
+	} else if detail.Status < models.WithdrawalStatusToAudit || detail.Status > models.WithdrawalStatusInAudit {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
@@ -311,6 +312,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 			// 提交成功
 			if err != nil {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
+				detail.FinancialStatus = models.WithdrawalAudioStatusAwait
 				_ = detail.UpdateRemark(o)
 				_ = WithdrawalAudioRefund(o, detail)
 				o.Commit()
@@ -380,7 +382,7 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, err
 	company_addr.Symbol, company_addr.Code = detail.Symbol, models.CodeWithdrawal
 	address, err := company_addr.GetOrderSymbolByAddress(o)
 	if err != nil {
-		return core.DefaultNilString, resp.CodeNotCompanyAddress
+		return fmt.Sprintf("%s", resp.CodeNotCompanyAddress), resp.CodeNotCompanyAddress
 	}
 
 	url := fmt.Sprintf("%s%s", consul_service, "/api/v1/blockchain-pay/ethtereum/withdrawal")
