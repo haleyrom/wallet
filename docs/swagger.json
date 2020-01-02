@@ -1248,14 +1248,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "删除充值",
+                "description": "审核充值",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Account 后台运营-充值"
                 ],
-                "summary": "删除充值接口",
+                "summary": "审核充值接口",
                 "parameters": [
                     {
                         "type": "string",
@@ -2924,7 +2924,7 @@
             "properties": {
                 "balance": {
                     "description": "余额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "currency_id": {
                     "description": "币种id",
@@ -2940,6 +2940,10 @@
                 },
                 "symbol": {
                     "description": "币种标识",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "时间",
                     "type": "string"
                 }
             }
@@ -3672,6 +3676,10 @@
                 },
                 "order_id": {
                     "description": "订单id",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "status": {
