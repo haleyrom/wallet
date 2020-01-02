@@ -24,6 +24,7 @@ type AccountInfoResp struct {
 	Symbol     string `json:"symbol"`      // 币种标识
 	Decimals   int    `json:"decimals"`    // 小数点位数
 	Name       string `json:"name"`        // 名称
+	UpdatedAt  string `json:"updated_at"`  // 时间
 }
 
 // AccountDetailResp 帐号详情

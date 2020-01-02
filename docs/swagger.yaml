@@ -43,7 +43,7 @@ definitions:
     properties:
       balance:
         description: 余额
-        type: number
+        type: string
       currency_id:
         description: 币种id
         type: integer
@@ -55,6 +55,9 @@ definitions:
         type: string
       symbol:
         description: 币种标识
+        type: string
+      updated_at:
+        description: 时间
         type: string
     type: object
   resp.AccountUserDetailInfoResp:
@@ -586,6 +589,9 @@ definitions:
         type: string
       order_id:
         description: 订单id
+        type: string
+      remark:
+        description: 备注
         type: string
       status:
         description: 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消
@@ -1451,7 +1457,7 @@ paths:
       - Account 后台钱包-用户钱包
   /admin/operate/recharge/audio:
     post:
-      description: 删除充值
+      description: 审核充值
       parameters:
       - description: 充值id
         in: formData
@@ -1474,7 +1480,7 @@ paths:
         "200": {}
       security:
       - ApiKeyAuth: []
-      summary: 删除充值接口
+      summary: 审核充值接口
       tags:
       - Account 后台运营-充值
   /admin/operate/recharge/join:

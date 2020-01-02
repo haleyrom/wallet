@@ -109,6 +109,7 @@ func WithdrawalAudio(p map[string]interface{}, url, srekey string) (*WithdrawalA
 	result, err := HttpPostBase(url, p)
 	data := &WithdrawalAudioDataResp{}
 	_ = json.Unmarshal([]byte(string(result)), data)
+	fmt.Println(string(result), data)
 	return data, err
 }
 

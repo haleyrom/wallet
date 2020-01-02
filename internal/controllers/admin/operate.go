@@ -1,6 +1,9 @@
 package admin
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/api"
@@ -11,6 +14,7 @@ import (
 	"github.com/haleyrom/wallet/pkg/jwt"
 	"github.com/mitchellh/mapstructure"
 	"strconv"
+	"time"
 )
 
 // JoinRecharge 添加充值
@@ -81,6 +85,10 @@ func JoinRecharge(c *gin.Context) {
 		core.GResp.Failure(c, resp.CodeNotCoin)
 		return
 	}
+
+	h := md5.New()
+	h.Write([]byte(fmt.Sprintf("%d%s", p.Uid, time.Now().Unix())))
+
 	// 创建订单
 	deposit_detail := &models.DepositDetail{
 		Uid:             user.ID,
@@ -93,6 +101,7 @@ func JoinRecharge(c *gin.Context) {
 		FinancialStatus: int8(core.DefaultNilNum),
 		Deleted:         models.DepositStatusNotDeleted,
 		Status:          int8(core.DefaultNilNum),
+		Md5Keys:         hex.EncodeToString(h.Sum(nil)),
 	}
 	if err := deposit_detail.CreateDepositDetail(o); err != nil {
 		o.Rollback()
@@ -176,8 +185,8 @@ func RemoveRecharge(c *gin.Context) {
 
 // AudioRecharge 审核充值
 // @Tags Account 后台运营-充值
-// @Summary 删除充值接口
-// @Description 删除充值
+// @Summary 审核充值接口
+// @Description 审核充值
 // @Security ApiKeyAuth
 // @Produce json
 // @Param id formData string true "充值id"

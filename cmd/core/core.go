@@ -64,7 +64,7 @@ func install() {
 		models.NewQuoteHistory(),
 	}
 
-	core.Orm.AutoMigrate(table...)
+	core.Orm.Set("gorm:table_options", "ROW_FORMAT=DYNAMIC").AutoMigrate(table...)
 }
 
 // InitJwt 初始化jwt
