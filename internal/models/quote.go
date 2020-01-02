@@ -12,10 +12,10 @@ import (
 // Quote 兑换
 type Quote struct {
 	gorm.Model
-	Code          string  `gorm:"index;column:code;unique;comment:'标示';"`           // 标示
-	BaseCurrency  string  `gorm:"index;column:base_currency;comment:'基础货币/大写字母';"`  // 基础货币
-	QuoteCurrency string  `gorm:"index;column:quote_currency;comment:'报价货币/大写字母';"` // 基础货币
-	Price         float64 `gorm:"column:price;default:0;comment:'金额';"`             // 金额
+	Code          string  `gorm:"index;size:250;column:code;unique;comment:'标示';"`           // 标示
+	BaseCurrency  string  `gorm:"index;size:250;column:base_currency;comment:'基础货币/大写字母';"`  // 基础货币
+	QuoteCurrency string  `gorm:"index;size:250;column:quote_currency;comment:'报价货币/大写字母';"` // 基础货币
+	Price         float64 `gorm:"column:price;default:0;comment:'金额';"`                      // 金额
 }
 
 // Table 表
