@@ -79,3 +79,15 @@ func (u *User) IsSetPayPassword(o *gorm.DB) bool {
 	}
 	return false
 }
+
+// UpdateInfo  更新信息
+func (u *User) UpdateInfo(o *gorm.DB) error {
+	if err := o.Model(u).Where("uid = ? ", u.Uid).Update(map[string]interface{}{
+		"email":      u.Email,
+		"name":       u.Name,
+		"updated_at": time.Now(),
+	}).Error; err != nil {
+		return err
+	}
+	return nil
+}

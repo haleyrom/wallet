@@ -57,6 +57,11 @@ func CreateUser(p *params.BaseParam) error {
 
 			wg.Wait()
 		}
+	} else {
+		if user.Name != p.Claims.Name || user.Email != p.Claims.Email {
+			user.Name, user.Email = p.Claims.Name, p.Claims.Email
+			_ = user.UpdateInfo(core.Orm.New())
+		}
 	}
 
 	p.Uid = user.ID

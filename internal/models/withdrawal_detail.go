@@ -22,7 +22,7 @@ type WithdrawalDetail struct {
 	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                    // 标识 coin,token
 	OrderId         string  `gorm:"size:255;column:order_id;comment:'订单号'"`                 // 生成该地址的订单号
 	TransactionHash string  `gorm:"size:255;column:transaction_hash;comment:'事务hash'"`      // 事务
-	Status          int8    `gorm:"size:3;column:status;default:0;index;comment:'状态'"`      // 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消
+	Status          int8    `gorm:"size:3;column:status;default:0;index;comment:'状态'"`      // 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败
 	Poundage        float64 `gorm:"column:poundage;default:0;comment:'手续费'"`                // 手续费
 	CustomerStatus  int8    `gorm:"column:customer_status;index;default:0;comment:'客服状态'"`  // 客服状态:0 待审核1：通过2：不通过
 	FinancialStatus int8    `gorm:"column:financial_status;index;default:0;comment:'财务状态'"` // 财务状态:0 待审核1：通过2：不通过
