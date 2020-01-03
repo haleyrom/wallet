@@ -19,12 +19,13 @@ const (
 
 // AccountInfoResp 详情返回结果集
 type AccountInfoResp struct {
-	CurrencyId int    `json:"currency_id"` // 币种id
-	Balance    string `json:"balance"`     // 余额
-	Symbol     string `json:"symbol"`      // 币种标识
-	Decimals   int    `json:"decimals"`    // 小数点位数
-	Name       string `json:"name"`        // 名称
-	UpdatedAt  string `json:"updated_at"`  // 时间
+	CurrencyId     int    `json:"currency_id"`     // 币种id
+	Balance        string `json:"balance"`         // 余额
+	Symbol         string `json:"symbol"`          // 币种标识
+	Decimals       int    `json:"decimals"`        // 小数点位数
+	Name           string `json:"name"`            // 名称
+	UpdatedAt      string `json:"updated_at"`      // 时间
+	BlockedBalance string `json:"blocked_balance"` // 冻结金额
 }
 
 // AccountDetailResp 帐号详情

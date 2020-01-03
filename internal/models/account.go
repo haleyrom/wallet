@@ -39,7 +39,7 @@ func (a *Account) GetUserAvailableBalance(o *gorm.DB) (float64, error) {
 // GetUserBalance 获取用户余额
 func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, error) {
 	data := make([]resp.AccountInfoResp, 0)
-	rows, err := o.Raw(fmt.Sprintf("SELECT acc.currency_id,(acc.balance-acc.blocked_balance) as balance,cur.symbol,cur.decimals,cur.name from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ?", GetCurrencyTable(), GetAccountTable()), uid).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ?", GetCurrencyTable(), GetAccountTable()), uid).Rows()
 	defer rows.Close()
 
 	if err == nil {
