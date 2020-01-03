@@ -156,3 +156,11 @@ type AccountCurrencyDetailParam struct {
 	PageSize  int        `json:"pageSize" form:"pageSize" binding:"required"`
 	Type      string     `json:"type" form:"type" binding:"required"`
 }
+
+// AccountPersonTransferParam 个人转账参数
+type AccountPersonTransferParam struct {
+	Base   *BaseParam `json:"claims" form:"claims"`
+	Email  string     `json:"email" form:"email"  binding:"email"`
+	Symbol string     `json:"symbol" form:"symbol"  binding:"required"`
+	Money  float64    `json:"money" form:"money"  binding:"required,gt=0"`
+}

@@ -24,6 +24,7 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.POST("/account/share/bonus", api.AccountShareBonus)
 	r.POST("/account/withdrawal", api.AccountWithdrawal)
 	r.GET("/account/currency/detail", api.AccountCurrencyDetail)
+	r.POST("/account/person/transfer", api.AccountPersonTransfer)
 
 	r.GET("/currency/list", api.ReadCurrencyList)
 	r.GET("/currency/transfer_list", api.ReadCurrencyTransferList)

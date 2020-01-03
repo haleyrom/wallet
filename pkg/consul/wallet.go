@@ -77,3 +77,29 @@ func GetUserInfo(uid, token string) (interface{}, error) {
 		return nil, err
 	}
 }
+
+// GetOrderEmailByInfo 根据email获取信息
+func GetOrderEmailByInfo(email, token string) (interface{}, error) {
+	service_url, err := ConsulGetServer("user.tfor")
+	if err != nil {
+		return nil, err
+	}
+
+	data := map[string]string{
+		"email": email,
+	}
+
+	head := map[string]string{
+		"Authorization": token,
+	}
+
+	url := fmt.Sprintf("%s%s", service_url, "/api/v1/user/inside/get-user-email")
+	if data, err := tools.HttpGetBase(url, data, head); err == nil {
+		if data.Code == http.StatusOK {
+			return data.Data, nil
+		}
+		return nil, errors.Errorf("%s", data.Msg)
+	} else {
+		return nil, err
+	}
+}
