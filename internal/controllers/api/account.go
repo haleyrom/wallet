@@ -628,7 +628,7 @@ func AccountPersonTransfer(c *gin.Context) {
 	}
 
 	// 余额不足
-	if (list[p.Base.Uid].Balance*100 - list[p.Base.Uid].Balance*100) < p.Money*100 {
+	if (list[p.Base.Uid].Balance*100 - list[p.Base.Uid].BlockedBalance*100) < p.Money*100 {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
