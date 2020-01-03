@@ -119,10 +119,29 @@ func (a *Account) IsExistAccount(o *gorm.DB) error {
 }
 
 // GetOrderIdsByInfo 根据ids,获取用户账本信息
-func (a *Account) GetOrderIdsByInfo(o *gorm.DB, ids []uint) ([]Account, error) {
+func (a *Account) GetOrderIdsByInfo(o *gorm.DB, ids []uint) (map[uint]Account, error) {
+	data := make(map[uint]Account, 0)
 	item := make([]Account, 0)
 	err := o.Table(GetAccountTable()).Where("currency_id in(?)", ids).Where("uid = ?", a.Uid).Find(&item).Error
-	return item, err
+	if err == nil {
+		for _, val := range item {
+			data[val.Uid] = val
+		}
+	}
+	return data, err
+}
+
+// GetOrderUidSByCurrencyInfo 根据uids,获取用户账本信息
+func (a *Account) GetOrderUidSByCurrencyInfo(o *gorm.DB, ids []uint) (map[uint]Account, error) {
+	data := make(map[uint]Account, 0)
+	item := make([]Account, 0)
+	err := o.Table(GetAccountTable()).Where("uid in(?)", ids).Where("currency_id = ?", a.CurrencyId).Find(&item).Error
+	if err == nil {
+		for _, val := range item {
+			data[val.Uid] = val
+		}
+	}
+	return data, err
 }
 
 // GetOrderUidCurrencyIdByInfo 根据用户id获取信息,获取用户账本信息

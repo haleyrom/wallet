@@ -182,7 +182,7 @@ func AccountChange(c *gin.Context) {
 	}
 
 	//  校验金额
-	if (data[core.DefaultNilNum].Balance*100 - data[core.DefaultNilNum].BlockedBalance*100 - p.Money*100) < 0 {
+	if (data[p.CurrencyId].Balance*100 - data[p.ChangeId].BlockedBalance*100 - p.Money*100) < 0 {
 		o.Callback()
 		core.GResp.Failure(c, errors.New("lack of balance"))
 		return
@@ -601,12 +601,14 @@ func AccountPersonTransfer(c *gin.Context) {
 			Email:  p.Email,
 		},
 	}
+
 	if err = CreateUser(param); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeNotUser)
 		return
 	}
 
+	// 获取代笔信息
 	currency := models.NewCurrency()
 	currency.Symbol = p.Symbol
 	if err := currency.GetSymbolById(o); err != nil {
@@ -615,41 +617,32 @@ func AccountPersonTransfer(c *gin.Context) {
 		return
 	}
 
-	// Fixme:优化
-
 	// 获取金额
 	account := models.NewAccount()
-	account.Uid, account.CurrencyId = p.Base.Uid, currency.ID
-	if err := account.IsExistAccount(o); err != nil {
+	account.CurrencyId = currency.ID
+	list := make(map[uint]models.Account, 0)
+	if list, err = account.GetOrderUidSByCurrencyInfo(o, []uint{p.Base.Uid, param.Uid}); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeNotAccount, err)
 		return
 	}
 
 	// 余额不足
-	if (account.Balance*100 - account.BlockedBalance*100) < p.Money*100 {
+	if (list[p.Base.Uid].Balance*100 - list[p.Base.Uid].Balance*100) < p.Money*100 {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
 	}
 
 	// 扣费
-	if err := AccountOperate(o, account, p.Money, core.OperateToOut, resp.AccountDetailInto); err != nil {
+	if err := AccountOperate(o, list[p.Base.Uid], p.Money, core.OperateToOut, resp.AccountDetailInto); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
-	} else {
-		// 获取充值用户
-		account.Uid = param.Uid
-		if err := account.IsExistAccount(o); err != nil {
-			o.Rollback()
-			core.GResp.Failure(c, resp.CodeNotAccount, err)
-			return
-		} else if err = AccountOperate(o, account, p.Money, core.OperateToUp, resp.AccountDetailInto); err != nil {
-			o.Rollback()
-			core.GResp.Failure(c, err)
-			return
-		}
+	} else if err = AccountOperate(o, list[param.Uid], p.Money, core.OperateToUp, resp.AccountDetailInto); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, err)
+		return
 	}
 
 	o.Commit()
@@ -658,7 +651,7 @@ func AccountPersonTransfer(c *gin.Context) {
 }
 
 // AccountOperate 账本操作
-func AccountOperate(o *gorm.DB, account *models.Account, money float64, operate string, types int8) error {
+func AccountOperate(o *gorm.DB, account models.Account, money float64, operate string, types int8) error {
 	balance := account.Balance
 	if err := account.UpdateBalance(o, operate, money); err != nil {
 		return err
@@ -675,5 +668,5 @@ func AccountOperate(o *gorm.DB, account *models.Account, money float64, operate 
 	if err := detail.CreateAccountDetail(o); err != nil {
 		return err
 	}
-
+	return nil
 }
