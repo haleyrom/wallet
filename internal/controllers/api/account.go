@@ -30,6 +30,7 @@ func AccountInfo(c *gin.Context) {
 	// 绑定参数
 	if err := c.ShouldBind(p); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
 	}
 
 	data, err := models.NewAccount().GetUserBalance(core.Orm.DB.New(), p.Base.Uid)
@@ -494,4 +495,57 @@ func AccountWithdrawal(c *gin.Context) {
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
 	return
+}
+
+// AccountCurrencyDetail 钱包币种详情
+// @Tags Account 钱包帐号
+// @Summary 钱包币种详情接口
+// @Description 钱包币种详情
+// @Produce json
+// @Security ApiKeyAuth
+// @Param account_id query int true "钱包id"
+// @Param pageSize query int true "页面条数"
+// @Param page query int true "页数"
+// @Param type query string true "类型（all全部，income收入，expend支出）"
+// @Success 200 {object} resp.AccountCurrencyDetailListResp
+// @Router /account/currency/detail [get]
+func AccountCurrencyDetail(c *gin.Context) {
+	p := &params.AccountCurrencyDetailParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	switch p.Type {
+	case models.AccountCurrentClassAll:
+		fallthrough
+	case models.AccountCurrentClassIn:
+		fallthrough
+	case models.AccountCurrentClassUp:
+		o := core.Orm.New()
+		detail := models.AccountDetail{
+			Uid:       p.Base.Uid,
+			AccountId: p.AccountId,
+		}
+		data, err := detail.GetCurrencyPageList(o, p.Page, p.PageSize, p.Type)
+		if err != nil {
+			core.GResp.Failure(c, err)
+			return
+		}
+		account := models.NewAccount()
+		account.ID, account.Uid = p.AccountId, p.Base.Uid
+		if data.Info, err = account.GetUserAccountBalance(o); err != nil {
+			core.GResp.Failure(c, err)
+			return
+		}
+		core.GResp.Success(c, data)
+		return
+	default:
+		core.GResp.Failure(c, resp.CodeIllegalParam)
+		return
+	}
 }

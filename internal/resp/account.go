@@ -19,6 +19,7 @@ const (
 
 // AccountInfoResp 详情返回结果集
 type AccountInfoResp struct {
+	AccountId      string `json:"account_id"`      // 钱包id
 	CurrencyId     int    `json:"currency_id"`     // 币种id
 	Balance        string `json:"balance"`         // 余额
 	Symbol         string `json:"symbol"`          // 币种标识
@@ -64,4 +65,11 @@ type AccountUserDetailInfoResp struct {
 type AccountUserDetailListResp struct {
 	Items []AccountUserDetailInfoResp `json:"items"` // 帐号详情
 	Page  BasePageResp                `json:"page"`  // 分页
+}
+
+// AccountCurrencyDetailListResp 帐号币种详情列表
+type AccountCurrencyDetailListResp struct {
+	Info  AccountInfoResp     `json:"info"`  // 币种信息
+	Items []AccountDetailResp `json:"items"` // 帐号详情
+	Page  BasePageResp        `json:"page"`  // 分页
 }

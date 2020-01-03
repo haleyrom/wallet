@@ -147,3 +147,12 @@ type AudioRechargeParam struct {
 	FinancialId uint `json:"financial_id" form:"financial_id"`
 	Status      int8 `json:"status" form:"status"`
 }
+
+// AccountCurrencyDetailParam 账单币种明细
+type AccountCurrencyDetailParam struct {
+	Base      *BaseParam `json:"claims" form:"claims"`
+	AccountId uint       `json:"account_id" form:"account_id" binding:"required"`
+	Page      int        `json:"page" form:"page"  binding:"required"`
+	PageSize  int        `json:"pageSize" form:"pageSize" binding:"required"`
+	Type      string     `json:"type" form:"type" binding:"required"`
+}

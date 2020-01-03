@@ -2922,6 +2922,10 @@
         "resp.AccountInfoResp": {
             "type": "object",
             "properties": {
+                "account_id": {
+                    "description": "钱包id",
+                    "type": "string"
+                },
                 "balance": {
                     "description": "余额",
                     "type": "string"
