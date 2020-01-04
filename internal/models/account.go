@@ -195,7 +195,7 @@ func (a *Account) GetAccountUserList(o *gorm.DB, page, pageSize, start_time, end
 		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
 	}
 
-	sql = fmt.Sprintf("%s ORDER BY detail.id LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
+	sql = fmt.Sprintf("%s ORDER BY detail.id desc LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
 
 	rows, err := o.Raw(sql).Rows()
 	defer rows.Close()

@@ -429,7 +429,7 @@ func AccountWithdrawal(c *gin.Context) {
 	coin_info, err := coin.GetDepositInfo(o)
 	if err != nil {
 		o.Callback()
-		core.GResp.Failure(c, resp.CodeNotCoin)
+		core.GResp.Failure(c, resp.CodeWithdrawalNotCurrency)
 		return
 	}
 
