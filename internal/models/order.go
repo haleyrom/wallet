@@ -51,7 +51,7 @@ func NewOrder() *Order {
 
 // CreateOrder 创建订单
 func (r *Order) CreateOrder(o *gorm.DB) error {
-	return o.Model(r).Create(r).Error
+	return o.Create(r).Error
 }
 
 // GetAllTransOrder GetAllTransOrder

@@ -190,7 +190,7 @@ func AccountChange(c *gin.Context) {
 
 	ratio, _ := strconv.ParseFloat(p.Ratio, 64)
 	jsonStr, _ := json.Marshal(c.Request.PostForm)
-	order := models.Order{
+	order := &models.Order{
 		Uid:        p.Base.Uid,
 		Context:    string(jsonStr),
 		CurrencyId: p.CurrencyId,
