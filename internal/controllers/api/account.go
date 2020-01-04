@@ -191,14 +191,15 @@ func AccountChange(c *gin.Context) {
 	ratio, _ := strconv.ParseFloat(p.Ratio, 64)
 	jsonStr, _ := json.Marshal(c.Request.PostForm)
 	order := &models.Order{
-		Uid:        p.Base.Uid,
-		Context:    string(jsonStr),
-		CurrencyId: p.CurrencyId,
-		ExchangeId: p.ChangeId,
-		Balance:    p.Money,
-		Ratio:      ratio,
-		Status:     models.OrderStatusOk,
-		Type:       models.OrderTypeChange,
+		Uid:         p.Base.Uid,
+		Context:     string(jsonStr),
+		CurrencyId:  p.CurrencyId,
+		ExchangeUid: p.Base.Uid,
+		ExchangeId:  p.ChangeId,
+		Balance:     p.Money,
+		Ratio:       ratio,
+		Status:      models.OrderStatusOk,
+		Type:        models.OrderTypeChange,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
@@ -546,6 +547,7 @@ func AccountCurrencyDetail(c *gin.Context) {
 			core.GResp.Failure(c, err)
 			return
 		}
+
 		core.GResp.Success(c, data)
 		return
 	default:
@@ -635,13 +637,30 @@ func AccountPersonTransfer(c *gin.Context) {
 	}
 
 	// 创建订单
+	jsonStr, _ := json.Marshal(c.Request.PostForm)
+	order := &models.Order{
+		Uid:         p.Base.Uid,
+		Context:     string(jsonStr),
+		CurrencyId:  list[p.Base.Uid].CurrencyId,
+		ExchangeUid: param.Uid,
+		ExchangeId:  list[param.Uid].CurrencyId,
+		Balance:     p.Money,
+		Ratio:       float64(core.DefaultNilNum),
+		Status:      models.OrderStatusOk,
+		Type:        models.OrderTypeTransfer,
+	}
+	if err := order.CreateOrder(o); err != nil {
+		o.Callback()
+		core.GResp.Failure(c, errors.Errorf("join order fail:%s", err))
+		return
+	}
 
 	// 扣费
-	if err := AccountOperate(o, list[p.Base.Uid], p.Money, core.OperateToOut, resp.AccountDetailTransfer); err != nil {
+	if err := AccountOperate(o, list[p.Base.Uid], p.Money, core.OperateToOut, resp.AccountDetailTransfer, order.ID); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
-	} else if err = AccountOperate(o, list[param.Uid], p.Money, core.OperateToUp, resp.AccountDetailTransfer); err != nil {
+	} else if err = AccountOperate(o, list[param.Uid], p.Money, core.OperateToUp, resp.AccountDetailTransfer, order.ID); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, err)
 		return
@@ -653,14 +672,14 @@ func AccountPersonTransfer(c *gin.Context) {
 }
 
 // AccountOperate 账本操作
-func AccountOperate(o *gorm.DB, account models.Account, money float64, operate string, types int8) error {
+func AccountOperate(o *gorm.DB, account models.Account, money float64, operate string, types int8, order_id uint) error {
 	balance := account.Balance
 	if err := account.UpdateBalance(o, operate, money); err != nil {
 		return err
 	}
 
 	detail := models.NewAccountDetail()
-	detail.Uid, detail.Type = account.Uid, types
+	detail.Uid, detail.Type, detail.OrderId = account.Uid, types, order_id
 	detail.AccountId, detail.LastBalance = account.ID, balance
 	if operate == core.OperateToOut {
 		detail.Spend, detail.Balance = money, account.Balance-money

@@ -33,6 +33,8 @@ var (
 	OrderTypeChange int8 = 0
 	// OrderTypeShare 分红
 	OrderTypeShare int8 = 1
+	// OrderTypeTransfer 转账
+	OrderTypeTransfer int8 = 2
 	//  OrderFormUsdd 算力
 	OrderFormUsdd string = "usdd"
 	// OrderFormTransfer

@@ -170,7 +170,7 @@ func init() {
 		CodeNotAddr:             "该地址不存在/不可用",
 		CodeNotCoin:             "该代币不存在/不可用",
 		CodeNotChain:            "该链不存在/不可用",
-		CodeNotCurrency:         "货币不存在",
+		CodeNotCurrency:         "货币不存在/不可用",
 		CodeDepositErr:          "充值不成功",
 		CodeCodeError:           "邮箱验证码错误",
 		CodeAlreadyAudio:        "已审核，请勿重复操作",

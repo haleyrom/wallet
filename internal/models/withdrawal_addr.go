@@ -86,3 +86,8 @@ func (w *WithdrawalAddr) RmWithdrawalAddr(o *gorm.DB) error {
 func (w *WithdrawalAddr) GetInfo(o *gorm.DB) error {
 	return o.Table(GetWithdrawalAddrTable()).Where("id = ?", w.ID).Find(w).Error
 }
+
+// GetUsableInfo 获取可用信息
+func (w *WithdrawalAddr) GetUsableInfo(o *gorm.DB) error {
+	return o.Table(GetWithdrawalAddrTable()).Where("id = ? and status = ?", w.ID, vStatusOk).Find(w).Error
+}
