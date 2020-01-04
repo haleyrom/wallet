@@ -22,7 +22,7 @@ type DepositDetail struct {
 	TransactionHash string  `gorm:"size:255;column:transaction_hash;index;comment:'事务hash'"` // 事务hash
 	Symbol          string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                  // 代币代号
 	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                     // 标识 coin,token
-	Status          int8    `gorm:"size:3;column:status;default:0;comment:'入账状态'"`           // 入账状态：0未入账,1已入账。
+	Status          int8    `gorm:"size:3;column:status;default:0;comment:'入账状态'"`           // 入账状态：0未入账,1已入账,2审核不通过。
 	ContractAddress string  `gorm:"size:200;column:contract_address;comment:'合约地址'"`         // 合约地址
 	Source          int8    `gorm:"size:3;column:source;default:0;comment:'来源(0充值，1手充)'"`    // 来源(0充值1手充)
 	FinancialStatus int8    `gorm:"column:financial_status;index;default:0;comment:'财务状态'"`  // 财务状态:0 待审核1：通过2：不通过
