@@ -59,7 +59,7 @@ func CreateUser(p *params.BaseParam) error {
 			wg.Wait()
 		}
 	}
-	fmt.Println(user, p.Claims)
+	fmt.Println(user.Name, user.Email, p.Claims.Name, p.Claims.Email)
 	if user.Name != p.Claims.Name || user.Email != p.Claims.Email {
 		user.Name, user.Email = p.Claims.Name, p.Claims.Email
 		_ = user.UpdateInfo(core.Orm.New())
