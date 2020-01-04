@@ -128,8 +128,8 @@ func (d *DepositDetail) GetAllPageList(o *gorm.DB, page, pageSize int, endTime, 
 	if endTime == 0 {
 		endTime = 10000000000000
 	}
-	count_sql := fmt.Sprintf("select count(*) as num from %s a left join %s b on a.uid = b.uid where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d and a.deleted = %d", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
-	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,a.value,a.transaction_hash,a.status,a.updated_at,a.source from %s a left join %s b on a.uid = b.uid where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
+	count_sql := fmt.Sprintf("select count(*) as num from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d and a.deleted = %d", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
+	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,a.value,a.transaction_hash,a.status,a.updated_at,a.source from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
 	if key != "" {
 		count_sql += "and b.name = '%" + key + "%'"
 		sql += "and b.name = '%" + key + "%'"
