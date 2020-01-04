@@ -22,6 +22,15 @@ type AccountDetail struct {
 	OrderId     uint    `gorm:"column:order_id;default:0;comment:'订单id'"`      // 订单id
 }
 
+const (
+	// AccountCurrentClassAll 全部
+	AccountCurrentClassAll string = "all"
+	// AccountCurrentClassIn 入账
+	AccountCurrentClassIn string = "income"
+	// AccountCurrentClassUp 支出
+	AccountCurrentClassUp string = "expend"
+)
+
 // GetAccountDetailTable 获取表
 func GetAccountDetailTable() string {
 	return viper.GetString("mysql.prefix") + "account_detail"
@@ -79,6 +88,50 @@ func (a *AccountDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.Accoun
 		}
 
 		o.Table(GetAccountDetailTable()).Where("uid = ?", a.Uid).Count(&data.Page.Count)
+		data.Page.PageSize = len(data.Items)
+		data.Page.CurrentPage = page
+		data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))
+	}
+	return data, err
+}
+
+// GetCurrencyPageList 获取币种分页列表
+func (a *AccountDetail) GetCurrencyPageList(o *gorm.DB, page, pageSize int, types string) (resp.AccountCurrencyDetailListResp, error) {
+	data := resp.AccountCurrencyDetailListResp{}
+	sql := fmt.Sprintf("SELECT account.currency_id,currency.symbol,currency.name,currency.decimals,detail.income,detail.spend,detail.type,detail.updated_at FROM %s AS detail LEFT JOIN %s account ON account.id = detail.account_id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.uid = ? and detail.account_id = ? ", GetAccountDetailTable(), GetAccountTable(), GetCurrencyTable())
+
+	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s AS detail where detail.uid = ? and detail.account_id = ? ", GetAccountDetailTable())
+
+	switch types {
+	case AccountCurrentClassAll:
+	case AccountCurrentClassIn:
+		sql += " and detail.income > 0 "
+		count_sql += " and detail.income > 0 "
+	case AccountCurrentClassUp:
+		sql += " and detail.spend > 0 "
+		count_sql += " and detail.spend > 0 "
+	}
+
+	sql += " ORDER BY detail.id desc LIMIT ?,? "
+
+	rows, err := o.Raw(sql, a.Uid, a.AccountId, (page-1)*pageSize, pageSize).Rows()
+	defer rows.Close()
+
+	if err == nil {
+		var (
+			timer time.Time
+			item  resp.AccountDetailResp
+		)
+		data.Items = make([]resp.AccountDetailResp, 0)
+		for rows.Next() {
+			if err = o.ScanRows(rows, &item); err == nil {
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				data.Items = append(data.Items, item)
+			}
+		}
+
+		_ = o.Raw(count_sql, a.Uid, a.AccountId).Row().Scan(&data.Page.Count)
 		data.Page.PageSize = len(data.Items)
 		data.Page.CurrentPage = page
 		data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))

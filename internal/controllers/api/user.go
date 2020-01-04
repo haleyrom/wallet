@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -57,11 +58,9 @@ func CreateUser(p *params.BaseParam) error {
 
 			wg.Wait()
 		}
-	} else {
-		if user.Name != p.Claims.Name || user.Email != p.Claims.Email {
-			user.Name, user.Email = p.Claims.Name, p.Claims.Email
-			_ = user.UpdateInfo(core.Orm.New())
-		}
+	} else if p.Claims.Name != core.DefaultNilString && p.Claims.Email != core.DefaultNilString && (user.Name != p.Claims.Name || user.Email != p.Claims.Email) {
+		user.Name, user.Email = p.Claims.Name, p.Claims.Email
+		_ = user.UpdateInfo(core.Orm.New())
 	}
 
 	p.Uid = user.ID
@@ -97,4 +96,80 @@ func UpdatePayPassword(c *gin.Context) {
 	}
 	core.GResp.Success(c, resp.EmptyData())
 	return
+}
+
+// ChargeQrCode 收费二维码
+// @Tags  User 用户
+// @Summary 收费二维码接口
+// @Description 收费二维码
+// @Produce json
+// @Security ApiKeyAuth
+// @Param currency_id query string true "币种ID"
+// @Param type query string true "收费类型1：不带金额2：带金额"
+// @Param symbol query string true "币种标示"
+// @Param money query number true "金额"
+// @Success 200 {object} resp.ChargeQrCodeResp
+// @Router /user/qrcode/change [get]
+func ChargeQrCode(c *gin.Context) {
+	p := &params.ChargeQrCodeParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%d&from=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "changre")
+	core.GResp.Success(c, resp.ChargeQrCodeResp{
+		UserName: p.Base.Claims.Name,
+		Email:    p.Base.Claims.Email,
+		Qrcode:   qrcode,
+	})
+	return
+}
+
+// PaymentQrCode 付款二维码
+// @Tags  User 用户
+// @Summary 付款二维码接口
+// @Description 付款二维码
+// @Produce json
+// @Security ApiKeyAuth
+// @Param symbol formData string true "币种标示"
+// @Param money formData number true "金额"
+// @Param code formData number true "code"
+// @Success 200
+// @Router /user/qrcode/pay [get]
+func PaymentQrCode(c *gin.Context) {
+	p := &params.PaymentQrCodeParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+}
+
+// UserChange 用户付款
+// @Tags  User 用户
+// @Summary 用户付款接口
+// @Description 用户付款
+// @Produce json
+// @Security ApiKeyAuth
+// @Param currency_id query string true "币种ID"
+// @Success 200
+// @Router /user/qrcode/pay [get]
+func UserChange(c *gin.Context) {
+	p := &params.UserChangeParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
 }

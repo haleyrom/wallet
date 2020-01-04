@@ -1,5 +1,21 @@
 basePath: /api/v1/wallet
 definitions:
+  resp.AccountCurrencyDetailListResp:
+    properties:
+      info:
+        $ref: '#/definitions/resp.AccountInfoResp'
+        description: 币种信息
+        type: object
+      items:
+        description: 帐号详情
+        items:
+          $ref: '#/definitions/resp.AccountDetailResp'
+        type: array
+      page:
+        $ref: '#/definitions/resp.BasePageResp'
+        description: 分页
+        type: object
+    type: object
   resp.AccountDetailListResp:
     properties:
       items:
@@ -33,7 +49,7 @@ definitions:
         description: 币种标识
         type: string
       type:
-        description: 明细类型  账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级
+        description: 明细类型（账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级 7兑换 8转账）
         type: integer
       updated_at:
         description: 时间
@@ -41,8 +57,17 @@ definitions:
     type: object
   resp.AccountInfoResp:
     properties:
+      account_id:
+        description: 钱包id
+        type: string
       balance:
         description: 余额
+        type: string
+      block_chain_id:
+        description: 链id
+        type: integer
+      blocked_balance:
+        description: 冻结金额
         type: string
       currency_id:
         description: 币种id
@@ -65,6 +90,9 @@ definitions:
       balance:
         description: 现余额
         type: number
+      block_chain_id:
+        description: 链id
+        type: integer
       email:
         description: 邮件
         type: string
@@ -149,6 +177,18 @@ definitions:
       totalPage:
         description: 总页数
         type: integer
+    type: object
+  resp.ChargeQrCodeResp:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      qrcode:
+        description: 二维码
+        type: string
+      user_name:
+        description: 用户名称
+        type: string
     type: object
   resp.CompanyStreamInfoResp:
     properties:
@@ -289,6 +329,9 @@ definitions:
         type: integer
       name:
         description: 链名称
+        type: string
+      type:
+        description: 链类型
         type: string
     type: object
   resp.ReadCoinDepositInfoResp:
@@ -697,6 +740,42 @@ paths:
       summary: 兑换代币接口
       tags:
       - Account 钱包帐号
+  /account/currency/detail:
+    get:
+      description: 钱包币种详情
+      parameters:
+      - description: 钱包id
+        in: query
+        name: account_id
+        required: true
+        type: integer
+      - description: 页面条数
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 类型（all全部，income收入，expend支出）
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountCurrencyDetailListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 钱包币种详情接口
+      tags:
+      - Account 钱包帐号
   /account/detail:
     get:
       description: 钱包明
@@ -736,6 +815,34 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 钱包详情接口
+      tags:
+      - Account 钱包帐号
+  /account/person/transfer:
+    post:
+      description: 个人转账
+      parameters:
+      - description: 转账金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      - description: 币种标识
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      - description: 邮件
+        in: formData
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 个人转账接口
       tags:
       - Account 钱包帐号
   /account/share/bonus:
@@ -2303,6 +2410,60 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 更新支付密码接口
+      tags:
+      - User 用户
+  /user/qrcode/change:
+    get:
+      description: 收费二维码
+      parameters:
+      - description: 币种ID
+        in: query
+        name: currency_id
+        required: true
+        type: string
+      - description: 收费类型1：不带金额2：带金额
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: 币种标示
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: 金额
+        in: query
+        name: money
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ChargeQrCodeResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 收费二维码接口
+      tags:
+      - User 用户
+  /user/qrcode/pay:
+    get:
+      description: 用户付款
+      parameters:
+      - description: 币种ID
+        in: query
+        name: currency_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 用户付款接口
       tags:
       - User 用户
   /withdrawal/addr/add:

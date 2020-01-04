@@ -39,7 +39,7 @@ func (a *Account) GetUserAvailableBalance(o *gorm.DB) (float64, error) {
 // GetUserBalance 获取用户余额
 func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, error) {
 	data := make([]resp.AccountInfoResp, 0)
-	rows, err := o.Raw(fmt.Sprintf("SELECT acc.currency_id,(acc.balance-acc.blocked_balance) as balance,cur.symbol,cur.decimals,cur.name from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ?", GetCurrencyTable(), GetAccountTable()), uid).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ?", GetCurrencyTable(), GetAccountTable()), uid).Rows()
 	defer rows.Close()
 
 	if err == nil {
@@ -61,8 +61,18 @@ func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, 
 // GetUserTFORBalance 获取用户TFOR余额
 func (a *Account) GetUserTFORBalance(o *gorm.DB, uid uint) (resp.AccountInfoResp, error) {
 	var data resp.AccountInfoResp
-	rows := o.Raw(fmt.Sprintf("SELECT acc.currency_id,(acc.balance-acc.blocked_balance) as balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable()), uid, "TFOR").Row()
-	err := rows.Scan(&data.CurrencyId, &data.Balance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
+	rows := o.Raw(fmt.Sprintf("SELECT acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable()), uid, "TFOR").Row()
+	err := rows.Scan(&data.AccountId, &data.CurrencyId, &data.Balance, &data.BlockedBalance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
+	timer, _ := time.Parse("2006-01-02T15:04:05+08:00", data.UpdatedAt)
+	data.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+	return data, err
+}
+
+// GetUserAccountBalance 获取用户钱包余额
+func (a *Account) GetUserAccountBalance(o *gorm.DB) (resp.AccountInfoResp, error) {
+	var data resp.AccountInfoResp
+	rows := o.Raw(fmt.Sprintf("SELECT acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND acc.id = ?", GetCurrencyTable(), GetAccountTable()), a.Uid, a.ID).Row()
+	err := rows.Scan(&data.AccountId, &data.CurrencyId, &data.Balance, &data.BlockedBalance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
 	timer, _ := time.Parse("2006-01-02T15:04:05+08:00", data.UpdatedAt)
 	data.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 	return data, err
@@ -109,10 +119,29 @@ func (a *Account) IsExistAccount(o *gorm.DB) error {
 }
 
 // GetOrderIdsByInfo 根据ids,获取用户账本信息
-func (a *Account) GetOrderIdsByInfo(o *gorm.DB, ids []uint) ([]Account, error) {
+func (a *Account) GetOrderIdsByInfo(o *gorm.DB, ids []uint) (map[uint]Account, error) {
+	data := make(map[uint]Account, 0)
 	item := make([]Account, 0)
 	err := o.Table(GetAccountTable()).Where("currency_id in(?)", ids).Where("uid = ?", a.Uid).Find(&item).Error
-	return item, err
+	if err == nil {
+		for _, val := range item {
+			data[val.CurrencyId] = val
+		}
+	}
+	return data, err
+}
+
+// GetOrderUidSByCurrencyInfo 根据uids,获取用户账本信息
+func (a *Account) GetOrderUidSByCurrencyInfo(o *gorm.DB, ids []uint) (map[uint]Account, error) {
+	data := make(map[uint]Account, 0)
+	item := make([]Account, 0)
+	err := o.Table(GetAccountTable()).Where("uid in(?)", ids).Where("currency_id = ?", a.CurrencyId).Find(&item).Error
+	if err == nil {
+		for _, val := range item {
+			data[val.Uid] = val
+		}
+	}
+	return data, err
 }
 
 // GetOrderUidCurrencyIdByInfo 根据用户id获取信息,获取用户账本信息
@@ -166,7 +195,7 @@ func (a *Account) GetAccountUserList(o *gorm.DB, page, pageSize, start_time, end
 		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
 	}
 
-	sql = fmt.Sprintf("%s ORDER BY detail.id LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
+	sql = fmt.Sprintf("%s ORDER BY detail.id desc LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
 
 	rows, err := o.Raw(sql).Rows()
 	defer rows.Close()

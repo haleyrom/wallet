@@ -8,7 +8,11 @@ import (
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/consul"
+	"github.com/haleyrom/wallet/pkg/jwt"
 	"github.com/haleyrom/wallet/pkg/tools"
+	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 	"strconv"
@@ -30,6 +34,7 @@ func AccountInfo(c *gin.Context) {
 	// 绑定参数
 	if err := c.ShouldBind(p); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
 	}
 
 	data, err := models.NewAccount().GetUserBalance(core.Orm.DB.New(), p.Base.Uid)
@@ -177,23 +182,24 @@ func AccountChange(c *gin.Context) {
 	}
 
 	//  校验金额
-	if (data[core.DefaultNilNum].Balance*100 - data[core.DefaultNilNum].BlockedBalance*100 - p.Money*100) < 0 {
+	if (data[p.CurrencyId].Balance*100 - data[p.ChangeId].BlockedBalance*100 - p.Money*100) < 0 {
 		o.Callback()
-		core.GResp.Failure(c, errors.New("lack of balance"))
+		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
 	}
 
 	ratio, _ := strconv.ParseFloat(p.Ratio, 64)
 	jsonStr, _ := json.Marshal(c.Request.PostForm)
-	order := models.Order{
-		Uid:        p.Base.Uid,
-		Context:    string(jsonStr),
-		CurrencyId: p.CurrencyId,
-		ExchangeId: p.ChangeId,
-		Balance:    p.Money,
-		Ratio:      ratio,
-		Status:     models.OrderStatusOk,
-		Type:       models.OrderTypeChange,
+	order := &models.Order{
+		Uid:         p.Base.Uid,
+		Context:     string(jsonStr),
+		CurrencyId:  p.CurrencyId,
+		ExchangeUid: p.Base.Uid,
+		ExchangeId:  p.ChangeId,
+		Balance:     p.Money,
+		Ratio:       ratio,
+		Status:      models.OrderStatusOk,
+		Type:        models.OrderTypeChange,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
@@ -423,7 +429,7 @@ func AccountWithdrawal(c *gin.Context) {
 	coin_info, err := coin.GetDepositInfo(o)
 	if err != nil {
 		o.Callback()
-		core.GResp.Failure(c, resp.CodeNotCoin)
+		core.GResp.Failure(c, resp.CodeWithdrawalNotCurrency)
 		return
 	}
 
@@ -494,4 +500,200 @@ func AccountWithdrawal(c *gin.Context) {
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
 	return
+}
+
+// AccountCurrencyDetail 钱包币种详情
+// @Tags Account 钱包帐号
+// @Summary 钱包币种详情接口
+// @Description 钱包币种详情
+// @Produce json
+// @Security ApiKeyAuth
+// @Param account_id query int true "钱包id"
+// @Param pageSize query int true "页面条数"
+// @Param page query int true "页数"
+// @Param type query string true "类型（all全部，income收入，expend支出）"
+// @Success 200 {object} resp.AccountCurrencyDetailListResp
+// @Router /account/currency/detail [get]
+func AccountCurrencyDetail(c *gin.Context) {
+	p := &params.AccountCurrencyDetailParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	switch p.Type {
+	case models.AccountCurrentClassAll:
+		fallthrough
+	case models.AccountCurrentClassIn:
+		fallthrough
+	case models.AccountCurrentClassUp:
+		o := core.Orm.New()
+		detail := models.AccountDetail{
+			Uid:       p.Base.Uid,
+			AccountId: p.AccountId,
+		}
+		data, err := detail.GetCurrencyPageList(o, p.Page, p.PageSize, p.Type)
+		if err != nil {
+			core.GResp.Failure(c, err)
+			return
+		}
+		account := models.NewAccount()
+		account.ID, account.Uid = p.AccountId, p.Base.Uid
+		if data.Info, err = account.GetUserAccountBalance(o); err != nil {
+			core.GResp.Failure(c, err)
+			return
+		}
+		coin := models.NewCoin()
+		coin.Symbol = data.Info.Symbol
+		if err := coin.GetOrderSymbolByInfo(o); err != nil {
+			core.GResp.Failure(c, err)
+			return
+		}
+		data.Info.BlockChainId = coin.BlockChainId
+		core.GResp.Success(c, data)
+		return
+	default:
+		core.GResp.Failure(c, resp.CodeIllegalParam)
+		return
+	}
+}
+
+// AccountPersonTransfer 个人转账
+// @Tags Account 钱包帐号
+// @Summary 个人转账接口
+// @Description 个人转账
+// @Produce json
+// @Security ApiKeyAuth
+// @param money formData number true "转账金额"
+// @param symbol formData string true "币种标识"
+// @param email formData string true "邮件"
+// @Success 200
+// @Router /account/person/transfer [post]
+func AccountPersonTransfer(c *gin.Context) {
+	p := &params.AccountPersonTransferParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	o := core.Orm.New().Begin()
+
+	// 查询用户创建用户
+	result, err := consul.GetOrderEmailByInfo(p.Email, c.Request.Header.Get(core.HttpHeadToken))
+	var data resp.GetOrderEmailUserInfoResp
+
+	if err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotUser)
+		return
+	} else if err = mapstructure.Decode(result, &data); err != nil || len(data.UserId) == core.DefaultNilNum {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotUser)
+		return
+	}
+
+	// 获取用户id
+	param := &params.BaseParam{
+		Uid: 0,
+		Claims: jwt.CustomClaims{
+			UserID: data.UserId,
+			Name:   data.UserName,
+			Email:  p.Email,
+		},
+	}
+
+	if err = CreateUser(param); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotUser)
+		return
+	}
+
+	// 获取代笔信息
+	currency := models.NewCurrency()
+	currency.Symbol = p.Symbol
+	if err := currency.GetSymbolById(o); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotCurrency, err)
+		return
+	}
+
+	// 获取金额
+	account := models.NewAccount()
+	account.CurrencyId = currency.ID
+	list := make(map[uint]models.Account, 0)
+	if list, err = account.GetOrderUidSByCurrencyInfo(o, []uint{p.Base.Uid, param.Uid}); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotAccount, err)
+		return
+	}
+
+	// 余额不足
+	if (list[p.Base.Uid].Balance*100 - list[p.Base.Uid].BlockedBalance*100) < p.Money*100 {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeLessMoney)
+		return
+	}
+
+	// 创建订单
+	jsonStr, _ := json.Marshal(c.Request.PostForm)
+	order := &models.Order{
+		Uid:         p.Base.Uid,
+		Context:     string(jsonStr),
+		CurrencyId:  list[p.Base.Uid].CurrencyId,
+		ExchangeUid: param.Uid,
+		ExchangeId:  list[param.Uid].CurrencyId,
+		Balance:     p.Money,
+		Ratio:       float64(core.DefaultNilNum),
+		Status:      models.OrderStatusOk,
+		Type:        models.OrderTypeTransfer,
+	}
+	if err := order.CreateOrder(o); err != nil {
+		o.Callback()
+		core.GResp.Failure(c, errors.Errorf("join order fail:%s", err))
+		return
+	}
+
+	// 扣费
+	if err := AccountOperate(o, list[p.Base.Uid], p.Money, core.OperateToOut, resp.AccountDetailTransfer, order.ID); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeLessMoney)
+		return
+	} else if err = AccountOperate(o, list[param.Uid], p.Money, core.OperateToUp, resp.AccountDetailTransfer, order.ID); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, err)
+		return
+	}
+
+	o.Commit()
+	core.GResp.Success(c, resp.EmptyData())
+	return
+}
+
+// AccountOperate 账本操作
+func AccountOperate(o *gorm.DB, account models.Account, money float64, operate string, types int8, order_id uint) error {
+	balance := account.Balance
+	if err := account.UpdateBalance(o, operate, money); err != nil {
+		return err
+	}
+
+	detail := models.NewAccountDetail()
+	detail.Uid, detail.Type, detail.OrderId = account.Uid, types, order_id
+	detail.AccountId, detail.LastBalance = account.ID, balance
+	if operate == core.OperateToOut {
+		detail.Spend, detail.Balance = money, account.Balance-money
+	} else {
+		detail.Income, detail.Balance = money, account.Balance+money
+	}
+	if err := detail.CreateAccountDetail(o); err != nil {
+		return err
+	}
+	return nil
 }

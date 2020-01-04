@@ -15,16 +15,21 @@ const (
 	AccountDetailUpgrade
 	// AccountDetailConvert 兑换
 	AccountDetailConvert
+	// AccountDetailTransfer 转账
+	AccountDetailTransfer
 )
 
 // AccountInfoResp 详情返回结果集
 type AccountInfoResp struct {
-	CurrencyId int    `json:"currency_id"` // 币种id
-	Balance    string `json:"balance"`     // 余额
-	Symbol     string `json:"symbol"`      // 币种标识
-	Decimals   int    `json:"decimals"`    // 小数点位数
-	Name       string `json:"name"`        // 名称
-	UpdatedAt  string `json:"updated_at"`  // 时间
+	AccountId      string `json:"account_id"`      // 钱包id
+	CurrencyId     int    `json:"currency_id"`     // 币种id
+	Balance        string `json:"balance"`         // 余额
+	Symbol         string `json:"symbol"`          // 币种标识
+	Decimals       int    `json:"decimals"`        // 小数点位数
+	Name           string `json:"name"`            // 名称
+	UpdatedAt      string `json:"updated_at"`      // 时间
+	BlockedBalance string `json:"blocked_balance"` // 冻结金额
+	BlockChainId   uint   `json:"block_chain_id"`  // 链id
 }
 
 // AccountDetailResp 帐号详情
@@ -35,7 +40,7 @@ type AccountDetailResp struct {
 	Name       string  `json:"name"`        // 名称
 	Income     float64 `json:"income"`      // 本期收入
 	Spend      float64 `json:"spend"`       // 上期支出
-	Type       int8    `json:"type"`        // 明细类型  账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级
+	Type       int8    `json:"type"`        // 明细类型（账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级 7兑换 8转账）
 	UpdatedAt  string  `json:"updated_at"`  // 时间
 }
 
@@ -47,20 +52,28 @@ type AccountDetailListResp struct {
 
 // AccountUserDetailInfoResp 用户帐号详情信息
 type AccountUserDetailInfoResp struct {
-	Id          int     `json:"id"`           // 明细id
-	Uid         int     `json:"uid"`          // 用户id
-	Name        string  `json:"name"`         // 用户帐号
-	Email       string  `json:"email"`        // 邮件
-	Income      float64 `json:"income"`       // 入账
-	Spend       float64 `json:"spend"`        // 支出
-	Balance     float64 `json:"balance"`      // 现余额
-	LastBalance float64 `json:"last_balance"` // 之前余额
-	Symbol      string  `json:"symbol"`       // 币种
-	UpdatedAt   string  `json:"update_at"`    // 时间
+	Id           int     `json:"id"`             // 明细id
+	Uid          int     `json:"uid"`            // 用户id
+	Name         string  `json:"name"`           // 用户帐号
+	Email        string  `json:"email"`          // 邮件
+	Income       float64 `json:"income"`         // 入账
+	Spend        float64 `json:"spend"`          // 支出
+	Balance      float64 `json:"balance"`        // 现余额
+	LastBalance  float64 `json:"last_balance"`   // 之前余额
+	Symbol       string  `json:"symbol"`         // 币种
+	UpdatedAt    string  `json:"update_at"`      // 时间
+	BlockChainId uint    `json:"block_chain_id"` // 链id
 }
 
 // AccountUserDetailListResp 用户帐号详情列表
 type AccountUserDetailListResp struct {
 	Items []AccountUserDetailInfoResp `json:"items"` // 帐号详情
 	Page  BasePageResp                `json:"page"`  // 分页
+}
+
+// AccountCurrencyDetailListResp 帐号币种详情列表
+type AccountCurrencyDetailListResp struct {
+	Info  AccountInfoResp     `json:"info"`  // 币种信息
+	Items []AccountDetailResp `json:"items"` // 帐号详情
+	Page  BasePageResp        `json:"page"`  // 分页
 }

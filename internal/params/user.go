@@ -22,3 +22,27 @@ type ReSetPayWordHandlerParam struct {
 	Password string     `json:"password" form:"password"  binding:"required"`
 	Email    string     `json:"email" form:"email"`
 }
+
+// ChargeQrCodeParam 收费二维码生成参数
+type ChargeQrCodeParam struct {
+	Base   *BaseParam `json:"claims" form:"claims"  binding:"required"`
+	Type   int        `json:"type" form:"type" binding:"required"`
+	Money  string     `json:"money" form:"money" `
+	Symbol string     `json:"symbol" form:"symbol" binding:"required"`
+}
+
+// PaymentQrCodeParam 支付二维码生成参数
+type PaymentQrCodeParam struct {
+	Base   *BaseParam `json:"claims" form:"claims"  binding:"required"`
+	Symbol string     `json:"symbol" form:"symbol" binding:"required"`
+}
+
+// UserChangeParam 用户收款
+type UserChangeParam struct {
+	Base    *BaseParam `json:"claims" form:"claims"  binding:"required"`
+	Code    uint       `json:"code" form:"code" binding:"required"`
+	Money   string     `json:"money" form:"money" binding:"gt=0"`
+	Symbol  string     `json:"symbol" form:"symbol" binding:"required"`
+	From    string     `json:"from" form:"from" binding:"required"`
+	OrderId string     `json:"order_id" form:"order_id"`
+}

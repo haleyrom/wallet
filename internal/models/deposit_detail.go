@@ -22,7 +22,7 @@ type DepositDetail struct {
 	TransactionHash string  `gorm:"size:255;column:transaction_hash;index;comment:'事务hash'"` // 事务hash
 	Symbol          string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                  // 代币代号
 	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                     // 标识 coin,token
-	Status          int8    `gorm:"size:3;column:status;default:0;comment:'入账状态'"`           // 入账状态：0未入账,1已入账。
+	Status          int8    `gorm:"size:3;column:status;default:0;comment:'入账状态'"`           // 入账状态：0未入账,1已入账,2审核不通过。
 	ContractAddress string  `gorm:"size:200;column:contract_address;comment:'合约地址'"`         // 合约地址
 	Source          int8    `gorm:"size:3;column:source;default:0;comment:'来源(0充值，1手充)'"`    // 来源(0充值1手充)
 	FinancialStatus int8    `gorm:"column:financial_status;index;default:0;comment:'财务状态'"`  // 财务状态:0 待审核1：通过2：不通过
@@ -128,8 +128,8 @@ func (d *DepositDetail) GetAllPageList(o *gorm.DB, page, pageSize int, endTime, 
 	if endTime == 0 {
 		endTime = 10000000000000
 	}
-	count_sql := fmt.Sprintf("select count(*) as num from %s a left join %s b on a.uid = b.uid where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d and a.deleted = %d", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
-	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,a.value,a.transaction_hash,a.status,a.updated_at,b.name,a.source from %s a left join %s b on a.uid = b.uid where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
+	count_sql := fmt.Sprintf("select count(*) as num from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d and a.deleted = %d", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
+	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,a.value,a.transaction_hash,a.status,a.updated_at,a.source from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
 	if key != "" {
 		count_sql += "and b.name = '%" + key + "%'"
 		sql += "and b.name = '%" + key + "%'"
