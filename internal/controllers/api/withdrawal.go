@@ -302,6 +302,7 @@ func WithdrawalCallback(c *gin.Context) {
 	//
 	// 入账金额
 	money := detail.Value + detail.Poundage
+	// Fixme:待启用
 	//// 冻结支出
 	//block_detail := &models.BlockDetail{
 	//	Uid:         detail.Uid,

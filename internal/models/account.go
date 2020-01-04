@@ -125,7 +125,7 @@ func (a *Account) GetOrderIdsByInfo(o *gorm.DB, ids []uint) (map[uint]Account, e
 	err := o.Table(GetAccountTable()).Where("currency_id in(?)", ids).Where("uid = ?", a.Uid).Find(&item).Error
 	if err == nil {
 		for _, val := range item {
-			data[val.Uid] = val
+			data[val.CurrencyId] = val
 		}
 	}
 	return data, err

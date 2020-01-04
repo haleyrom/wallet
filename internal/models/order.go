@@ -35,6 +35,8 @@ var (
 	OrderTypeShare int8 = 1
 	//  OrderFormUsdd 算力
 	OrderFormUsdd string = "usdd"
+	// OrderFormTransfer
+	OrderFormTransfer string = "transfer"
 )
 
 // GetOrderTable 订单地址
