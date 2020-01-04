@@ -62,7 +62,7 @@ func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, 
 func (a *Account) GetUserTFORBalance(o *gorm.DB, uid uint) (resp.AccountInfoResp, error) {
 	var data resp.AccountInfoResp
 	rows := o.Raw(fmt.Sprintf("SELECT acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable()), uid, "TFOR").Row()
-	err := rows.Scan(&data.AccountId, &data.CurrencyId, &data.Balance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
+	err := rows.Scan(&data.AccountId, &data.CurrencyId, &data.Balance, &data.BlockedBalance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
 	timer, _ := time.Parse("2006-01-02T15:04:05+08:00", data.UpdatedAt)
 	data.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 	return data, err
