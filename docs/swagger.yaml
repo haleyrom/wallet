@@ -63,6 +63,9 @@ definitions:
       balance:
         description: 余额
         type: string
+      block_chain_id:
+        description: 链id
+        type: integer
       blocked_balance:
         description: 冻结金额
         type: string
@@ -87,6 +90,9 @@ definitions:
       balance:
         description: 现余额
         type: number
+      block_chain_id:
+        description: 链id
+        type: integer
       email:
         description: 邮件
         type: string
