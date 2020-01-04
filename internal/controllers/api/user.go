@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -58,6 +59,7 @@ func CreateUser(p *params.BaseParam) error {
 			wg.Wait()
 		}
 	} else {
+		fmt.Println(user, p.Claims, "+++++++++++++")
 		if user.Name != p.Claims.Name || user.Email != p.Claims.Email {
 			user.Name, user.Email = p.Claims.Name, p.Claims.Email
 			_ = user.UpdateInfo(core.Orm.New())

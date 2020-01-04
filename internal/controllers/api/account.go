@@ -635,11 +635,11 @@ func AccountPersonTransfer(c *gin.Context) {
 	}
 
 	// 扣费
-	if err := AccountOperate(o, list[p.Base.Uid], p.Money, core.OperateToOut, resp.AccountDetailInto); err != nil {
+	if err := AccountOperate(o, list[p.Base.Uid], p.Money, core.OperateToOut, resp.AccountDetailTransfer); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
-	} else if err = AccountOperate(o, list[param.Uid], p.Money, core.OperateToUp, resp.AccountDetailInto); err != nil {
+	} else if err = AccountOperate(o, list[param.Uid], p.Money, core.OperateToUp, resp.AccountDetailTransfer); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, err)
 		return

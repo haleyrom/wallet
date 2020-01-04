@@ -59,6 +59,61 @@
                 }
             }
         },
+        "/account/currency/detail": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "钱包币种详情",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "钱包币种详情接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "钱包id",
+                        "name": "account_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页面条数",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "类型（all全部，income收入，expend支出）",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountCurrencyDetailListResp"
+                        }
+                    }
+                }
+            }
+        },
         "/account/detail": {
             "get": {
                 "security": [
@@ -122,6 +177,49 @@
                             "$ref": "#/definitions/resp.AccountInfoResp"
                         }
                     }
+                }
+            }
+        },
+        "/account/person/transfer": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "个人转账",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "个人转账接口",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "转账金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标识",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮件",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
                 }
             }
         },
@@ -2865,6 +2963,28 @@
         }
     },
     "definitions": {
+        "resp.AccountCurrencyDetailListResp": {
+            "type": "object",
+            "properties": {
+                "info": {
+                    "description": "币种信息",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.AccountInfoResp"
+                },
+                "items": {
+                    "description": "帐号详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resp.AccountDetailResp"
+                    }
+                },
+                "page": {
+                    "description": "分页",
+                    "type": "object",
+                    "$ref": "#/definitions/resp.BasePageResp"
+                }
+            }
+        },
         "resp.AccountDetailListResp": {
             "type": "object",
             "properties": {
@@ -2910,7 +3030,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "description": "明细类型  账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级",
+                    "description": "明细类型（账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级 7兑换 8转账）",
                     "type": "integer"
                 },
                 "updated_at": {

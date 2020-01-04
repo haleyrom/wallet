@@ -15,6 +15,8 @@ const (
 	AccountDetailUpgrade
 	// AccountDetailConvert 兑换
 	AccountDetailConvert
+	// AccountDetailTransfer 转账
+	AccountDetailTransfer
 )
 
 // AccountInfoResp 详情返回结果集
@@ -37,7 +39,7 @@ type AccountDetailResp struct {
 	Name       string  `json:"name"`        // 名称
 	Income     float64 `json:"income"`      // 本期收入
 	Spend      float64 `json:"spend"`       // 上期支出
-	Type       int8    `json:"type"`        // 明细类型  账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级
+	Type       int8    `json:"type"`        // 明细类型（账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级 7兑换 8转账）
 	UpdatedAt  string  `json:"updated_at"`  // 时间
 }
 
