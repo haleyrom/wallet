@@ -2651,6 +2651,90 @@
                 }
             }
         },
+        "/user/qrcode/change": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "收费二维码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User 用户"
+                ],
+                "summary": "收费二维码接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "币种ID",
+                        "name": "currency_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "收费类型1：不带金额2：带金额",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标示",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "money",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ChargeQrCodeResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/qrcode/pay": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户付款",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User 用户"
+                ],
+                "summary": "用户付款接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "币种ID",
+                        "name": "currency_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
         "/withdrawal/addr/add": {
             "post": {
                 "security": [
@@ -3208,6 +3292,23 @@
                 }
             }
         },
+        "resp.ChargeQrCodeResp": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "qrcode": {
+                    "description": "二维码",
+                    "type": "string"
+                },
+                "user_name": {
+                    "description": "用户名称",
+                    "type": "string"
+                }
+            }
+        },
         "resp.CompanyStreamInfoResp": {
             "type": "object",
             "properties": {
@@ -3399,6 +3500,10 @@
                 },
                 "name": {
                     "description": "链名称",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "链类型",
                     "type": "string"
                 }
             }

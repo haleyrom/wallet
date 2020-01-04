@@ -17,3 +17,10 @@ type GetOrderEmailUserInfoResp struct {
 	UserName     string `json:"user_name" mapstructure:"user_name"`         // 用户名
 	AccountState int    `json:"account_state" mapstructure:"account_state"` // 账户状态
 }
+
+// ChargeQrCodeResp 收费二维码
+type ChargeQrCodeResp struct {
+	UserName string `json:"user_name"` // 用户名称
+	Email    string `json:"email"`     // 邮箱
+	Qrcode   string `json:"qrcode"`    // 二维码
+}

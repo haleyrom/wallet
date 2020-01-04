@@ -178,6 +178,18 @@ definitions:
         description: 总页数
         type: integer
     type: object
+  resp.ChargeQrCodeResp:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      qrcode:
+        description: 二维码
+        type: string
+      user_name:
+        description: 用户名称
+        type: string
+    type: object
   resp.CompanyStreamInfoResp:
     properties:
       address:
@@ -317,6 +329,9 @@ definitions:
         type: integer
       name:
         description: 链名称
+        type: string
+      type:
+        description: 链类型
         type: string
     type: object
   resp.ReadCoinDepositInfoResp:
@@ -2395,6 +2410,60 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 更新支付密码接口
+      tags:
+      - User 用户
+  /user/qrcode/change:
+    get:
+      description: 收费二维码
+      parameters:
+      - description: 币种ID
+        in: query
+        name: currency_id
+        required: true
+        type: string
+      - description: 收费类型1：不带金额2：带金额
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: 币种标示
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: 金额
+        in: query
+        name: money
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ChargeQrCodeResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 收费二维码接口
+      tags:
+      - User 用户
+  /user/qrcode/pay:
+    get:
+      description: 用户付款
+      parameters:
+      - description: 币种ID
+        in: query
+        name: currency_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 用户付款接口
       tags:
       - User 用户
   /withdrawal/addr/add:
