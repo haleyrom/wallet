@@ -339,12 +339,13 @@ func AccountShareBonus(c *gin.Context) {
 	}
 
 	details := &models.AccountDetail{
-		Uid:       p.Base.Uid,
-		AccountId: account.ID,
-		Type:      resp.AccountDetailShare,
-		OrderId:   order.ID,
-		Income:    p.Money,
-		Balance:   account.Balance + p.Money,
+		Uid:         p.Base.Uid,
+		AccountId:   account.ID,
+		Type:        resp.AccountDetailShare,
+		OrderId:     order.ID,
+		Income:      p.Money,
+		Balance:     account.Balance + p.Money,
+		LastBalance: account.Balance,
 	}
 	if err := details.CreateAccountDetail(o); err != nil {
 		o.Callback()
