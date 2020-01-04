@@ -184,7 +184,7 @@ func AccountChange(c *gin.Context) {
 	//  校验金额
 	if (data[p.CurrencyId].Balance*100 - data[p.ChangeId].BlockedBalance*100 - p.Money*100) < 0 {
 		o.Callback()
-		core.GResp.Failure(c, errors.New("lack of balance"))
+		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
 	}
 
