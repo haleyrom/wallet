@@ -52,16 +52,17 @@ type AccountDetailListResp struct {
 
 // AccountUserDetailInfoResp 用户帐号详情信息
 type AccountUserDetailInfoResp struct {
-	Id          int     `json:"id"`           // 明细id
-	Uid         int     `json:"uid"`          // 用户id
-	Name        string  `json:"name"`         // 用户帐号
-	Email       string  `json:"email"`        // 邮件
-	Income      float64 `json:"income"`       // 入账
-	Spend       float64 `json:"spend"`        // 支出
-	Balance     float64 `json:"balance"`      // 现余额
-	LastBalance float64 `json:"last_balance"` // 之前余额
-	Symbol      string  `json:"symbol"`       // 币种
-	UpdatedAt   string  `json:"update_at"`    // 时间
+	Id           int     `json:"id"`             // 明细id
+	Uid          int     `json:"uid"`            // 用户id
+	Name         string  `json:"name"`           // 用户帐号
+	Email        string  `json:"email"`          // 邮件
+	Income       float64 `json:"income"`         // 入账
+	Spend        float64 `json:"spend"`          // 支出
+	Balance      float64 `json:"balance"`        // 现余额
+	LastBalance  float64 `json:"last_balance"`   // 之前余额
+	Symbol       string  `json:"symbol"`         // 币种
+	UpdatedAt    string  `json:"update_at"`      // 时间
+	BlockChainId uint    `json:"block_chain_id"` // 链id
 }
 
 // AccountUserDetailListResp 用户帐号详情列表
