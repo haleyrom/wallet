@@ -117,8 +117,8 @@ func (c *Coin) UpdateCoinStatus(o *gorm.DB) error {
 // GetDepositInfo 获取提现信息
 func (c *Coin) GetDepositInfo(o *gorm.DB) (resp.ReadCoinDepositInfoResp, error) {
 	var data resp.ReadCoinDepositInfoResp
-	row := o.Table(GetCoinTable()).Where("id = ? and status < ?", c.ID, vStatusOk).Select("id as coin_id,currency_id,min_withdrawal,withdrawal_fee,withdrawal_fee_type,symbol,type").Row()
-	_ = row.Scan(&data.CoinId, &data.CurrencyId, &data.MinWithdrawal, &data.WithdrawalFee, &data.WithdrawalFeeType, &data.Symbol, &data.Type)
+	row := o.Table(GetCoinTable()).Where("id = ? and status < ?", c.ID, vStatusStop).Select("id as coin_id,currency_id,min_withdrawal,withdrawal_fee,withdrawal_fee_type,symbol,type,status").Row()
+	_ = row.Scan(&data.CoinId, &data.CurrencyId, &data.MinWithdrawal, &data.WithdrawalFee, &data.WithdrawalFeeType, &data.Symbol, &data.Type, &data.Status)
 	if data.CoinId == 0 {
 		return data, fmt.Errorf("%s", "Coin not exist")
 	}

@@ -37,6 +37,16 @@ type PaymentQrCodeParam struct {
 	Symbol string     `json:"symbol" form:"symbol" binding:"required"`
 }
 
+// UserPayInfoParam 用户收款信息
+type UserPayInfoParam struct {
+	Base    *BaseParam `json:"claims" form:"claims"  binding:"required"`
+	Code    uint       `json:"code" form:"code" binding:"required"`
+	Money   string     `json:"money" form:"money" binding:"gt=0"`
+	Symbol  string     `json:"symbol" form:"symbol" binding:"required"`
+	From    string     `json:"from" form:"from" binding:"required"`
+	OrderId string     `json:"order_id" form:"order_id"`
+}
+
 // UserChangeParam 用户收款
 type UserChangeParam struct {
 	Base    *BaseParam `json:"claims" form:"claims"  binding:"required"`

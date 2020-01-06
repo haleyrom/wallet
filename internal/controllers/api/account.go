@@ -81,6 +81,7 @@ func AccountTFORInfo(c *gin.Context) {
 // @Description 钱包TFOR详情列表
 // @Security ApiKeyAuth
 // @Produce json
+// @Param uids query string true "用户id多个以,隔开"
 // @Success 200 {object} resp.AccountTFORListInfoResp
 // @Router /account/tfor/list [get]
 func AccountTFORList(c *gin.Context) {
@@ -463,7 +464,7 @@ func AccountWithdrawal(c *gin.Context) {
 	coin := models.NewCoin()
 	coin.ID = p.CoinId
 	coin_info, err := coin.GetDepositInfo(o)
-	if err != nil {
+	if err != nil || coin_info.Status != core.DefaultNilNum {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeWithdrawalNotCurrency)
 		return

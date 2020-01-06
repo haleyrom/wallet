@@ -68,7 +68,7 @@ func (a *Account) GetUserTFORBalance(o *gorm.DB, uid uint) (resp.AccountInfoResp
 	return data, err
 }
 
-// GetUserTFORBalance 获取用户TFOR余额
+// GetUserTFORBalanceList 获取用户TFOR余额列表
 func (a *Account) GetUserTFORBalanceList(o *gorm.DB, uids []string) (resp.AccountTFORListResp, error) {
 	rows, err := o.Raw(fmt.Sprintf("SELECT u.uid ,acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id LEFT JOIN %s u on acc.uid = u.id where u.uid in(?) AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable(), GetUserTable()), uids, "TFOR").Rows()
 	defer rows.Close()
