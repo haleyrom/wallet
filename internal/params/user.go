@@ -35,6 +35,8 @@ type ChargeQrCodeParam struct {
 type PaymentQrCodeParam struct {
 	Base   *BaseParam `json:"claims" form:"claims"  binding:"required"`
 	Symbol string     `json:"symbol" form:"symbol" binding:"required"`
+	Money  string     `json:"money" form:"money" `
+	Type   int        `json:"type" form:"type"`
 }
 
 // UserPayInfoParam 用户收款信息

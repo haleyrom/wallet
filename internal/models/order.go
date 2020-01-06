@@ -126,9 +126,11 @@ func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startT
 func (r *Order) UpdateStatusOk(o *gorm.DB) error {
 	timer := time.Now()
 	if err := o.Table(GetOrderTable()).Where("id = ? ", r.ID).Update(map[string]interface{}{
-		"updated_at": timer,
-		"deleted_at": timer,
-		"status":     OrderStatusOk,
+		"updated_at":   timer,
+		"deleted_at":   timer,
+		"balance":      r.Balance,
+		"exchange_uid": r.ExchangeUid,
+		"status":       OrderStatusOk,
 	}).Error; err != nil {
 		return err
 	}

@@ -144,7 +144,7 @@ func ChargeQrCode(c *gin.Context) {
 // @Param symbol formData string true "币种标示"
 // @Param money formData number true "金额"
 // @Param code formData number true "code"
-// @Success 200
+// @Success 200 {object} resp.ChargeQrCodeResp
 // @Router /user/qrcode/pay [get]
 func PaymentQrCode(c *gin.Context) {
 	p := &params.PaymentQrCodeParam{
@@ -156,6 +156,45 @@ func PaymentQrCode(c *gin.Context) {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
 		return
 	}
+
+	o := core.Orm.New()
+	// 获取代笔信息
+	currency := models.NewCurrency()
+	currency.Symbol = p.Symbol
+	if err := currency.GetSymbolById(o); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotCurrency, err)
+		return
+	}
+
+	// 创建订单
+	jsonStr, _ := json.Marshal(c.Request.PostForm)
+	order := &models.Order{
+		Uid:         p.Base.Uid,
+		Context:     string(jsonStr),
+		CurrencyId:  currency.ID,
+		ExchangeUid: uint(core.DefaultNilNum),
+		ExchangeId:  currency.ID,
+		Balance:     float64(core.DefaultNilNum),
+		Ratio:       float64(core.DefaultNilNum),
+		Status:      models.OrderStatusNot,
+		Type:        models.OrderTypePayment,
+		Form:        models.OrderFormPayment,
+	}
+	if err := order.CreateOrder(o); err != nil {
+		o.Callback()
+		core.GResp.Failure(c, errors.Errorf("join order fail:%s", err))
+		return
+	}
+
+	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%d&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
+	core.GResp.Success(c, resp.ChargeQrCodeResp{
+		UserName: p.Base.Claims.Name,
+		Email:    p.Base.Claims.Email,
+		Qrcode:   qrcode,
+	})
+	return
+
 }
 
 // UserPayInfo 用户付款
@@ -244,10 +283,6 @@ func UserChange(c *gin.Context) {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeNotUser)
 		return
-	} else if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
-		o.Callback()
-		core.GResp.Failure(c, resp.CodeErrorPayPassword)
-		return
 	}
 
 	// 获取代笔信息
@@ -257,6 +292,14 @@ func UserChange(c *gin.Context) {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeNotCurrency, err)
 		return
+	}
+
+	if (p.From == "payment" && p.Money < currency.MinPayMoney) == false {
+		if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
+			o.Callback()
+			core.GResp.Failure(c, resp.CodeErrorPayPassword)
+			return
+		}
 	}
 
 	// 获取金额
@@ -288,9 +331,11 @@ func UserChange(c *gin.Context) {
 			o.Rollback()
 			core.GResp.Failure(c, resp.CodeOrderStatusOK)
 			return
-		} else if err = order.UpdateStatusOk(o); err != nil {
+		}
+		order.Balance, order.ExchangeUid = p.Money, p.Base.Uid
+		if err = order.UpdateStatusOk(o); err != nil {
 			o.Rollback()
-			core.GResp.Failure(c, errors.Errorf("join order fail:%s", err))
+			core.GResp.Failure(c, errors.Errorf("update order fail:%s", err))
 			return
 		}
 	} else {
