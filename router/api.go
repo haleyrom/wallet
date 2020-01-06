@@ -20,6 +20,7 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 
 	r.GET("/account/info", api.AccountInfo)
 	r.GET("/account/tfor/info", api.AccountTFORInfo)
+	r.GET("/account/tfor/list", api.AccountTFORList)
 	r.GET("/account/detail", api.AccountDetail)
 	r.POST("/account/transfer", api.AccountTransfer)
 	r.POST("/account/change", api.AccountChange)

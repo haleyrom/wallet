@@ -21,6 +21,7 @@ const (
 
 // AccountInfoResp 详情返回结果集
 type AccountInfoResp struct {
+	Uid            int    `json:"uid"`             // 用户uid
 	AccountId      string `json:"account_id"`      // 钱包id
 	CurrencyId     int    `json:"currency_id"`     // 币种id
 	Balance        string `json:"balance"`         // 余额
@@ -76,4 +77,23 @@ type AccountCurrencyDetailListResp struct {
 	Info  AccountInfoResp     `json:"info"`  // 币种信息
 	Items []AccountDetailResp `json:"items"` // 帐号详情
 	Page  BasePageResp        `json:"page"`  // 分页
+}
+
+// AccountInfoResp 详情返回结果集
+type AccountTFORListInfoResp struct {
+	Uid            string `json:"uid"`             // 用户uid
+	AccountId      string `json:"account_id"`      // 钱包id
+	CurrencyId     int    `json:"currency_id"`     // 币种id
+	Balance        string `json:"balance"`         // 余额
+	Symbol         string `json:"symbol"`          // 币种标识
+	Decimals       int    `json:"decimals"`        // 小数点位数
+	Name           string `json:"name"`            // 名称
+	UpdatedAt      string `json:"updated_at"`      // 时间
+	BlockedBalance string `json:"blocked_balance"` // 冻结金额
+	BlockChainId   uint   `json:"block_chain_id"`  // 链id
+}
+
+// AccountTFORListResp tfor列表
+type AccountTFORListResp struct {
+	Items map[string]AccountTFORListInfoResp `json:"items"` // 帐号详情
 }
