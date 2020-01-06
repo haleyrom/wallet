@@ -16,6 +16,7 @@ import (
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 	"strconv"
+	"strings"
 )
 
 // AccountInfo 钱包详情
@@ -62,9 +63,44 @@ func AccountTFORInfo(c *gin.Context) {
 	// 绑定参数
 	if err := c.ShouldBind(p); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
 	}
 
 	data, err := models.NewAccount().GetUserTFORBalance(core.Orm.DB.New(), p.Base.Uid)
+	if err != nil {
+		core.GResp.Failure(c, err)
+		return
+	}
+	core.GResp.Success(c, data)
+	return
+}
+
+// AccountTFORList 钱包TFOR详情列表
+// @Tags Account 钱包帐号
+// @Summary 钱包TFOR详情列表接口
+// @Description 钱包TFOR详情列表
+// @Security ApiKeyAuth
+// @Produce json
+// @Param uids query string true "用户id多个以,隔开"
+// @Success 200 {object} resp.AccountTFORListInfoResp
+// @Router /account/tfor/list [get]
+func AccountTFORList(c *gin.Context) {
+	p := &params.AccountTFORListParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	ids := strings.Split(p.Uids, ",")
+	if len(ids) == core.DefaultNilNum {
+		core.GResp.Failure(c, resp.CodeIllegalParam)
+		return
+	}
+	data, err := models.NewAccount().GetUserTFORBalanceList(core.Orm.DB.New(), ids)
 	if err != nil {
 		core.GResp.Failure(c, err)
 		return
@@ -428,7 +464,7 @@ func AccountWithdrawal(c *gin.Context) {
 	coin := models.NewCoin()
 	coin.ID = p.CoinId
 	coin_info, err := coin.GetDepositInfo(o)
-	if err != nil {
+	if err != nil || coin_info.Status != core.DefaultNilNum {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeWithdrawalNotCurrency)
 		return

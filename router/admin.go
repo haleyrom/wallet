@@ -35,6 +35,5 @@ func RegisterAdminRouter(r *gin.RouterGroup) {
 		v1.GET("/operate/recharge/list", admin.ReadRechargePage)
 		v1.POST("/operate/recharge/remove", admin.RemoveRecharge)
 		v1.POST("/operate/recharge/audio", admin.AudioRecharge)
-
 	}
 }

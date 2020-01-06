@@ -164,3 +164,9 @@ type AccountPersonTransferParam struct {
 	Symbol string     `json:"symbol" form:"symbol"  binding:"required"`
 	Money  float64    `json:"money" form:"money"  binding:"required,gt=0"`
 }
+
+// AccountTFORListParam TFOR钱包列表解析参数
+type AccountTFORListParam struct {
+	Base *BaseParam `json:"claims" form:"claims"`
+	Uids string     `json:"uids" form:"uids"`
+}

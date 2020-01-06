@@ -153,15 +153,45 @@ func PaymentQrCode(c *gin.Context) {
 	}
 }
 
+// UserPayInfo 用户付款
+// @Tags  User 用户
+// @Summary 用户付款接口
+// @Description 用户付款
+// @Produce json
+// @Security ApiKeyAuth
+// @Param code formData number true "code标示"
+// @Param money formData number true "金额"
+// @Param symbol formData string true "币种标识"
+// @Param from formData string true "来源"
+// @Param order_id formData string false "订单id"
+// @Success 200
+// @Router /user/pay/info [get]
+func UserPayInfo(c *gin.Context) {
+	p := &params.UserPayInfoParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+}
+
 // UserChange 用户付款
 // @Tags  User 用户
 // @Summary 用户付款接口
 // @Description 用户付款
 // @Produce json
 // @Security ApiKeyAuth
-// @Param currency_id query string true "币种ID"
+// @Param code formData number true "code标示"
+// @Param money formData number true "金额"
+// @Param symbol formData string true "币种标识"
+// @Param from formData string true "来源"
+// @Param order_id formData string false "订单id"
 // @Success 200
-// @Router /user/qrcode/pay [get]
+// @Router /user/pay/change [post]
 func UserChange(c *gin.Context) {
 	p := &params.UserChangeParam{
 		Base: core.UserInfoPool.Get().(*params.BaseParam),

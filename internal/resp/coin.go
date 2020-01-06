@@ -50,4 +50,6 @@ type ReadCoinDepositInfoResp struct {
 	WithdrawalFeeType string  `json:"withdrawal_fee_type"` // 手续费类型 fixed 按百分百比,percent 固定收取
 	Symbol            string  `json:"symbol"`              // 币种代号
 	Type              string  `json:"type"`                // 标识 coin,token
+	Status            int     `json:"status"`              // 状态
+
 }

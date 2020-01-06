@@ -284,6 +284,31 @@
                 }
             }
         },
+        "/account/tfor/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "钱包TFOR详情列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "钱包TFOR详情列表接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountTFORListInfoResp"
+                        }
+                    }
+                }
+            }
+        },
         "/account/transfer": {
             "post": {
                 "security": [
@@ -3156,6 +3181,55 @@
                 },
                 "symbol": {
                     "description": "币种标识",
+                    "type": "string"
+                },
+                "uid": {
+                    "description": "用户uid",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "时间",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.AccountTFORListInfoResp": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "description": "钱包id",
+                    "type": "string"
+                },
+                "balance": {
+                    "description": "余额",
+                    "type": "string"
+                },
+                "block_chain_id": {
+                    "description": "链id",
+                    "type": "integer"
+                },
+                "blocked_balance": {
+                    "description": "冻结金额",
+                    "type": "string"
+                },
+                "currency_id": {
+                    "description": "币种id",
+                    "type": "integer"
+                },
+                "decimals": {
+                    "description": "小数点位数",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "symbol": {
+                    "description": "币种标识",
+                    "type": "string"
+                },
+                "uid": {
+                    "description": "用户uid",
                     "type": "string"
                 },
                 "updated_at": {
