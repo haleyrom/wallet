@@ -257,7 +257,7 @@ func TopUpDeposit(c *gin.Context) {
 	var confirm bool
 	// 判断是否已经存在订单
 	if err := detail.IsKey(o); err != nil {
-		//// 是否到确认数量
+		// 是否到确认数量
 		//if coin.ConfirmCount <= block_count {
 		//	confirm = true
 		//	detail.Status = models.DepositStatusBooked
@@ -307,6 +307,7 @@ func TopUpDeposit(c *gin.Context) {
 			Income:      money,
 			Type:        resp.AccountDetailUp,
 		}
+
 		if err := account_detail.CreateAccountDetail(o); err != nil {
 			o.Rollback()
 			core.GResp.Failure(c, resp.CodeNotAccount)

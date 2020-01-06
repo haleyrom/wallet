@@ -85,6 +85,7 @@ func (d *DepositDetail) IsDepositBooked(o *gorm.DB) bool {
 // UpdateBlockCount 更新确认数
 func (d *DepositDetail) UpdateBlockCount(o *gorm.DB) error {
 	if err := o.Table(GetDepositDetailTable()).Where("transaction_hash = ? ", d.TransactionHash).Update(map[string]interface{}{
+		"status":      d.Status,
 		"updated_at":  time.Now(),
 		"block_count": d.BlockCount,
 	}).Error; err != nil {

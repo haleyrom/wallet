@@ -192,6 +192,7 @@ func PaymentQrCode(c *gin.Context) {
 		UserName: p.Base.Claims.Name,
 		Email:    p.Base.Claims.Email,
 		Qrcode:   qrcode,
+		MinMoney: currency.MinPayMoney,
 	})
 	return
 

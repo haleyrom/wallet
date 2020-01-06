@@ -20,9 +20,10 @@ type GetOrderEmailUserInfoResp struct {
 
 // ChargeQrCodeResp 收费二维码
 type ChargeQrCodeResp struct {
-	UserName string `json:"user_name"` // 用户名称
-	Email    string `json:"email"`     // 邮箱
-	Qrcode   string `json:"qrcode"`    // 二维码
+	UserName string  `json:"user_name"` // 用户名称
+	Email    string  `json:"email"`     // 邮箱
+	Qrcode   string  `json:"qrcode"`    // 二维码
+	MinMoney float64 `json:"min_money"` // 最小转账金额
 }
 
 // UserPayInfoResp 用户支付信息输出
