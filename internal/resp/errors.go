@@ -127,6 +127,12 @@ const (
 
 	// CodeWithdrawalNotCurrency 不支持该币提现
 	CodeWithdrawalNotCurrency StatusCode = 101132
+
+	// CodeNotOrderId 订单号不存在
+	CodeNotOrderId StatusCode = 101133
+
+	// CodeOrderStatusOK 订单号已支付
+	CodeOrderStatusOK StatusCode = 101135
 )
 
 // StatusCode 状态码
@@ -188,6 +194,8 @@ func init() {
 		CodeNotDepositDetail:      "充值记录不存在",
 		CodeIllegalPassword:       "密码不合法",
 		CodeWithdrawalNotCurrency: "暂不支持该币提现",
+		CodeNotOrderId:            "订单号不存在",
+		CodeOrderStatusOK:         "订单号已支付",
 	}
 }
 

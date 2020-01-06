@@ -24,3 +24,11 @@ type ChargeQrCodeResp struct {
 	Email    string `json:"email"`     // 邮箱
 	Qrcode   string `json:"qrcode"`    // 二维码
 }
+
+// UserPayInfoResp 用户支付信息输出
+type UserPayInfoResp struct {
+	OrderId string `json:"order_id" form:"order_id"` // 订单号
+	Symbol  string `json:"symbol" form:"symbol"`     // symbol标示
+	Email   string `json:"email" form:"email"`       // 邮件
+	Money   string `json:"money" form:"money"`       // money
+}

@@ -1,13 +1,18 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/consul"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"sync"
 )
@@ -164,7 +169,7 @@ func PaymentQrCode(c *gin.Context) {
 // @Param symbol formData string true "币种标识"
 // @Param from formData string true "来源"
 // @Param order_id formData string false "订单id"
-// @Success 200
+// @Success 200 {object} resp.UserPayInfoResp
 // @Router /user/pay/info [get]
 func UserPayInfo(c *gin.Context) {
 	p := &params.UserPayInfoParam{
@@ -177,6 +182,33 @@ func UserPayInfo(c *gin.Context) {
 		return
 	}
 
+	o := core.Orm.New()
+	user := models.NewUser()
+	user.ID = p.Code
+	if err := user.GetInfo(o); err != nil {
+		core.GResp.Failure(c, resp.CodeNotUser, err)
+		return
+	}
+
+	result, err := consul.GetUserInfo(user.Uid, c.Request.Header.Get(core.HttpHeadToken))
+	var data resp.UserInfoResp
+
+	if err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotUser)
+		return
+	} else if err = mapstructure.Decode(result, &data); err != nil {
+		core.GResp.Failure(c, resp.CodeNotUser)
+		return
+	}
+
+	core.GResp.Success(c, resp.UserPayInfoResp{
+		OrderId: p.OrderId,
+		Symbol:  p.Symbol,
+		Email:   data.Email,
+		Money:   p.Money,
+	})
+	return
 }
 
 // UserChange 用户付款
@@ -193,6 +225,7 @@ func UserPayInfo(c *gin.Context) {
 // @Success 200
 // @Router /user/pay/change [post]
 func UserChange(c *gin.Context) {
+	var err error
 	p := &params.UserChangeParam{
 		Base: core.UserInfoPool.Get().(*params.BaseParam),
 	}
@@ -202,4 +235,98 @@ func UserChange(c *gin.Context) {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
 		return
 	}
+
+	// 验证支付密码
+	o := core.Orm.New().Begin()
+	user := models.NewUser()
+	user.ID = p.Code
+	if err = user.GetInfo(o); err != nil {
+		o.Callback()
+		core.GResp.Failure(c, resp.CodeNotUser)
+		return
+	} else if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
+		o.Callback()
+		core.GResp.Failure(c, resp.CodeErrorPayPassword)
+		return
+	}
+
+	// 获取代笔信息
+	currency := models.NewCurrency()
+	currency.Symbol = p.Symbol
+	if err := currency.GetSymbolById(o); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotCurrency, err)
+		return
+	}
+
+	// 获取金额
+	account := models.NewAccount()
+	account.CurrencyId = currency.ID
+	list := make(map[uint]models.Account, 0)
+	if list, err = account.GetOrderUidSByCurrencyInfo(o, []uint{p.Base.Uid, p.Code}); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeNotAccount, err)
+		return
+	}
+
+	// 余额不足
+	if (list[p.Base.Uid].Balance*100 - list[p.Base.Uid].BlockedBalance*100) < p.Money*100 {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeLessMoney)
+		return
+	}
+
+	order := models.NewOrder()
+	// 判断订单id
+	if len(p.OrderId) > core.DefaultNilNum {
+		order.OrderUuid = p.OrderId
+		if err := order.IsOrderUuid(o); err != nil {
+			o.Rollback()
+			core.GResp.Failure(c, resp.CodeNotOrderId)
+			return
+		} else if order.Status == models.OrderStatusOk {
+			o.Rollback()
+			core.GResp.Failure(c, resp.CodeOrderStatusOK)
+			return
+		} else if err = order.UpdateStatusOk(o); err != nil {
+			o.Rollback()
+			core.GResp.Failure(c, errors.Errorf("join order fail:%s", err))
+			return
+		}
+	} else {
+		// 创建订单
+		jsonStr, _ := json.Marshal(c.Request.PostForm)
+		order = &models.Order{
+			Uid:         p.Base.Uid,
+			Context:     string(jsonStr),
+			CurrencyId:  list[p.Base.Uid].CurrencyId,
+			ExchangeUid: p.Code,
+			ExchangeId:  list[p.Code].CurrencyId,
+			Balance:     p.Money,
+			Ratio:       float64(core.DefaultNilNum),
+			Status:      models.OrderStatusOk,
+			Type:        models.OrderTypePayment,
+			Form:        models.OrderFormPayment,
+		}
+		if err := order.CreateOrder(o); err != nil {
+			o.Callback()
+			core.GResp.Failure(c, errors.Errorf("join order fail:%s", err))
+			return
+		}
+	}
+
+	// 扣费
+	if err := AccountOperate(o, list[p.Base.Uid], p.Money, core.OperateToOut, resp.AccountDetailPayment, order.ID); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, resp.CodeLessMoney)
+		return
+	} else if err = AccountOperate(o, list[p.Code], p.Money, core.OperateToUp, resp.AccountDetailGather, order.ID); err != nil {
+		o.Rollback()
+		core.GResp.Failure(c, err)
+		return
+	}
+
+	o.Commit()
+	core.GResp.Success(c, resp.EmptyData())
+	return
 }

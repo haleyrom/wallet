@@ -49,10 +49,11 @@ type UserPayInfoParam struct {
 
 // UserChangeParam 用户收款
 type UserChangeParam struct {
-	Base    *BaseParam `json:"claims" form:"claims"  binding:"required"`
-	Code    uint       `json:"code" form:"code" binding:"required"`
-	Money   string     `json:"money" form:"money" binding:"gt=0"`
-	Symbol  string     `json:"symbol" form:"symbol" binding:"required"`
-	From    string     `json:"from" form:"from" binding:"required"`
-	OrderId string     `json:"order_id" form:"order_id"`
+	Base        *BaseParam `json:"claims" form:"claims"  binding:"required"`
+	Code        uint       `json:"code" form:"code" binding:"required"`
+	Money       float64    `json:"money" form:"money" binding:"gt=0"`
+	Symbol      string     `json:"symbol" form:"symbol" binding:"required"`
+	From        string     `json:"from" form:"from" binding:"required"`
+	OrderId     string     `json:"order_id" form:"order_id"`
+	PayPassword string     `json:"pay_password" form:"pay_password"`
 }

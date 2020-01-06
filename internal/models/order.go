@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/jinzhu/gorm"
+	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 	"math"
 	"time"
@@ -22,6 +23,7 @@ type Order struct {
 	Form        string  `gorm:"column:form;comment:'来源'"`                               // 来源
 	Status      int8    `gorm:"size(3);column:status;default:0;comment:'状态(0未成功,1成功)'"` // 订单状态
 	Type        int8    `gorm:"size(3);column:type;default:0;comment:'订单类型(0兑换本地的币)'"`  // 订单类型
+	OrderUuid   string  `gorm:"size(200);column:order_uuid;comment:'订单uuid'"`           //订单号
 }
 
 var (
@@ -35,10 +37,14 @@ var (
 	OrderTypeShare int8 = 1
 	// OrderTypeTransfer 转账
 	OrderTypeTransfer int8 = 2
+	// OrderTypePayment 支付
+	OrderTypePayment int8 = 3
 	//  OrderFormUsdd 算力
 	OrderFormUsdd string = "usdd"
 	// OrderFormTransfer
 	OrderFormTransfer string = "transfer"
+	// OrderFormPayment 支付
+	OrderFormPayment string = "payment"
 )
 
 // GetOrderTable 订单地址
@@ -53,7 +59,16 @@ func NewOrder() *Order {
 
 // CreateOrder 创建订单
 func (r *Order) CreateOrder(o *gorm.DB) error {
+	r.OrderUuid = fmt.Sprintf("%s", uuid.NewV4())
 	return o.Create(r).Error
+}
+
+// IsOrderUuid 判断订单是否存在
+func (r *Order) IsOrderUuid(o *gorm.DB) error {
+	return o.Table(GetOrderTable()).
+		Where("order_uuid = ?", r.OrderUuid).
+		First(o).
+		Error
 }
 
 // GetAllTransOrder GetAllTransOrder
@@ -105,4 +120,17 @@ func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startT
 		data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))
 	}
 	return data, err
+}
+
+// UpdateStatusOk 更新订单状态
+func (r *Order) UpdateStatusOk(o *gorm.DB) error {
+	timer := time.Now()
+	if err := o.Table(GetOrderTable()).Where("id = ? ", r.ID).Update(map[string]interface{}{
+		"updated_at": timer,
+		"deleted_at": timer,
+		"status":     OrderStatusOk,
+	}).Error; err != nil {
+		return err
+	}
+	return nil
 }

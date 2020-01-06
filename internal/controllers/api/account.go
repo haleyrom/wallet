@@ -691,6 +691,7 @@ func AccountPersonTransfer(c *gin.Context) {
 		Ratio:       float64(core.DefaultNilNum),
 		Status:      models.OrderStatusOk,
 		Type:        models.OrderTypeTransfer,
+		Form:        models.OrderFormTransfer,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
