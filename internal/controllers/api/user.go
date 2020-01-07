@@ -305,7 +305,7 @@ func UserChange(c *gin.Context) {
 	}
 
 	if (p.From == "payment" && p.Money < currency.MinPayMoney) == false {
-		fmt.Println(p.PayPassword, p.Base.Claims.UserID, tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)), user.PayPassword)
+		fmt.Println(p.PayPassword, p.Base.Claims.UserID, tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)), user.PayPassword, "===========")
 		if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
 			o.Callback()
 			core.GResp.Failure(c, resp.CodeErrorPayPassword)
