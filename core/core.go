@@ -8,6 +8,12 @@ import (
 	"sync"
 )
 
+// PaymentChannel 支付channel
+type PaymentChannel struct {
+	MapChan map[string]chan *struct{}
+	MapTime map[string][]string
+}
+
 var (
 	// Conf 配置
 	Conf config.Configure
@@ -33,8 +39,8 @@ var (
 	// OperateToOut 入账
 	OperateToOut string = "-"
 
-	// PaymentChannel 支付通道
-	PaymentChannel map[string]chan *struct{}
+	// PayChan 支付通道
+	PayChan PaymentChannel
 
 	EmptyStruct = &struct{}{}
 )
@@ -48,6 +54,10 @@ func init() {
 			return &params.BaseParam{}
 		},
 	}
-	// 支付通道
-	PaymentChannel = make(map[string]chan *struct{}, 0)
+
+	PayChan = PaymentChannel{
+		MapChan: make(map[string]chan *struct{}, 0),
+		MapTime: make(map[string][]string, 0),
+	}
+
 }

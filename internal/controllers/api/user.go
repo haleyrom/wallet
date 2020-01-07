@@ -189,7 +189,7 @@ func PaymentQrCode(c *gin.Context) {
 
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
 
-	core.PaymentChannel[order.OrderUuid] <- core.EmptyStruct
+	core.PayChan.MapChan[order.OrderUuid] <- core.EmptyStruct
 
 	core.GResp.Success(c, resp.ChargeQrCodeResp{
 		UserName: p.Base.Claims.Name,
@@ -305,7 +305,7 @@ func UserChange(c *gin.Context) {
 	}
 
 	if (p.From == "payment" && p.Money < currency.MinPayMoney) == false {
-		fmt.Println(tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)))
+		fmt.Println(tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)), user.PayPassword)
 		if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
 			o.Callback()
 			core.GResp.Failure(c, resp.CodeErrorPayPassword)
@@ -399,7 +399,7 @@ func UserChange(c *gin.Context) {
 // UserPayQrCodeStatus 付款码激活状态查询
 // @Tags  User 用户
 // @Summary 付款码激活状态查询接口
-// @Description 付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码
+// @Description 付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码 最长等待时间30秒
 // @Produce json
 // @Security ApiKeyAuth
 // @Param order_id formData string false "订单id"
@@ -416,17 +416,17 @@ func UserPayQrCodeStatus(c *gin.Context) {
 		return
 	}
 
-	if _, ok := core.PaymentChannel[p.OrderId]; ok == false {
+	if _, ok := core.PayChan.MapChan[p.OrderId]; ok == false {
 		core.GResp.Failure(c, resp.CodeFailureQrCode)
 		return
 	}
 
 	for {
 		select {
-		case <-core.PaymentChannel[p.OrderId]:
-			delete(core.PaymentChannel, p.OrderId)
+		case <-core.PayChan.MapChan[p.OrderId]:
+			delete(core.PayChan.MapChan, p.OrderId)
 			core.GResp.Success(c, resp.EmptyData())
-		case <-time.After(15000 * time.Millisecond):
+		case <-time.After(500 * time.Millisecond):
 			core.GResp.Failure(c, resp.CodeWaitQrCode)
 		}
 	}
