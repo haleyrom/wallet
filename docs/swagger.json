@@ -180,6 +180,47 @@
                 }
             }
         },
+        "/account/person/charge/detail": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "个人收款明细",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 钱包帐号"
+                ],
+                "summary": "个人收款明细接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页面条数",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountDetailListResp"
+                        }
+                    }
+                }
+            }
+        },
         "/account/person/transfer": {
             "post": {
                 "security": [
@@ -299,6 +340,15 @@
                     "Account 钱包帐号"
                 ],
                 "summary": "钱包TFOR详情列表接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户id多个以,隔开",
+                        "name": "uids",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2546,6 +2596,123 @@
                 }
             }
         },
+        "/user/pay/change": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户付款",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User 用户"
+                ],
+                "summary": "用户付款接口",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "code标示",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标识",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "来源",
+                        "name": "from",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "订单id",
+                        "name": "order_id",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/user/pay/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户付款",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User 用户"
+                ],
+                "summary": "用户付款接口",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "code标示",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种标识",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "来源",
+                        "name": "from",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "订单id",
+                        "name": "order_id",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.UserPayInfoResp"
+                        }
+                    }
+                }
+            }
+        },
         "/user/pay/is_init": {
             "get": {
                 "description": "使用jwt命令牌",
@@ -2738,25 +2905,44 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "用户付款",
+                "description": "付款二维码",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User 用户"
                 ],
-                "summary": "用户付款接口",
+                "summary": "付款二维码接口",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "币种ID",
-                        "name": "currency_id",
-                        "in": "query",
+                        "description": "币种标示",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "code",
+                        "name": "code",
+                        "in": "formData",
                         "required": true
                     }
                 ],
                 "responses": {
-                    "200": {}
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ChargeQrCodeResp"
+                        }
+                    }
                 }
             }
         },
@@ -3373,6 +3559,10 @@
                     "description": "邮箱",
                     "type": "string"
                 },
+                "min_money": {
+                    "description": "最小转账金额",
+                    "type": "number"
+                },
                 "qrcode": {
                     "description": "二维码",
                     "type": "string"
@@ -3600,6 +3790,10 @@
                 "money": {
                     "description": "可提现金额",
                     "type": "number"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "integer"
                 },
                 "symbol": {
                     "description": "币种代号",
@@ -3933,6 +4127,27 @@
                 }
             }
         },
+        "resp.UserPayInfoResp": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "邮件",
+                    "type": "string"
+                },
+                "money": {
+                    "description": "money",
+                    "type": "string"
+                },
+                "order_id": {
+                    "description": "订单号",
+                    "type": "string"
+                },
+                "symbol": {
+                    "description": "symbol标示",
+                    "type": "string"
+                }
+            }
+        },
         "resp.WithdrawalAddrResp": {
             "type": "object",
             "properties": {
@@ -4065,7 +4280,7 @@
                     "type": "number"
                 },
                 "status": {
-                    "description": "状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消",
+                    "description": "状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败",
                     "type": "integer"
                 },
                 "symbol": {

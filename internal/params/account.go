@@ -170,3 +170,10 @@ type AccountTFORListParam struct {
 	Base *BaseParam `json:"claims" form:"claims"`
 	Uids string     `json:"uids" form:"uids"`
 }
+
+// AccountChargeDetailParam 个人收款账单明细
+type AccountChargeDetailParam struct {
+	Base     *BaseParam `json:"claims" form:"claims"`
+	Page     int        `json:"page" form:"page"  binding:"required"`
+	PageSize int        `json:"pageSize" form:"pageSize" binding:"required"`
+}

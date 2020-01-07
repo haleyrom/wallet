@@ -735,3 +735,36 @@ func AccountOperate(o *gorm.DB, account models.Account, money float64, operate s
 	}
 	return nil
 }
+
+// AccountChargeDetail 个人收款明细
+// @Tags Account 钱包帐号
+// @Summary 个人收款明细接口
+// @Description 个人收款明细
+// @Produce json
+// @Security ApiKeyAuth
+// @Param pageSize query int true "页面条数"
+// @Param page query int true "页数"
+// @Success 200 {object} resp.AccountDetailListResp
+// @Router /account/person/charge/detail [get]
+func AccountChargeDetail(c *gin.Context) {
+	p := &params.AccountChargeDetailParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	detail := models.AccountDetail{
+		Uid: p.Base.Uid,
+	}
+	data, err := detail.GetGatherPageList(core.Orm.New(), p.Page, p.PageSize)
+	if err != nil {
+		core.GResp.Failure(c, err)
+		return
+	}
+	core.GResp.Success(c, data)
+	return
+}
