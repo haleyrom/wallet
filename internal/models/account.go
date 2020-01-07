@@ -204,7 +204,7 @@ func (a *Account) UpdateWithdrawalBalance(o *gorm.DB, balance, block_balance flo
 // GetAccountUserList 获取用户钱包列表
 func (a *Account) GetAccountUserList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.AccountUserDetailListResp, error) {
 	data := resp.AccountUserDetailListResp{}
-	sql := fmt.Sprintf("SELECT detail.id as id,user.id as uid,user.name,user.email,detail.income,TRUNCATE(detail.spend,6) as spend,TRUNCATE(detail.balance,6) as balance, TRUNCATE(detail.last_balance,6) as last_balance, currency.symbol,detail.updated_at FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.id > 0 ", GetAccountDetailTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable())
+	sql := fmt.Sprintf("SELECT detail.id as id,user.id as uid,user.name,user.email,TRUNCATE(detail.income,6) as income,TRUNCATE(detail.spend,6) as spend,TRUNCATE(detail.balance,6) as balance, TRUNCATE(detail.last_balance,6) as last_balance, currency.symbol,detail.updated_at FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.id > 0 ", GetAccountDetailTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable())
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 ", GetAccountDetailTable(), GetUserTable())
 
 	if start_time > 0 && end_timer > 0 {
