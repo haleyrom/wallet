@@ -122,7 +122,7 @@ func (c *Currency) RmCurrency(o *gorm.DB) error {
 
 // GetSymbolById 获取id
 func (c *Currency) GetSymbolById(o *gorm.DB) error {
-	if err := o.Table(GetCurrencyTable()).Where("symbol = ? and status < ?", c.Symbol, vStatusStop).Select("id").First(&c).Error; err == nil {
+	if err := o.Table(GetCurrencyTable()).Where("symbol = ? and status < ?", c.Symbol, vStatusStop).Select("id,min_pay_money").First(&c).Error; err == nil {
 		return nil
 	}
 	return fmt.Errorf("%s", "currency not exist")

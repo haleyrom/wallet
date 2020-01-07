@@ -109,7 +109,6 @@ func UpdatePayPassword(c *gin.Context) {
 // @Description 收费二维码
 // @Produce json
 // @Security ApiKeyAuth
-// @Param currency_id query string true "币种ID"
 // @Param type query string true "收费类型1：不带金额2：带金额"
 // @Param symbol query string true "币种标示"
 // @Param money query number true "金额"
@@ -126,7 +125,7 @@ func ChargeQrCode(c *gin.Context) {
 		return
 	}
 
-	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%d&from=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "changre")
+	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "changre")
 	core.GResp.Success(c, resp.ChargeQrCodeResp{
 		UserName: p.Base.Claims.Name,
 		Email:    p.Base.Claims.Email,
@@ -187,7 +186,7 @@ func PaymentQrCode(c *gin.Context) {
 		return
 	}
 
-	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%d&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
+	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
 	core.GResp.Success(c, resp.ChargeQrCodeResp{
 		UserName: p.Base.Claims.Name,
 		Email:    p.Base.Claims.Email,
@@ -276,6 +275,11 @@ func UserChange(c *gin.Context) {
 		return
 	}
 
+	if p.Base.Uid == p.Code {
+		core.GResp.Failure(c, resp.CodeOneselfInto)
+		return
+	}
+
 	// 验证支付密码
 	o := core.Orm.New().Begin()
 	user := models.NewUser()
@@ -295,6 +299,7 @@ func UserChange(c *gin.Context) {
 		return
 	}
 
+	fmt.Println(p.From, p.Money, currency.MinPayMoney)
 	if (p.From == "payment" && p.Money < currency.MinPayMoney) == false {
 		if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
 			o.Callback()
@@ -333,6 +338,7 @@ func UserChange(c *gin.Context) {
 			core.GResp.Failure(c, resp.CodeOrderStatusOK)
 			return
 		}
+		fmt.Println(order.ID, "====")
 		order.Balance, order.ExchangeUid = p.Money, p.Base.Uid
 		if err = order.UpdateStatusOk(o); err != nil {
 			o.Rollback()

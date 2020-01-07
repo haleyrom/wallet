@@ -67,7 +67,7 @@ func (r *Order) CreateOrder(o *gorm.DB) error {
 func (r *Order) IsOrderUuid(o *gorm.DB) error {
 	return o.Table(GetOrderTable()).
 		Where("order_uuid = ?", r.OrderUuid).
-		First(o).
+		First(r).
 		Error
 }
 
