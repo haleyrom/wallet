@@ -59,3 +59,9 @@ type UserChangeParam struct {
 	OrderId     string     `json:"order_id" form:"order_id"`
 	PayPassword string     `json:"pay_password" form:"pay_password"`
 }
+
+// UserPayStatusParam 用户支付状态信息
+type UserPayStatusParam struct {
+	Base    *BaseParam `json:"claims" form:"claims"  binding:"required"`
+	OrderId string     `json:"order_id" form:"order_id"   binding:"required"`
+}

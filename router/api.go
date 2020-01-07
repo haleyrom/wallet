@@ -19,6 +19,7 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.GET("/user/qrcode/pay", api.PaymentQrCode)
 	r.POST("/user/pay/change", api.UserChange)
 	r.GET("/user/pay/info", api.UserPayInfo)
+	r.GET("/user/pay/status", api.UserPayQrCodeStatus)
 
 	r.GET("/account/info", api.AccountInfo)
 	r.GET("/account/tfor/info", api.AccountTFORInfo)

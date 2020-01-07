@@ -32,6 +32,11 @@ var (
 
 	// OperateToOut 入账
 	OperateToOut string = "-"
+
+	// PaymentChannel 支付通道
+	PaymentChannel map[string]chan *struct{}
+
+	EmptyStruct = &struct{}{}
 )
 
 // 初始化
@@ -43,4 +48,6 @@ func init() {
 			return &params.BaseParam{}
 		},
 	}
+	// 支付通道
+	PaymentChannel = make(map[string]chan *struct{}, 0)
 }

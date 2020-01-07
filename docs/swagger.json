@@ -2820,6 +2820,34 @@
                 }
             }
         },
+        "/user/pay/status": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User 用户"
+                ],
+                "summary": "付款码激活状态查询接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "订单id",
+                        "name": "order_id",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
         "/user/pay/update": {
             "post": {
                 "security": [

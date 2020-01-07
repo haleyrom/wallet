@@ -71,6 +71,18 @@ func (r *Order) IsOrderUuid(o *gorm.DB) error {
 		Error
 }
 
+// RemoveOrder 删除账单
+func (r *Order) RemoveOrder(o *gorm.DB) error {
+	timer := time.Now()
+	if err := o.Table(GetOrderTable()).Where("id = ? ", r.ID).Update(map[string]interface{}{
+		"updated_at": timer,
+		"deleted_at": timer,
+	}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetAllTransOrder GetAllTransOrder
 func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startTime int, key string) (resp.RespUserTransOrder, error) {
 	data := resp.RespUserTransOrder{}

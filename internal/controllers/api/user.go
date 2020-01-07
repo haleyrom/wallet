@@ -15,6 +15,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"sync"
+	"time"
 )
 
 // Check Check
@@ -187,6 +188,9 @@ func PaymentQrCode(c *gin.Context) {
 	}
 
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
+
+	core.PaymentChannel[order.OrderUuid] <- core.EmptyStruct
+
 	core.GResp.Success(c, resp.ChargeQrCodeResp{
 		UserName: p.Base.Claims.Name,
 		Email:    p.Base.Claims.Email,
@@ -332,7 +336,8 @@ func UserChange(c *gin.Context) {
 	// 判断订单id
 	if len(p.OrderId) > core.DefaultNilNum {
 		order.OrderUuid = p.OrderId
-		if err := order.IsOrderUuid(o); err != nil {
+		err := order.IsOrderUuid(o)
+		if err != nil {
 			o.Rollback()
 			core.GResp.Failure(c, resp.CodeNotOrderId, err)
 			return
@@ -340,7 +345,13 @@ func UserChange(c *gin.Context) {
 			o.Rollback()
 			core.GResp.Failure(c, resp.CodeOrderStatusOK)
 			return
+		} else if order.CreatedAt.Add(time.Minute*1).Unix() < time.Now().Unix() {
+			_ = order.RemoveOrder(o)
+			o.Commit()
+			core.GResp.Failure(c, resp.CodeFailureQrCode)
+			return
 		}
+
 		order.Context = string(jsonStr)
 		order.Balance, order.ExchangeUid = p.Money, p.Base.Uid
 		if err = order.UpdateStatusOk(o); err != nil {
@@ -382,5 +393,42 @@ func UserChange(c *gin.Context) {
 
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
+	return
+}
+
+// UserPayQrCodeStatus 付款码激活状态查询
+// @Tags  User 用户
+// @Summary 付款码激活状态查询接口
+// @Description 付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码
+// @Produce json
+// @Security ApiKeyAuth
+// @Param order_id formData string false "订单id"
+// @Success 200
+// @Router /user/pay/status [get]
+func UserPayQrCodeStatus(c *gin.Context) {
+	p := &params.UserPayStatusParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	if _, ok := core.PaymentChannel[p.OrderId]; ok == false {
+		core.GResp.Failure(c, resp.CodeFailureQrCode)
+		return
+	}
+
+	for {
+		select {
+		case <-core.PaymentChannel[p.OrderId]:
+			delete(core.PaymentChannel, p.OrderId)
+			core.GResp.Success(c, resp.EmptyData())
+		case <-time.After(15000 * time.Millisecond):
+			core.GResp.Failure(c, resp.CodeWaitQrCode)
+		}
+	}
 	return
 }
