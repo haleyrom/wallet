@@ -288,7 +288,7 @@ func UserChange(c *gin.Context) {
 	// 验证支付密码
 	o := core.Orm.New().Begin()
 	user := models.NewUser()
-	user.ID = p.Code
+	user.ID = p.Base.Uid
 	if err = user.GetInfo(o); err != nil {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeNotUser)
