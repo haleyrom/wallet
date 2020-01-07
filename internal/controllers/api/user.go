@@ -261,6 +261,7 @@ func UserPayInfo(c *gin.Context) {
 // @Param symbol formData string true "币种标识"
 // @Param from formData string true "来源"
 // @Param order_id formData string false "订单id"
+// @Param pay_password formData string false "支付密码"
 // @Success 200
 // @Router /user/pay/change [post]
 func UserChange(c *gin.Context) {
@@ -326,6 +327,8 @@ func UserChange(c *gin.Context) {
 	}
 
 	order := models.NewOrder()
+	jsonStr, _ := json.Marshal(c.Request.PostForm)
+
 	// 判断订单id
 	if len(p.OrderId) > core.DefaultNilNum {
 		order.OrderUuid = p.OrderId
@@ -338,6 +341,7 @@ func UserChange(c *gin.Context) {
 			core.GResp.Failure(c, resp.CodeOrderStatusOK)
 			return
 		}
+		order.Context = string(jsonStr)
 		order.Balance, order.ExchangeUid = p.Money, p.Base.Uid
 		if err = order.UpdateStatusOk(o); err != nil {
 			o.Rollback()
@@ -346,7 +350,6 @@ func UserChange(c *gin.Context) {
 		}
 	} else {
 		// 创建订单
-		jsonStr, _ := json.Marshal(c.Request.PostForm)
 		order = &models.Order{
 			Uid:         p.Base.Uid,
 			Context:     string(jsonStr),

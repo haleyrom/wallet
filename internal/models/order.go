@@ -128,6 +128,7 @@ func (r *Order) UpdateStatusOk(o *gorm.DB) error {
 	if err := o.Table(GetOrderTable()).Where("id = ? ", r.ID).Update(map[string]interface{}{
 		"updated_at":   timer,
 		"balance":      r.Balance,
+		"context":      r.Context,
 		"exchange_uid": r.ExchangeUid,
 		"status":       OrderStatusOk,
 	}).Error; err != nil {

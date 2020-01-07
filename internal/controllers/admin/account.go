@@ -426,7 +426,6 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, err
 	if result == nil || err != nil || result.Code != http.StatusOK {
 		return core.DefaultNilString, errors.Errorf("%s", result.Msg)
 	}
-	fmt.Println(detail, "=========")
 	detail.TransactionHash = result.Data.TransactionHash
 	_ = AccountInsertDetail(o, detail)
 	return result.Msg, nil

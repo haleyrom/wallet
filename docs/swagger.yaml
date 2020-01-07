@@ -2458,6 +2458,10 @@ paths:
         in: formData
         name: order_id
         type: string
+      - description: 支付密码
+        in: formData
+        name: pay_password
+        type: string
       produces:
       - application/json
       responses:

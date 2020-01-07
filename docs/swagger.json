@@ -2645,6 +2645,12 @@
                         "description": "订单id",
                         "name": "order_id",
                         "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "支付密码",
+                        "name": "pay_password",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
