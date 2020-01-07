@@ -2597,11 +2597,6 @@ paths:
     get:
       description: 收费二维码
       parameters:
-      - description: 币种ID
-        in: query
-        name: currency_id
-        required: true
-        type: string
       - description: 收费类型1：不带金额2：带金额
         in: query
         name: type

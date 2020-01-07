@@ -299,8 +299,8 @@ func UserChange(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(p.From, p.Money, currency.MinPayMoney)
 	if (p.From == "payment" && p.Money < currency.MinPayMoney) == false {
+		fmt.Println(tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)))
 		if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
 			o.Callback()
 			core.GResp.Failure(c, resp.CodeErrorPayPassword)
@@ -331,14 +331,13 @@ func UserChange(c *gin.Context) {
 		order.OrderUuid = p.OrderId
 		if err := order.IsOrderUuid(o); err != nil {
 			o.Rollback()
-			core.GResp.Failure(c, resp.CodeNotOrderId)
+			core.GResp.Failure(c, resp.CodeNotOrderId, err)
 			return
 		} else if order.Status == models.OrderStatusOk {
 			o.Rollback()
 			core.GResp.Failure(c, resp.CodeOrderStatusOK)
 			return
 		}
-		fmt.Println(order.ID, "====")
 		order.Balance, order.ExchangeUid = p.Money, p.Base.Uid
 		if err = order.UpdateStatusOk(o); err != nil {
 			o.Rollback()

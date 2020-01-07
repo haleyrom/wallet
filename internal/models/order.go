@@ -67,7 +67,7 @@ func (r *Order) CreateOrder(o *gorm.DB) error {
 func (r *Order) IsOrderUuid(o *gorm.DB) error {
 	return o.Table(GetOrderTable()).
 		Where("order_uuid = ?", r.OrderUuid).
-		First(r).
+		Find(r).
 		Error
 }
 
@@ -127,7 +127,6 @@ func (r *Order) UpdateStatusOk(o *gorm.DB) error {
 	timer := time.Now()
 	if err := o.Table(GetOrderTable()).Where("id = ? ", r.ID).Update(map[string]interface{}{
 		"updated_at":   timer,
-		"deleted_at":   timer,
 		"balance":      r.Balance,
 		"exchange_uid": r.ExchangeUid,
 		"status":       OrderStatusOk,
