@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/armon/go-metrics v0.3.0 // indirect
+	github.com/astaxie/beego v1.12.0
 	github.com/coreos/go-semver v0.3.0
 	github.com/denisenkom/go-mssqldb v0.0.0-20190707035753-2be1aa521ff4 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -41,6 +42,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/satori/go.uuid v1.2.0
+	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -63,5 +65,6 @@ require (
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/go-playground/validator.v9 v9.30.2 // indirect
 	gopkg.in/resty.v1 v1.12.0
+	gopkg.in/robfig/cron.v2 v2.0.0-20150107220207-be2e0b0deed5
 	gopkg.in/yaml.v2 v2.2.7 // indirect
 )

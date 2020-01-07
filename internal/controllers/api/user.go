@@ -18,6 +18,9 @@ import (
 	"time"
 )
 
+// failure_timer 无效时间
+const failure_timer = time.Minute * 1
+
 // Check Check
 func Check(c *gin.Context) {
 	core.GResp.Success(c, "ok")
@@ -189,7 +192,14 @@ func PaymentQrCode(c *gin.Context) {
 
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
 
-	core.PayChan.MapChan[order.OrderUuid] <- core.EmptyStruct
+	core.PayChan.MapChan[order.OrderUuid] = make(chan int, 1)
+	core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
+	key := int(order.CreatedAt.Add(failure_timer).Unix())
+	fmt.Println("++++++", core.PayChan.MapTime, core.PayChan.MapChan)
+	if len(core.PayChan.MapTime[key]) == core.DefaultNilNum {
+		core.PayChan.MapTime[key] = make([]string, 0)
+	}
+	core.PayChan.MapTime[key] = append(core.PayChan.MapTime[key], order.OrderUuid)
 
 	core.GResp.Success(c, resp.ChargeQrCodeResp{
 		UserName: p.Base.Claims.Name,
@@ -305,7 +315,6 @@ func UserChange(c *gin.Context) {
 	}
 
 	if (p.From == "payment" && p.Money < currency.MinPayMoney) == false {
-		fmt.Println(p.PayPassword, p.Base.Claims.UserID, tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)), user.PayPassword, "===========")
 		if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
 			o.Callback()
 			core.GResp.Failure(c, resp.CodeErrorPayPassword)
@@ -345,7 +354,7 @@ func UserChange(c *gin.Context) {
 			o.Rollback()
 			core.GResp.Failure(c, resp.CodeOrderStatusOK)
 			return
-		} else if order.CreatedAt.Add(time.Minute*1).Unix() < time.Now().Unix() {
+		} else if order.CreatedAt.Add(failure_timer).Unix() < time.Now().Unix() {
 			_ = order.RemoveOrder(o)
 			o.Commit()
 			core.GResp.Failure(c, resp.CodeFailureQrCode)

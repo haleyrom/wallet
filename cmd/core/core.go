@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/haleyrom/wallet/core"
+	"github.com/haleyrom/wallet/core/cron"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/pkg/jwt"
 	"github.com/haleyrom/wallet/pkg/middleware"
@@ -21,6 +22,7 @@ func Init() {
 	InitConf()
 	InitJwt()
 	InitStorage()
+	cron.InitCron()
 }
 
 // InitConf  初始化配置

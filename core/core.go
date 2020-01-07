@@ -10,8 +10,8 @@ import (
 
 // PaymentChannel 支付channel
 type PaymentChannel struct {
-	MapChan map[string]chan *struct{}
-	MapTime map[string][]string
+	MapChan map[string]chan int
+	MapTime map[int][]string
 }
 
 var (
@@ -42,7 +42,8 @@ var (
 	// PayChan 支付通道
 	PayChan PaymentChannel
 
-	EmptyStruct = &struct{}{}
+	// EmptyStruct
+	EmptyStruct = struct{}{}
 )
 
 // 初始化
@@ -56,8 +57,8 @@ func init() {
 	}
 
 	PayChan = PaymentChannel{
-		MapChan: make(map[string]chan *struct{}, 0),
-		MapTime: make(map[string][]string, 0),
+		MapChan: make(map[string]chan int, 0),
+		MapTime: make(map[int][]string, 0),
 	}
 
 }

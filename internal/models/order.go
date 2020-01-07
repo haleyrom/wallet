@@ -83,6 +83,13 @@ func (r *Order) RemoveOrder(o *gorm.DB) error {
 	return nil
 }
 
+// RemoveOrder 删除账单
+func (r *Order) RemoveOrderUuid(o *gorm.DB) error {
+	return o.Where("order_uuid = ?", r.OrderUuid).
+		Delete(r).
+		Error
+}
+
 // GetAllTransOrder GetAllTransOrder
 func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startTime int, key string) (resp.RespUserTransOrder, error) {
 	data := resp.RespUserTransOrder{}
