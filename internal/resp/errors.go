@@ -127,6 +127,21 @@ const (
 
 	// CodeWithdrawalNotCurrency 不支持该币提现
 	CodeWithdrawalNotCurrency StatusCode = 101132
+
+	// CodeNotOrderId 订单号不存在
+	CodeNotOrderId StatusCode = 101133
+
+	// CodeOrderStatusOK 订单号已支付
+	CodeOrderStatusOK StatusCode = 101135
+
+	// CodeOneselfInto 自己支付
+	CodeOneselfInto StatusCode = 101136
+
+	// CodeFailureQrCode 二维码失效
+	CodeFailureQrCode StatusCode = 101137
+
+	// CodeWaitQrCode 二维码等待
+	CodeWaitQrCode StatusCode = 101138
 )
 
 // StatusCode 状态码
@@ -188,6 +203,11 @@ func init() {
 		CodeNotDepositDetail:      "充值记录不存在",
 		CodeIllegalPassword:       "密码不合法",
 		CodeWithdrawalNotCurrency: "暂不支持该币提现",
+		CodeNotOrderId:            "订单号不存在",
+		CodeOrderStatusOK:         "订单号已支付",
+		CodeOneselfInto:           "不支持自身互转",
+		CodeFailureQrCode:         "二维码失效",
+		CodeWaitQrCode:            "二维码可用",
 	}
 }
 

@@ -11,11 +11,11 @@ import (
 // Currency 代币
 type Currency struct {
 	gorm.Model
-	Symbol   string `gorm:"size:255;column:symbol;comment:'币种标识';"`                     // 代币标识
-	Name     string `gorm:"size:255;column:name;comment:'币种名称';"`                       // 代币名称
-	Decimals int    `gorm:"column:decimals;default:0;comment:'币种小数点';"`                 // 代币小数点
-	Status   int8   `gorm:"size(3);column:status;default:0;commit:'状态(0开启,1:停用,2:删除)'"` // 状态：0开启;1:停用;2:删除
-
+	Symbol      string  `gorm:"size:255;column:symbol;comment:'币种标识';"`                     // 代币标识
+	Name        string  `gorm:"size:255;column:name;comment:'币种名称';"`                       // 代币名称
+	Decimals    int     `gorm:"column:decimals;default:0;comment:'币种小数点';"`                 // 代币小数点
+	Status      int8    `gorm:"size(3);column:status;default:0;commit:'状态(0开启,1:停用,2:删除)'"` // 状态：0开启;1:停用;2:删除
+	MinPayMoney float64 `gorm:"column:min_pay_money;default:0;commit:'最小支付金额'"`             // 最小支付金额
 }
 
 const (
@@ -122,7 +122,7 @@ func (c *Currency) RmCurrency(o *gorm.DB) error {
 
 // GetSymbolById 获取id
 func (c *Currency) GetSymbolById(o *gorm.DB) error {
-	if err := o.Table(GetCurrencyTable()).Where("symbol = ? and status < ?", c.Symbol, vStatusStop).Select("id").First(&c).Error; err == nil {
+	if err := o.Table(GetCurrencyTable()).Where("symbol = ? and status < ?", c.Symbol, vStatusStop).Select("id,min_pay_money").First(&c).Error; err == nil {
 		return nil
 	}
 	return fmt.Errorf("%s", "currency not exist")

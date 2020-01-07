@@ -17,8 +17,9 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.GET("/user/pay/is_init", api.IsSetPassWord)
 	r.GET("/user/qrcode/change", api.ChargeQrCode)
 	r.GET("/user/qrcode/pay", api.PaymentQrCode)
-	r.GET("/user/pay/change", api.UserChange)
+	r.POST("/user/pay/change", api.UserChange)
 	r.GET("/user/pay/info", api.UserPayInfo)
+	r.GET("/user/pay/status", api.UserPayQrCodeStatus)
 
 	r.GET("/account/info", api.AccountInfo)
 	r.GET("/account/tfor/info", api.AccountTFORInfo)
@@ -30,6 +31,7 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.POST("/account/withdrawal", api.AccountWithdrawal)
 	r.GET("/account/currency/detail", api.AccountCurrencyDetail)
 	r.POST("/account/person/transfer", api.AccountPersonTransfer)
+	r.GET("/account/person/charge/detail", api.AccountChargeDetail)
 
 	r.GET("/currency/list", api.ReadCurrencyList)
 	r.GET("/currency/transfer_list", api.ReadCurrencyTransferList)

@@ -16,7 +16,7 @@ type WithdrawalDetailResp struct {
 	Value     float64 `json:"value"`      // 金额
 	Symbol    string  `json:"symbol"`     // 代币代号
 	Type      string  `json:"type"`       // 标识 coin,token
-	Status    int8    `json:"status"`     // 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消
+	Status    int8    `json:"status"`     // 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败
 	Poundage  float64 `json:"poundage"`   // 手续费
 	UpdatedAt string  `json:"updated_at"` // 更新时间
 }

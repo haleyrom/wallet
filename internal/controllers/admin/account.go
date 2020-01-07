@@ -303,7 +303,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
 	}
-
+	fmt.Println(1)
 	// 客服拒绝不处理
 	if detail.CustomerStatus == models.WithdrawalAudioStatusFailure {
 		o.Rollback()
@@ -314,6 +314,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 	detail.FinancialStatus, detail.FinancialId = p.Status, p.FinancialId
 	// 审核成功
 	if detail.FinancialStatus == models.WithdrawalAudioStatusOk {
+		fmt.Println(3)
 		// 同时审核成功进行处理
 		if detail.CustomerStatus == models.WithdrawalAudioStatusOk {
 			// 调取提现接口
@@ -362,7 +363,6 @@ func WithdrawalAudioRefund(o *gorm.DB, detail *models.WithdrawalDetail) error {
 	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
 
 	_ = account.IsExistAccount(o)
-
 	if account.BlockedBalance*100 < money*100 {
 		return resp.CodeLessMoney
 	}
@@ -426,7 +426,6 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, err
 	if result == nil || err != nil || result.Code != http.StatusOK {
 		return core.DefaultNilString, errors.Errorf("%s", result.Msg)
 	}
-	fmt.Println(detail, "=========")
 	detail.TransactionHash = result.Data.TransactionHash
 	_ = AccountInsertDetail(o, detail)
 	return result.Msg, nil

@@ -35,6 +35,8 @@ type ChargeQrCodeParam struct {
 type PaymentQrCodeParam struct {
 	Base   *BaseParam `json:"claims" form:"claims"  binding:"required"`
 	Symbol string     `json:"symbol" form:"symbol" binding:"required"`
+	Money  string     `json:"money" form:"money" `
+	Type   int        `json:"type" form:"type"`
 }
 
 // UserPayInfoParam 用户收款信息
@@ -49,10 +51,17 @@ type UserPayInfoParam struct {
 
 // UserChangeParam 用户收款
 type UserChangeParam struct {
+	Base        *BaseParam `json:"claims" form:"claims"  binding:"required"`
+	Code        uint       `json:"code" form:"code" binding:"required"`
+	Money       float64    `json:"money" form:"money" binding:"gt=0"`
+	Symbol      string     `json:"symbol" form:"symbol" binding:"required"`
+	From        string     `json:"from" form:"from" binding:"required"`
+	OrderId     string     `json:"order_id" form:"order_id"`
+	PayPassword string     `json:"pay_password" form:"pay_password"`
+}
+
+// UserPayStatusParam 用户支付状态信息
+type UserPayStatusParam struct {
 	Base    *BaseParam `json:"claims" form:"claims"  binding:"required"`
-	Code    uint       `json:"code" form:"code" binding:"required"`
-	Money   string     `json:"money" form:"money" binding:"gt=0"`
-	Symbol  string     `json:"symbol" form:"symbol" binding:"required"`
-	From    string     `json:"from" form:"from" binding:"required"`
-	OrderId string     `json:"order_id" form:"order_id"`
+	OrderId string     `json:"order_id" form:"order_id"   binding:"required"`
 }

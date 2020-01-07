@@ -219,6 +219,9 @@ definitions:
       email:
         description: 邮箱
         type: string
+      min_money:
+        description: 最小转账金额
+        type: number
       qrcode:
         description: 二维码
         type: string
@@ -384,6 +387,9 @@ definitions:
       money:
         description: 可提现金额
         type: number
+      status:
+        description: 状态
+        type: integer
       symbol:
         description: 币种代号
         type: string
@@ -625,6 +631,21 @@ definitions:
         description: 链名称
         type: string
     type: object
+  resp.UserPayInfoResp:
+    properties:
+      email:
+        description: 邮件
+        type: string
+      money:
+        description: money
+        type: string
+      order_id:
+        description: 订单号
+        type: string
+      symbol:
+        description: symbol标示
+        type: string
+    type: object
   resp.WithdrawalAddrResp:
     properties:
       address:
@@ -721,7 +742,7 @@ definitions:
         description: 手续费
         type: number
       status:
-        description: 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消
+        description: 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败
         type: integer
       symbol:
         description: 代币代号
@@ -853,6 +874,32 @@ paths:
       summary: 钱包详情接口
       tags:
       - Account 钱包帐号
+  /account/person/charge/detail:
+    get:
+      description: 个人收款明细
+      parameters:
+      - description: 页面条数
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountDetailListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 个人收款明细接口
+      tags:
+      - Account 钱包帐号
   /account/person/transfer:
     post:
       description: 个人转账
@@ -922,6 +969,12 @@ paths:
   /account/tfor/list:
     get:
       description: 钱包TFOR详情列表
+      parameters:
+      - description: 用户id多个以,隔开
+        in: query
+        name: uids
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2377,6 +2430,87 @@ paths:
       summary: 充值接口 code=101119 入账成功
       tags:
       - DepositAdd 钱包地址
+  /user/pay/change:
+    post:
+      description: 用户付款
+      parameters:
+      - description: code标示
+        in: formData
+        name: code
+        required: true
+        type: number
+      - description: 金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      - description: 币种标识
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      - description: 来源
+        in: formData
+        name: from
+        required: true
+        type: string
+      - description: 订单id
+        in: formData
+        name: order_id
+        type: string
+      - description: 支付密码
+        in: formData
+        name: pay_password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 用户付款接口
+      tags:
+      - User 用户
+  /user/pay/info:
+    get:
+      description: 用户付款
+      parameters:
+      - description: code标示
+        in: formData
+        name: code
+        required: true
+        type: number
+      - description: 金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      - description: 币种标识
+        in: formData
+        name: symbol
+        required: true
+        type: string
+      - description: 来源
+        in: formData
+        name: from
+        required: true
+        type: string
+      - description: 订单id
+        in: formData
+        name: order_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.UserPayInfoResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户付款接口
+      tags:
+      - User 用户
   /user/pay/is_init:
     get:
       description: 使用jwt命令牌
@@ -2445,6 +2579,23 @@ paths:
       summary: 设置支付密码接口
       tags:
       - 支付密码
+  /user/pay/status:
+    get:
+      description: 付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码
+      parameters:
+      - description: 订单id
+        in: formData
+        name: order_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 付款码激活状态查询接口
+      tags:
+      - User 用户
   /user/pay/update:
     post:
       description: 更新支付密码
@@ -2467,11 +2618,6 @@ paths:
     get:
       description: 收费二维码
       parameters:
-      - description: 币种ID
-        in: query
-        name: currency_id
-        required: true
-        type: string
       - description: 收费类型1：不带金额2：带金额
         in: query
         name: type
@@ -2501,20 +2647,33 @@ paths:
       - User 用户
   /user/qrcode/pay:
     get:
-      description: 用户付款
+      description: 付款二维码
       parameters:
-      - description: 币种ID
-        in: query
-        name: currency_id
+      - description: 币种标示
+        in: formData
+        name: symbol
         required: true
         type: string
+      - description: 金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      - description: code
+        in: formData
+        name: code
+        required: true
+        type: number
       produces:
       - application/json
       responses:
-        "200": {}
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ChargeQrCodeResp'
       security:
       - ApiKeyAuth: []
-      summary: 用户付款接口
+      summary: 付款二维码接口
       tags:
       - User 用户
   /withdrawal/addr/add:

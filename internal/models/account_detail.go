@@ -67,10 +67,10 @@ func (a *AccountDetail) CreateAccountDetailAll(o *gorm.DB, items []AccountDetail
 
 }
 
-// GetPageList 获取分页列表
-func (a *AccountDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.AccountDetailListResp, error) {
+// GetGatherPageList 获取收款分页列表
+func (a *AccountDetail) GetGatherPageList(o *gorm.DB, page, pageSize int) (resp.AccountDetailListResp, error) {
 	data := resp.AccountDetailListResp{}
-	rows, err := o.Raw(fmt.Sprintf("SELECT account.currency_id,currency.symbol,currency.name,currency.decimals,detail.income,detail.spend,detail.type,detail.updated_at FROM %s AS detail LEFT JOIN %s account ON account.id = detail.account_id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.uid = ? ORDER BY detail.id desc LIMIT ?,?", GetAccountDetailTable(), GetAccountTable(), GetCurrencyTable()), a.Uid, (page-1)*pageSize, pageSize).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT account.currency_id,currency.symbol,currency.name,currency.decimals,detail.income,detail.spend,detail.type,detail.updated_at FROM %s AS detail LEFT JOIN %s account ON account.id = detail.account_id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.uid = ? and detail.type = ? ORDER BY detail.id desc LIMIT ?,?", GetAccountDetailTable(), GetAccountTable(), GetCurrencyTable()), a.Uid, resp.AccountDetailGather, (page-1)*pageSize, pageSize).Rows()
 	defer rows.Close()
 
 	if err == nil {
@@ -87,7 +87,7 @@ func (a *AccountDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.Accoun
 			}
 		}
 
-		o.Table(GetAccountDetailTable()).Where("uid = ?", a.Uid).Count(&data.Page.Count)
+		o.Table(GetAccountDetailTable()).Where("uid = ?", a.Uid).Where("type = ?", resp.AccountDetailGather).Count(&data.Page.Count)
 		data.Page.PageSize = len(data.Items)
 		data.Page.CurrentPage = page
 		data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))
@@ -132,6 +132,34 @@ func (a *AccountDetail) GetCurrencyPageList(o *gorm.DB, page, pageSize int, type
 		}
 
 		_ = o.Raw(count_sql, a.Uid, a.AccountId).Row().Scan(&data.Page.Count)
+		data.Page.PageSize = len(data.Items)
+		data.Page.CurrentPage = page
+		data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))
+	}
+	return data, err
+}
+
+// GetPageList 获取分页列表
+func (a *AccountDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.AccountDetailListResp, error) {
+	data := resp.AccountDetailListResp{}
+	rows, err := o.Raw(fmt.Sprintf("SELECT account.currency_id,currency.symbol,currency.name,currency.decimals,detail.income,detail.spend,detail.type,detail.updated_at FROM %s AS detail LEFT JOIN %s account ON account.id = detail.account_id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.uid = ? ORDER BY detail.id desc LIMIT ?,?", GetAccountDetailTable(), GetAccountTable(), GetCurrencyTable()), a.Uid, (page-1)*pageSize, pageSize).Rows()
+	defer rows.Close()
+
+	if err == nil {
+		var (
+			timer time.Time
+			item  resp.AccountDetailResp
+		)
+		data.Items = make([]resp.AccountDetailResp, 0)
+		for rows.Next() {
+			if err = o.ScanRows(rows, &item); err == nil {
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				data.Items = append(data.Items, item)
+			}
+		}
+
+		o.Table(GetAccountDetailTable()).Where("uid = ?", a.Uid).Count(&data.Page.Count)
 		data.Page.PageSize = len(data.Items)
 		data.Page.CurrentPage = page
 		data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))

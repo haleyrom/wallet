@@ -17,6 +17,10 @@ const (
 	AccountDetailConvert
 	// AccountDetailTransfer 转账
 	AccountDetailTransfer
+	// AccountDetailGather 收款
+	AccountDetailGather
+	// AccountDetailPayment 付款
+	AccountDetailPayment
 )
 
 // AccountInfoResp 详情返回结果集
