@@ -244,3 +244,47 @@ func (a *Account) GetAccountUserList(o *gorm.DB, page, pageSize, start_time, end
 	data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))
 	return data, err
 }
+
+// GetAdminAccountList 获取后台用户钱包列表
+func (a *Account) GetAdminAccountList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.AccountListResp, error) {
+	data := resp.AccountListResp{}
+	sql := fmt.Sprintf("SELECT account.id AS id,user.id AS uid,user.name,user.email, TRUNCATE(account.balance,6) AS balance, TRUNCATE ( account.blocked_balance, 6 ) AS blocked_balance, currency.symbol, account.updated_at FROM %s account LEFT JOIN %s user ON account.uid = user.id LEFT JOIN %s currency ON currency.id = account.currency_id where account.id > 0 ", GetAccountTable(), GetUserTable(), GetCurrencyTable())
+	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s account LEFT JOIN %s user ON account.uid = user.id where account.id > 0 ", GetAccountTable(), GetUserTable())
+
+	if start_time > 0 && end_timer > 0 {
+		sql = fmt.Sprintf("%s AND UNIX_TIMESTAMP(account.updated_at) >= %d AND UNIX_TIMESTAMP(account.updated_at) <= %d ", sql, start_time, end_timer)
+		count_sql = fmt.Sprintf("%s AND UNIX_TIMESTAMP(account.updated_at) >= %d AND UNIX_TIMESTAMP(account.updated_at) <= %d ", count_sql, start_time, end_timer)
+	}
+
+	if len(keyword) > 0 {
+		sql = fmt.Sprintf("%s AND user.name like '%s'", sql, "%"+keyword+"%")
+		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
+	}
+
+	sql = fmt.Sprintf("%s ORDER BY account.id desc LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
+
+	rows, err := o.Raw(sql).Rows()
+	defer rows.Close()
+
+	if err == nil {
+		var (
+			item  resp.AccountAdminInfoResp
+			timer time.Time
+		)
+
+		data.Items = make([]resp.AccountAdminInfoResp, 0)
+		for rows.Next() {
+			if err = o.ScanRows(rows, &item); err == nil {
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				data.Items = append(data.Items, item)
+			}
+		}
+
+	}
+	_ = o.Raw(count_sql).Row().Scan(&data.Page.Count)
+	data.Page.PageSize = len(data.Items)
+	data.Page.CurrentPage = page
+	data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))
+	return data, err
+}

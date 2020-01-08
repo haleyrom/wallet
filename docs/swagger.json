@@ -861,6 +861,65 @@
                 }
             }
         },
+        "/admin/account/list": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户钱包列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account 后台钱包-用户钱包"
+                ],
+                "summary": "用户钱包列表接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "长度",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页数",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索帐号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.AccountUserDetailListResp"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/account/user/deposit-list": {
             "get": {
                 "security": [
@@ -927,14 +986,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "用户钱包列表",
+                "description": "用户钱包流水列表",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Account 后台钱包-用户钱包"
                 ],
-                "summary": "用户钱包列表接口",
+                "summary": "用户钱包流水列表接口",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2827,7 +2886,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码",
+                "description": "付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码 最长等待时间30秒",
                 "produces": [
                     "application/json"
                 ],

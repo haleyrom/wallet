@@ -101,3 +101,21 @@ type AccountTFORListInfoResp struct {
 type AccountTFORListResp struct {
 	Items map[string]AccountTFORListInfoResp `json:"items"` // 帐号详情
 }
+
+// AccountUserDetailInfoResp 用户帐号详情信息
+type AccountAdminInfoResp struct {
+	Id             int     `json:"id"`              // 明细id
+	Uid            int     `json:"uid"`             // 用户id
+	Name           string  `json:"name"`            // 用户帐号
+	Email          string  `json:"email"`           // 邮件
+	Balance        float64 `json:"balance"`         // 现余额
+	BlockedBalance float64 `json:"blocked_balance"` // 之前余额
+	Symbol         string  `json:"symbol"`          // 币种
+	UpdatedAt      string  `json:"update_at"`       // 时间
+}
+
+// AccountListResp 用户账本列表
+type AccountListResp struct {
+	Items []AccountAdminInfoResp `json:"items"` // 帐号详情
+	Page  BasePageResp           `json:"page"`  // 分页
+}

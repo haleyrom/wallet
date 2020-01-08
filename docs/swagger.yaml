@@ -1310,6 +1310,44 @@ paths:
       summary: 公司出金地址接口
       tags:
       - Account 后台钱包-用户钱包
+  /admin/account/list:
+    get:
+      description: 用户钱包列表
+      parameters:
+      - description: 长度
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountUserDetailListResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户钱包列表接口
+      tags:
+      - Account 后台钱包-用户钱包
   /admin/account/user/deposit-list:
     get:
       description: 用户充值流水列表
@@ -1350,7 +1388,7 @@ paths:
       - Account 后台钱包-用户钱包
   /admin/account/user/list:
     get:
-      description: 用户钱包列表
+      description: 用户钱包流水列表
       parameters:
       - description: 长度
         in: query
@@ -1383,7 +1421,7 @@ paths:
             $ref: '#/definitions/resp.AccountUserDetailListResp'
       security:
       - ApiKeyAuth: []
-      summary: 用户钱包列表接口
+      summary: 用户钱包流水列表接口
       tags:
       - Account 后台钱包-用户钱包
   /admin/account/user/order-list:
@@ -2582,6 +2620,7 @@ paths:
   /user/pay/status:
     get:
       description: 付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码
+        最长等待时间30秒
       parameters:
       - description: 订单id
         in: formData

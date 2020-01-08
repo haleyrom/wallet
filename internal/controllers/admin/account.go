@@ -28,6 +28,35 @@ import (
 // @Param start_time query int false "开始时间"
 // @Param end_time query int false "结束时间"
 // @Success 200 {object} resp.AccountUserDetailListResp
+// @Router /admin/account/list [get]
+func AccountList(c *gin.Context) {
+	p := &params.AccountListParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	data, _ := models.NewAccount().GetAdminAccountList(core.Orm.New(), p.Page, p.PageSize, p.StartTime, p.EndTime, p.Keyword)
+	core.GResp.Success(c, data)
+	return
+}
+
+// AccountUserList 用户钱包流水列表
+// @Tags Account 后台钱包-用户钱包
+// @Summary 用户钱包流水列表接口
+// @Description 用户钱包流水列表
+// @Security ApiKeyAuth
+// @Produce json
+// @Param pageSize query int true "长度"
+// @Param page query int true "页数"
+// @Param keyword query string false "搜索帐号"
+// @Param start_time query int false "开始时间"
+// @Param end_time query int false "结束时间"
+// @Success 200 {object} resp.AccountUserDetailListResp
 // @Router /admin/account/user/list [get]
 func AccountUserList(c *gin.Context) {
 	p := &params.AccountUserListParam{
