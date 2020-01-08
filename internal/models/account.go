@@ -280,7 +280,6 @@ func (a *Account) GetAdminAccountList(o *gorm.DB, page, pageSize, start_time, en
 				data.Items = append(data.Items, item)
 			}
 		}
-
 	}
 	_ = o.Raw(count_sql).Row().Scan(&data.Page.Count)
 	data.Page.PageSize = len(data.Items)
