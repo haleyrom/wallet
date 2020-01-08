@@ -259,7 +259,7 @@ func AudioRecharge(c *gin.Context) {
 			company_stream := &models.CompanyStream{
 				Code:        models.CodeWithdrawal,
 				Uid:         account_detail.Uid,
-				AccountId:   account_detail.ID,
+				AccountId:   account_detail.AccountId,
 				Balance:     account_detail.Balance,
 				LastBalance: account_detail.LastBalance,
 				Income:      account_detail.Income,
