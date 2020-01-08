@@ -49,7 +49,7 @@ func (c *CompanyStream) CreateCompanyStream(o *gorm.DB) error {
 // GetList 获取企业充值列表
 func (c *CompanyStream) GetList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.CompanyStreamListResp, error) {
 	data := resp.CompanyStreamListResp{}
-	sql := fmt.Sprintf("SELECT detail.address,detail.id as id,user.id as uid,user.name,user.email,TRUNCATE(detail.income,6) as income,TRUNCATE(detail.spend,6) as spend,TRUNCATE(detail.balance,6) as balance, TRUNCATE(detail.last_balance,6) as last_balance, currency.symbol,detail.updated_at,detail.order_id FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable(), c.Code)
+	sql := fmt.Sprintf("SELECT detail.address,detail.id as id,user.id as uid,user.name,user.email,TRUNCATE(detail.income,6) as income,TRUNCATE(detail.spend,6) as spend,TRUNCATE(detail.balance,6) as balance, TRUNCATE(detail.last_balance,6) as last_balance, currency.symbol,detail.updated_at,detail.order_id FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.order_id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable(), c.Code)
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), c.Code)
 
 	if start_time > 0 && end_timer > 0 {
