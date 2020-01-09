@@ -100,8 +100,8 @@ func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startT
 	count_sql := fmt.Sprintf("select count(*) as num from %s o left join %s u on o.uid = u.id  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
 	sql := fmt.Sprintf("SELECT o.id,o.uid,o.currency_id,o.exchange_id,o.updated_at,TRUNCATE(o.balance,6) as value,o.status,o.ratio,u.name,u.email FROM %s o LEFT JOIN %s u on u.id = o.uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
 	if key != "" {
-		count_sql += " and o.name like  '%" + key + "%' "
-		sql += " and o.name like  '%" + key + "%' "
+		count_sql += " and u.name like  '%" + key + "%' "
+		sql += " and u.name like  '%" + key + "%' "
 	}
 	sql = sql + fmt.Sprintf("order by o.id desc limit %d offset %d", pageSize, (page-1)*pageSize)
 	rows, err := o.Raw(sql).Rows()
