@@ -132,8 +132,8 @@ func (d *DepositDetail) GetAllPageList(o *gorm.DB, page, pageSize int, endTime, 
 	count_sql := fmt.Sprintf("select count(*) as num from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d and a.deleted = %d", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
 	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,TRUNCATE(a.value,6) as value,a.transaction_hash,a.status,a.updated_at,a.source from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
 	if key != "" {
-		count_sql += "and b.name = '%" + key + "%'"
-		sql += "and b.name = '%" + key + "%'"
+		count_sql += "and b.name like '%" + key + "%'"
+		sql += "and b.name like '%" + key + "%'"
 	}
 	sql = sql + fmt.Sprintf("order by a.id desc limit %d , %d", (page-1)*pageSize, pageSize)
 	rows, err := o.Raw(sql).Rows()
