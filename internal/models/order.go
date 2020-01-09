@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
@@ -122,8 +123,7 @@ func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startT
 
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
-				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				if _, ok := currencty[item.CurrencyId]; ok == true {
 					item.CurrencySymbol = currencty[item.CurrencyId]
 				}

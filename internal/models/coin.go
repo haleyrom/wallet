@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 	"time"
@@ -49,8 +50,7 @@ func (c *Coin) GetAll(o *gorm.DB) ([]resp.ReadCoinListResp, error) {
 		)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
-				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				data = append(data, item)
 			}
 		}

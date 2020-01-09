@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 	"math"
@@ -59,8 +60,7 @@ func (q *Quote) GetQuoteCurrencyByList(o *gorm.DB) ([]resp.CurrencyQuoteInfoResp
 
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
-				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				data = append(data, item)
 			}
 		}
@@ -110,8 +110,7 @@ func (q *Quote) GetAllPageList(o *gorm.DB, page, pageSize int, start_time, end_t
 		data.Items = make([]resp.CurrencyQuoteInfoResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
-				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				data.Items = append(data.Items, item)
 			}
 		}
