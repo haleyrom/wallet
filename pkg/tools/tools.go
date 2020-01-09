@@ -16,7 +16,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // WalletInfoResp 钱包信息
@@ -197,8 +196,4 @@ func Hash256(pwd, salt string) string {
 	h.Write([]byte(s))
 	hs := h.Sum(nil)
 	return fmt.Sprintf("%x", hs)
-}
-
-func TimerConvert(timer *time.Time, datetime string) {
-
 }
