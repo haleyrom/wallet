@@ -81,7 +81,7 @@ func (a *AccountDetail) GetGatherPageList(o *gorm.DB, page, pageSize int) (resp.
 		data.Items = make([]resp.AccountDetailResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data.Items = append(data.Items, item)
 			}
@@ -125,7 +125,7 @@ func (a *AccountDetail) GetCurrencyPageList(o *gorm.DB, page, pageSize int, type
 		data.Items = make([]resp.AccountDetailResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data.Items = append(data.Items, item)
 			}
@@ -153,7 +153,7 @@ func (a *AccountDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.Accoun
 		data.Items = make([]resp.AccountDetailResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data.Items = append(data.Items, item)
 			}

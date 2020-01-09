@@ -59,7 +59,7 @@ func (q *Quote) GetQuoteCurrencyByList(o *gorm.DB) ([]resp.CurrencyQuoteInfoResp
 
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data = append(data, item)
 			}
@@ -110,7 +110,7 @@ func (q *Quote) GetAllPageList(o *gorm.DB, page, pageSize int, start_time, end_t
 		data.Items = make([]resp.CurrencyQuoteInfoResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data.Items = append(data.Items, item)
 			}

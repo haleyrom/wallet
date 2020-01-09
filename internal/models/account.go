@@ -49,7 +49,7 @@ func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, 
 		)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data = append(data, item)
 			}
@@ -63,7 +63,7 @@ func (a *Account) GetUserTFORBalance(o *gorm.DB, uid uint) (resp.AccountInfoResp
 	var data resp.AccountInfoResp
 	rows := o.Raw(fmt.Sprintf("SELECT acc.uid,acc.id as account_id,acc.currency_id,TRUNCATE(acc.balance-acc.blocked_balance,6) as balance,TRUNCATE(acc.blocked_balance,6) as blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable()), uid, "TFOR").Row()
 	err := rows.Scan(&data.Uid, &data.AccountId, &data.CurrencyId, &data.Balance, &data.BlockedBalance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
-	timer, _ := time.Parse("2006-01-02T15:04:05+08:00", data.UpdatedAt)
+	timer, _ := time.Parse("2006-01-02T15:04:05+08:00Z", data.UpdatedAt)
 	data.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 	return data, err
 }
@@ -81,7 +81,7 @@ func (a *Account) GetUserTFORBalanceList(o *gorm.DB, uids []string) (resp.Accoun
 	data.Items = make(map[string]resp.AccountTFORListInfoResp, 0)
 	for rows.Next() {
 		if err = o.ScanRows(rows, &item); err == nil {
-			timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+			timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 			item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 			data.Items[item.Uid] = item
 		}
@@ -95,7 +95,7 @@ func (a *Account) GetUserAccountBalance(o *gorm.DB) (resp.AccountInfoResp, error
 	var data resp.AccountInfoResp
 	rows := o.Raw(fmt.Sprintf("SELECT acc.uid,acc.id as account_id,acc.currency_id,TRUNCATE(acc.balance-acc.blocked_balance,6) as balance,TRUNCATE(acc.blocked_balance,6) as blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND acc.id = ?", GetCurrencyTable(), GetAccountTable()), a.Uid, a.ID).Row()
 	err := rows.Scan(&data.Uid, &data.AccountId, &data.CurrencyId, &data.Balance, &data.BlockedBalance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
-	timer, _ := time.Parse("2006-01-02T15:04:05+08:00", data.UpdatedAt)
+	timer, _ := time.Parse("2006-01-02T15:04:05+08:00Z", data.UpdatedAt)
 	data.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 	return data, err
 }
@@ -231,7 +231,7 @@ func (a *Account) GetAccountUserList(o *gorm.DB, page, pageSize, start_time, end
 		data.Items = make([]resp.AccountUserDetailInfoResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data.Items = append(data.Items, item)
 			}
@@ -275,7 +275,7 @@ func (a *Account) GetAdminAccountList(o *gorm.DB, page, pageSize, start_time, en
 		data.Items = make([]resp.AccountAdminInfoResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00Z", item.UpdatedAt)
 				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data.Items = append(data.Items, item)
 			}
