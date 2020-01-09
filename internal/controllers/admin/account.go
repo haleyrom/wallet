@@ -332,7 +332,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 		core.GResp.Failure(c, resp.CodeAlreadyAudio)
 		return
 	}
-	fmt.Println(1)
+
 	// 客服拒绝不处理
 	if detail.CustomerStatus == models.WithdrawalAudioStatusFailure {
 		o.Rollback()
@@ -364,7 +364,8 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 				core.GResp.CustomFailure(c, err)
 				return
 			}
-			detail.Status = models.WithdrawalStatusSubmit
+			// 提交成功后，现在已通过状态
+			detail.Status = models.WithdrawalStatusThrough
 		} else {
 			detail.Status = models.WithdrawalStatusInAudit
 		}
@@ -455,71 +456,11 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, err
 	if result == nil || err != nil || result.Code != http.StatusOK {
 		return core.DefaultNilString, errors.Errorf("%s", result.Msg)
 	}
-	detail.TransactionHash = result.Data.TransactionHash
-	_ = AccountInsertDetail(o, detail)
-	return result.Msg, nil
-}
-
-// AccountInsertDetail 插入钱包明细
-func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
-	detail.Status = models.WithdrawalStatusThrough
-	if err := detail.UpdateStatus(o); err != nil {
-		return err
-	}
-
-	account := models.NewAccount()
-	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
-	if err := account.GetOrderUidCurrencyIdByInfo(o); err != nil {
-		return err
-	}
-
-	// 入账金额
-	money := detail.Value + detail.Poundage
-	// 冻结支出
-	block_detail := &models.BlockDetail{
-		Uid:         detail.Uid,
-		AccountId:   detail.AccountId,
-		Balance:     account.BlockedBalance - money,
-		LastBalance: account.BlockedBalance,
-		Spend:       money,
-	}
-
-	if err := block_detail.CreateBlockDetail(o); err != nil {
-		return err
-	}
-
-	account_detail := &models.AccountDetail{
-		Uid:         detail.Uid,
-		AccountId:   detail.AccountId,
-		Balance:     account.Balance - money,
-		LastBalance: account.Balance,
-		Spend:       money,
-		Type:        resp.AccountDetailOut,
-	}
-	if err := account_detail.CreateAccountDetail(o); err != nil {
-		return err
-	}
 
 	// 入账
-	if err := account.UpdateWithdrawalBalance(o, money, money, core.OperateToOut, core.OperateToOut); err != nil {
-		return err
-	}
-
-	go func() {
-		company_stream := &models.CompanyStream{
-			Code:        models.CodeWithdrawal,
-			Uid:         account_detail.Uid,
-			AccountId:   account_detail.AccountId,
-			Balance:     account_detail.Balance,
-			LastBalance: account_detail.LastBalance,
-			Income:      account_detail.Income,
-			Type:        account_detail.Type,
-			Address:     detail.Address,
-			OrderId:     detail.OrderId,
-		}
-		_ = company_stream.CreateCompanyStream(core.Orm.New())
-	}()
-	return nil
+	//detail.TransactionHash = result.Data.TransactionHash
+	//_ = AccountInsertDetail(o, detail)
+	return result.Msg, nil
 }
 
 // CompanyDepositList 公司充值流水

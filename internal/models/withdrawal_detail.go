@@ -223,6 +223,12 @@ func (w *WithdrawalDetail) GetOrderIdBySubmitInfo(o *gorm.DB) error {
 		Where("order_id = ? and financial_status = ? and customer_status = ? and status = ?", w.OrderId, WithdrawalAudioStatusOk, WithdrawalAudioStatusOk, WithdrawalStatusSubmit).Find(w).Error
 }
 
+// GetOrderIdByInfo 根据订单id获取信息
+func (w *WithdrawalDetail) GetOrderIdByInfo(o *gorm.DB) error {
+	return o.Table(GetWithdrawalDetailTable()).
+		Where("order_id = ? ", w.OrderId).Find(w).Error
+}
+
 // WithdrawalStatusCancel 订单取消
 func (w *WithdrawalDetail) WithdrawalStatusCancel(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).

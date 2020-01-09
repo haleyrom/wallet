@@ -13,35 +13,9 @@ import (
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
-	"github.com/jinzhu/gorm"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"strconv"
 )
-
-// CreateDeposit 创建钱包地址
-func CreateDeposit(o *gorm.DB, uid uint) error {
-	chain := models.NewBlockChain()
-	if items, _ := chain.GetAll(core.Orm.New()); len(items) > 0 {
-		addr := models.DepositAddr{
-			Uid: uid,
-		}
-
-		for _, item := range items {
-			go func(code string) {
-				if data, err := consul.GetWalletAddress(code); err == nil && data != nil && len(data.Data.Address) > 0 {
-					addr.BlockChainId = uint(item.Id)
-					addr.Address = data.Data.Address
-					addr.OrderId = data.Data.OrderId
-					_ = addr.CreateDepositAddr(o)
-				} else {
-					logrus.Errorf("RegisterWalletAddr data :%v,failure :%v", data, err)
-				}
-			}(item.ChainCode)
-		}
-	}
-	return nil
-}
 
 // ReadDepositAddList 读取钱包地址列表
 // @Tags  DepositAdd 钱包地址

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
+	"github.com/haleyrom/wallet/internal/controllers/base"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
@@ -647,7 +648,7 @@ func AccountPersonTransfer(c *gin.Context) {
 		},
 	}
 
-	if err = CreateUser(param); err != nil {
+	if err = base.CreateUser(param); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeNotUser)
 		return

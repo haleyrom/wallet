@@ -45,7 +45,7 @@ type AccountDetailResp struct {
 	Name       string  `json:"name"`        // 名称
 	Income     float64 `json:"income"`      // 本期收入
 	Spend      float64 `json:"spend"`       // 上期支出
-	Type       int8    `json:"type"`        // 明细类型（账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级 7兑换 8转账）
+	Type       int8    `json:"type"`        // 明细类型（账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级 7兑换 8转账 9收款 10付款）
 	UpdatedAt  string  `json:"updated_at"`  // 时间
 }
 

@@ -2,9 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
+	"github.com/haleyrom/wallet/internal/controllers/base"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
@@ -252,7 +253,6 @@ func WithdrawalCallback(c *gin.Context) {
 	jsonStr, _ := json.Marshal(p)
 	_ = json.Unmarshal(jsonStr, &data)
 	if hash := tools.GenerateSign(data, viper.GetString("deposit.Srekey")); hash != p.Hash {
-		fmt.Println(hash, "===========", p.Hash)
 		core.GResp.CustomFailure(c, resp.CodeErrSign)
 		return
 	}
@@ -260,12 +260,34 @@ func WithdrawalCallback(c *gin.Context) {
 	o := core.Orm.New().Begin()
 	detail := models.NewWithdrawalDetail()
 	detail.OrderId = p.OrderId
-	fmt.Println(p.Code, "-------------------------")
+	// 根据订单ID获取信息
+	if err := detail.GetOrderIdByInfo(o); err != nil {
+		o.Rollback()
+		core.GResp.CustomFailure(c, err)
+		return
+	}
+
 	switch p.Code {
+	case "105004":
+		// 已提交
+		detail.TransactionHash = p.TransactionHash
+		// 入账
+		if err := base.AccountInsertDetail(o, detail); err != nil {
+			o.Rollback()
+			core.GResp.CustomFailure(c, err)
+			return
+		}
+
+		o.Commit()
+		core.GResp.Success(c, resp.EmptyData())
+		return
 	case "105005":
+		// 已汇出
 	case "105006":
+		// 异常
 		fallthrough
 	default:
+		// 汇款失败
 		detail.Remark = p.Message
 		if err := detail.UpdateOrderIdRemark(o); err != nil {
 			o.Commit()
@@ -277,9 +299,9 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	if err := detail.GetOrderIdBySubmitInfo(o); err != nil {
+	if detail.FinancialStatus != models.WithdrawalAudioStatusOk || detail.CustomerStatus != models.WithdrawalAudioStatusOk || detail.Status != models.WithdrawalStatusSubmit {
 		o.Rollback()
-		core.GResp.CustomFailure(c, err)
+		core.GResp.CustomFailure(c, errors.New("order status not submit"))
 		return
 	}
 
@@ -299,9 +321,8 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	//
 	// 入账金额
-	money := detail.Value + detail.Poundage
+	//money := detail.Value + detail.Poundage
 	// Fixme:待启用
 	//// 冻结支出
 	//block_detail := &models.BlockDetail{
@@ -339,21 +360,6 @@ func WithdrawalCallback(c *gin.Context) {
 	//	return
 	//}
 	//
-	go func() {
-		company_stream := &models.CompanyStream{
-			Code:        models.CodeWithdrawal,
-			Uid:         detail.Uid,
-			AccountId:   detail.AccountId,
-			Balance:     account.Balance - money,
-			LastBalance: account.Balance,
-			Income:      money,
-			Type:        resp.AccountDetailOut,
-			Address:     detail.Address,
-			OrderId:     detail.OrderId,
-		}
-		_ = company_stream.CreateCompanyStream(core.Orm.New())
-	}()
-
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
 	return
