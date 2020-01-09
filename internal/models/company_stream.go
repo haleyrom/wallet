@@ -78,7 +78,6 @@ func (c *CompanyStream) GetList(o *gorm.DB, page, pageSize, start_time, end_time
 		data.Items = make([]resp.CompanyStreamInfoResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				fmt.Println(item.UpdatedAt)
 				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				data.Items = append(data.Items, item)
 			}
