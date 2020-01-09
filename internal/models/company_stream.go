@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 	"math"
+	"time"
 )
 
 // CompanyStream 公司流水
@@ -69,16 +70,15 @@ func (c *CompanyStream) GetList(o *gorm.DB, page, pageSize, start_time, end_time
 
 	if err == nil {
 		var (
-			item resp.CompanyStreamInfoResp
-			//timer time.Time
+			item  resp.CompanyStreamInfoResp
+			timer time.Time
 		)
 
 		data.Items = make([]resp.CompanyStreamInfoResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				fmt.Println(item.UpdatedAt)
-				//timer, _ = time.ParseInLocation("2006-01-02T15:04:05Z", item.UpdatedAt, time.UTC)
-				//item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
+				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 				data.Items = append(data.Items, item)
 			}
 		}
