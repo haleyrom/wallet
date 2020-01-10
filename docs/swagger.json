@@ -257,6 +257,13 @@
                         "name": "email",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "支付密码",
+                        "name": "pay_password",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3411,7 +3418,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "description": "明细类型（账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级 7兑换 8转账）",
+                    "description": "明细类型（账单业务类型 1充值 2提币 3节点分红 4算力释放 5转入 6升级 7兑换 8转账 9收款 10付款）",
                     "type": "integer"
                 },
                 "updated_at": {
@@ -3706,7 +3713,7 @@
                     "description": "用户id",
                     "type": "integer"
                 },
-                "update_at": {
+                "updated_at": {
                     "description": "时间",
                     "type": "string"
                 }

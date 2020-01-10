@@ -609,6 +609,7 @@ func AccountCurrencyDetail(c *gin.Context) {
 // @param money formData number true "转账金额"
 // @param symbol formData string true "币种标识"
 // @param email formData string true "邮件"
+// @param pay_password formData string true "支付密码"
 // @Success 200
 // @Router /account/person/transfer [post]
 func AccountPersonTransfer(c *gin.Context) {
@@ -651,6 +652,20 @@ func AccountPersonTransfer(c *gin.Context) {
 	if err = base.CreateUser(param); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeNotUser)
+		return
+	}
+
+	user := models.NewUser()
+	user.ID = param.Uid
+	if err = user.GetInfo(o); err != nil {
+		o.Callback()
+		core.GResp.Failure(c, resp.CodeNotUser)
+		return
+	}
+
+	if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
+		o.Callback()
+		core.GResp.Failure(c, resp.CodeErrorPayPassword)
 		return
 	}
 
