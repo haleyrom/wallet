@@ -162,10 +162,11 @@ type AccountCurrencyDetailParam struct {
 
 // AccountPersonTransferParam 个人转账参数
 type AccountPersonTransferParam struct {
-	Base   *BaseParam `json:"claims" form:"claims"`
-	Email  string     `json:"email" form:"email"  binding:"email"`
-	Symbol string     `json:"symbol" form:"symbol"  binding:"required"`
-	Money  float64    `json:"money" form:"money"  binding:"required,gt=0"`
+	Base        *BaseParam `json:"claims" form:"claims"`
+	Email       string     `json:"email" form:"email"  binding:"email"`
+	Symbol      string     `json:"symbol" form:"symbol"  binding:"required"`
+	Money       float64    `json:"money" form:"money"  binding:"required,gt=0"`
+	PayPassword string     `json:"pay_password" form:"pay_password" binding:"required"`
 }
 
 // AccountTFORListParam TFOR钱包列表解析参数
