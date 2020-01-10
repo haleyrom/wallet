@@ -19,6 +19,10 @@ type UpdateCoinParam struct {
 	WithdrawalFeeType string     `json:"withdrawal_fee_type" form:"withdrawal_fee_type" binding:"required"` // 手续费类型 fixed 按百分百比,percent 固定收取
 	ContractAddress   string     `json:"contract_address" form:"contract_address" binding:"required"`       // 合约地址:如该是type=token，这里必须输入
 	Abi               string     `json:"abi" form:"abi" binding:"required"`                                 // 字节数
+	WithdrawalStatus  int8       `json:"withdrawal_status" form:"withdrawal_status"`                        // 状态：0开启;1:停用;
+	DepositStatus     int8       `json:"deposit_status" form:"deposit_status"`                              // 状态：0开启;1:停用;
+	CustomerStatus    int8       `json:"customer_status" form:"customer_status"`                            // 客服状态:0 必须1：不必须
+	FinancialStatus   int8       `json:"financial_status" form:"financial_status"`                          // 财务状态:0 必须1：不必须
 }
 
 // AddCoinParam 更新参数
@@ -36,6 +40,11 @@ type AddCoinParam struct {
 	WithdrawalFeeType string     `json:"withdrawal_fee_type" form:"withdrawal_fee_type" binding:"required"` // 手续费类型 fixed 按百分百比,percent 固定收取
 	ContractAddress   string     `json:"contract_address" form:"contract_address" binding:"required"`       // 合约地址:如该是type=token，这里必须输入
 	Abi               string     `json:"abi" form:"abi" binding:"required"`                                 // 字节数
+	// 字节数
+	WithdrawalStatus int8 `json:"withdrawal_status" form:"withdrawal_status"` // 状态：0开启;1:停用;
+	DepositStatus    int8 `json:"deposit_status" form:"deposit_status"`       // 状态：0开启;1:停用;
+	CustomerStatus   int8 `json:"customer_status" form:"customer_status"`     // 客服状态:0 必须1：不必须
+	FinancialStatus  int8 `json:"financial_status" form:"financial_status"`   // 财务状态:0 必须1：不必须
 }
 
 // RemoveCoinParam 删除参数

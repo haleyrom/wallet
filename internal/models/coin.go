@@ -12,19 +12,23 @@ import (
 // Coin 代币
 type Coin struct {
 	gorm.Model
-	CurrencyId        uint    `gorm:"column:currency_id;comment:'币种id'"`                          // 币种id
-	Symbol            string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                     // 代币代号
-	Name              string  `gorm:"size:255;column:name;comment:'代币名称';"`                       // 代币名称
-	BlockChainId      uint    `gorm:"column:block_chain_id;default:0;comment:'区块链id';"`           // 区块链名称
-	Type              string  `gorm:"size:255;column:type;comment:'币类型';"`                        // 标识 coin,token
-	ConfirmCount      int     `gorm:"column:confirm_count;default:0;comment:'确认数'"`               // 充值入帐的区块链确认数
-	MinDeposit        float64 `gorm:"column:min_deposit;default:0;comment:'最小充值金额'"`              // 最小充值金额，小于该金额不入账
-	MinWithdrawal     float64 `gorm:"column:min_withdrawal;default:0;comment:'最小提现金额'"`           // 小于该金额不能提
-	WithdrawalFee     float64 `gorm:"column:withdrawal_fee;default:0;comment:'提现手续费'"`            // 提现手续费
-	WithdrawalFeeType string  `gorm:"size:255;column:withdrawal_fee_type;comment:'手续费类型'"`        // 手续费类型 fixed 按百分百比,percent 固定收取
-	ContractAddress   string  `gorm:"size:255;column:contract_address;comment:'合约地址'"`            // 合约地址:如该是type=token，这里必须输入
-	Abi               string  `gorm:"size:255;column:abi;comment:'字节数'"`                          // 字节长度
-	Status            int8    `gorm:"size(3);column:status;default:0;commit:'状态(0开启,1:停用,2:删除)'"` // 状态：0开启;1:停用;2:删除
+	CurrencyId        uint    `gorm:"column:currency_id;comment:'币种id'"`                               // 币种id
+	Symbol            string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                          // 代币代号
+	Name              string  `gorm:"size:255;column:name;comment:'代币名称';"`                            // 代币名称
+	BlockChainId      uint    `gorm:"column:block_chain_id;default:0;comment:'区块链id';"`                // 区块链名称
+	Type              string  `gorm:"size:255;column:type;comment:'币类型';"`                             // 标识 coin,token
+	ConfirmCount      int     `gorm:"column:confirm_count;default:0;comment:'确认数'"`                    // 充值入帐的区块链确认数
+	MinDeposit        float64 `gorm:"column:min_deposit;default:0;comment:'最小充值金额'"`                   // 最小充值金额，小于该金额不入账
+	MinWithdrawal     float64 `gorm:"column:min_withdrawal;default:0;comment:'最小提现金额'"`                // 小于该金额不能提
+	WithdrawalFee     float64 `gorm:"column:withdrawal_fee;default:0;comment:'提现手续费'"`                 // 提现手续费
+	WithdrawalFeeType string  `gorm:"size:255;column:withdrawal_fee_type;comment:'手续费类型'"`             // 手续费类型 fixed 按百分百比,percent 固定收取
+	ContractAddress   string  `gorm:"size:255;column:contract_address;comment:'合约地址'"`                 // 合约地址:如该是type=token，这里必须输入
+	Abi               string  `gorm:"size:255;column:abi;comment:'字节数'"`                               // 字节长度
+	Status            int8    `gorm:"size(3);column:status;default:0;commit:'状态(0开启,1:停用,2:删除)'"`      // 状态：0开启;1:停用;2:删除
+	WithdrawalStatus  int8    `gorm:"size(3);column:withdrawal_status;default:0;commit:'充值状态-0开启1停用'"` // 状态：0开启;1:停用;
+	DepositStatus     int8    `gorm:"size(3);column:deposit_status;default:0;commit:'提笔状态-0开启1停用'"`    // 状态：0开启;1:停用;
+	CustomerStatus    int8    `gorm:"size(3);column:customer_status;index;default:0;comment:'客服状态'"`   // 客服状态:0 必须1：不必须
+	FinancialStatus   int8    `gorm:"size(3);column:financial_status;index;default:0;comment:'财务状态'"`  // 财务状态:0 必须1：不必须
 }
 
 // GetCoinTable 表
@@ -40,7 +44,7 @@ func NewCoin() *Coin {
 // GetAll 获取全部
 func (c *Coin) GetAll(o *gorm.DB) ([]resp.ReadCoinListResp, error) {
 	data := make([]resp.ReadCoinListResp, 0)
-	rows, err := o.Raw(fmt.Sprintf("SELECT coin.currency_id,currency.symbol as currency_symbol,currency.name as currency_name,currency.decimals as currency_decimals,coin.id as coin_id,coin.symbol,coin.type,coin.status,coin.name,block_chain_id,chain.chain_code,chain.name as chain_name,coin.type,confirm_count,min_deposit,min_withdrawal,withdrawal_fee,withdrawal_fee_type,contract_address,coin.updated_at FROM %s coin left JOIN %s chain on chain.id = coin.block_chain_id LEFT JOIN %s currency ON currency.id = coin.currency_id WHERE coin.status < ?", GetCoinTable(), GetBlockChain(), GetCurrencyTable()), vStatusRm).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT coin.currency_id,currency.symbol as currency_symbol,currency.name as currency_name,currency.decimals as currency_decimals,coin.id as coin_id,coin.symbol,coin.type,coin.status,coin.name,block_chain_id,chain.chain_code,chain.name as chain_name,coin.type,confirm_count,min_deposit,min_withdrawal,withdrawal_fee,withdrawal_fee_type,contract_address,coin.updated_at,coin.withdrawal_status,coin.deposit_status,coin.customer_status,coin.financial_status FROM %s coin left JOIN %s chain on chain.id = coin.block_chain_id LEFT JOIN %s currency ON currency.id = coin.currency_id WHERE coin.status < ?", GetCoinTable(), GetBlockChain(), GetCurrencyTable()), vStatusRm).Rows()
 	defer rows.Close()
 
 	if err == nil {
@@ -95,8 +99,8 @@ func (c *Coin) RmChain(o *gorm.DB) error {
 // GetInfo  获取消息
 func (c *Coin) GetInfo(o *gorm.DB) (resp.ReadCoinInfoResp, error) {
 	var data resp.ReadCoinInfoResp
-	row := o.Table(GetCoinTable()).Where("id = ? and status < ?", c.ID, vStatusRm).Select("id as coin_id,currency_id,symbol,name,block_chain_id,type,confirm_count,min_deposit,min_withdrawal,withdrawal_fee,withdrawal_fee_type,contract_address,abi,status").Row()
-	_ = row.Scan(&data.CoinId, &data.CurrencyId, &data.Symbol, &data.Name, &data.BlockChainId, &data.Type, &data.ConfirmCount, &data.MinDeposit, &data.MinWithdrawal, &data.WithdrawalFee, &data.WithdrawalFeeType, &data.ContractAddress, &data.Abi, &data.Status)
+	row := o.Table(GetCoinTable()).Where("id = ? and status < ?", c.ID, vStatusRm).Select("id as coin_id,currency_id,symbol,name,block_chain_id,type,confirm_count,min_deposit,min_withdrawal,withdrawal_fee,withdrawal_fee_type,contract_address,abi,status,withdrawal_status,deposit_status,customer_status,financial_status").Row()
+	_ = row.Scan(&data.CoinId, &data.CurrencyId, &data.Symbol, &data.Name, &data.BlockChainId, &data.Type, &data.ConfirmCount, &data.MinDeposit, &data.MinWithdrawal, &data.WithdrawalFee, &data.WithdrawalFeeType, &data.ContractAddress, &data.Abi, &data.Status, &data.WithdrawalStatus, &data.DepositStatus, &data.CustomerStatus, &data.FinancialStatus)
 	if data.CoinId == 0 {
 		return data, fmt.Errorf("%s", "Coin not exist")
 	}
@@ -117,8 +121,8 @@ func (c *Coin) UpdateCoinStatus(o *gorm.DB) error {
 // GetDepositInfo 获取提现信息
 func (c *Coin) GetDepositInfo(o *gorm.DB) (resp.ReadCoinDepositInfoResp, error) {
 	var data resp.ReadCoinDepositInfoResp
-	row := o.Table(GetCoinTable()).Where("id = ? and status < ?", c.ID, vStatusStop).Select("id as coin_id,currency_id,min_withdrawal,withdrawal_fee,withdrawal_fee_type,symbol,type,status").Row()
-	_ = row.Scan(&data.CoinId, &data.CurrencyId, &data.MinWithdrawal, &data.WithdrawalFee, &data.WithdrawalFeeType, &data.Symbol, &data.Type, &data.Status)
+	row := o.Table(GetCoinTable()).Where("id = ? and status < ? and deposit_status = ?", c.ID, vStatusStop, vStatusOk).Select("id as coin_id,currency_id,min_withdrawal,withdrawal_fee,withdrawal_fee_type,symbol,type,status,withdrawal_status,deposit_status,customer_status,financial_status").Row()
+	_ = row.Scan(&data.CoinId, &data.CurrencyId, &data.MinWithdrawal, &data.WithdrawalFee, &data.WithdrawalFeeType, &data.Symbol, &data.Type, &data.Status, &data.WithdrawalStatus, &data.DepositStatus, &data.CustomerStatus, &data.FinancialStatus)
 	if data.CoinId == 0 {
 		return data, fmt.Errorf("%s", "Coin not exist")
 	}

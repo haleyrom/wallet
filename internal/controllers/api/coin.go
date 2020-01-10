@@ -85,6 +85,10 @@ func ReadCoinInfo(c *gin.Context) {
 // @Param withdrawal_fee formData number true "提现手续费"
 // @Param withdrawal_fee_type formData int true "手续费类型 1：百分比;2：固定类型"
 // @Param contract_address formData string true "合约地址 如该是type=token，这里必须输入"
+// @Param withdrawal_status formData number "充值状态0：开启；1:关闭"
+// @Param deposit_status formData number "提笔状态0：开启；1:关闭"
+// @Param customer_status formData number "客服状态:0 必须1：不必须"
+// @Param financial_status formData number "财务状态:0 必须1：不必须"
 // @Success 200
 // @Router /coin/update [POST]
 func UpdateCoin(c *gin.Context) {
@@ -113,18 +117,14 @@ func UpdateCoin(c *gin.Context) {
 		return
 	}
 
-	coin.Symbol = p.Symbol
-	coin.Name = p.Name
-	coin.CurrencyId = p.CurrencyId
-	coin.BlockChainId = p.BlockChainId
-	coin.Type = p.Type
-	coin.ConfirmCount = p.ConfirmCount
-	coin.MinDeposit = p.MinDeposit
-	coin.MinWithdrawal = p.MinWithdrawal
-	coin.WithdrawalFee = p.WithdrawalFee
-	coin.WithdrawalFeeType = p.WithdrawalFeeType
-	coin.ContractAddress = p.ContractAddress
-	coin.Abi = p.Abi
+	coin.Symbol, coin.Name = p.Symbol, p.Name
+	coin.CurrencyId, coin.BlockChainId = p.CurrencyId, p.BlockChainId
+	coin.Type, coin.ConfirmCount = p.Type, p.ConfirmCount
+	coin.MinDeposit, coin.MinWithdrawal = p.MinDeposit, p.MinWithdrawal
+	coin.WithdrawalFee, coin.WithdrawalFeeType = p.WithdrawalFee, p.WithdrawalFeeType
+	coin.ContractAddress, coin.Abi = p.ContractAddress, p.Abi
+	coin.WithdrawalStatus, coin.DepositStatus = p.WithdrawalStatus, p.DepositStatus
+	coin.CustomerStatus, coin.FinancialStatus = p.CustomerStatus, p.FinancialStatus
 	if err := coin.UpdateCoin(o); err != nil {
 		core.GResp.Failure(c, err)
 		return
@@ -184,6 +184,10 @@ func AddCoin(c *gin.Context) {
 		WithdrawalFeeType: p.WithdrawalFeeType,
 		ContractAddress:   p.ContractAddress,
 		Abi:               p.Abi,
+		WithdrawalStatus:  p.WithdrawalStatus,
+		DepositStatus:     p.DepositStatus,
+		CustomerStatus:    p.CustomerStatus,
+		FinancialStatus:   p.FinancialStatus,
 	}
 	if err := coin.CreateCoin(core.Orm.DB.New()); err != nil {
 		core.GResp.Failure(c, err)

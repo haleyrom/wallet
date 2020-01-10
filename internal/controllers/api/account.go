@@ -517,18 +517,29 @@ func AccountWithdrawal(c *gin.Context) {
 
 	// TODO: 对接提现
 	withdrawal_detail := &models.WithdrawalDetail{
-		Uid:        p.Base.Uid,
-		Address:    withdrawal_addr.Address,
-		CoinId:     p.CoinId,
-		CurrencyId: p.CurrencyId,
-		AccountId:  account.ID,
-		Value:      p.Money,
-		Symbol:     coin_info.Symbol,
-		Type:       coin_info.Type,
-		OrderId:    fmt.Sprintf("%s", uuid.NewV4()),
-		Status:     models.WithdrawalStatusToAudit,
-		Poundage:   poundage,
+		Uid:             p.Base.Uid,
+		Address:         withdrawal_addr.Address,
+		CoinId:          p.CoinId,
+		CurrencyId:      p.CurrencyId,
+		AccountId:       account.ID,
+		Value:           p.Money,
+		Symbol:          coin_info.Symbol,
+		Type:            coin_info.Type,
+		OrderId:         fmt.Sprintf("%s", uuid.NewV4()),
+		Status:          models.WithdrawalStatusToAudit,
+		Poundage:        poundage,
+		FinancialStatus: coin.FinancialStatus,
+		CustomerStatus:  coin.CustomerStatus,
 	}
+
+	// 不需要审核直接提交
+	if coin.FinancialStatus > int8(core.DefaultNilNum) && coin.CustomerStatus > int8(core.DefaultNilNum) {
+		withdrawal_detail.Status = models.WithdrawalStatusThrough
+		if msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
+			withdrawal_detail.Remark = msg
+		}
+	}
+
 	if err := withdrawal_detail.CreateWithdrawalDetail(o); err != nil {
 		o.Callback()
 		core.GResp.Failure(c, err)
