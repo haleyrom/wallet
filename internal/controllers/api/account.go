@@ -663,7 +663,7 @@ func AccountPersonTransfer(c *gin.Context) {
 		return
 	}
 
-	if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
+	if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(data.UserId, 1)) {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeErrorPayPassword)
 		return
