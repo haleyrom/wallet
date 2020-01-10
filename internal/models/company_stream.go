@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 	"math"
@@ -49,8 +50,9 @@ func (c *CompanyStream) CreateCompanyStream(o *gorm.DB) error {
 // GetList 获取企业充值列表
 func (c *CompanyStream) GetList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.CompanyStreamListResp, error) {
 	data := resp.CompanyStreamListResp{}
-	sql := fmt.Sprintf("SELECT detail.address,detail.id as id,user.id as uid,user.name,user.email,detail.income,detail.spend,detail.balance, detail.last_balance, currency.symbol,detail.updated_at,detail.order_id FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable(), c.Code)
-	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), c.Code)
+	sql := fmt.Sprintf("SELECT detail.address,detail.id as id,user.id as uid,user.name,user.email,TRUNCATE(detail.income,6) as income,TRUNCATE(detail.spend,6) as spend,TRUNCATE(detail.balance,6) as balance, TRUNCATE(detail.last_balance,6) as last_balance, currency.symbol,detail.updated_at,detail.order_id FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.order_id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable(), c.Code)
+
+	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.order_id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), c.Code)
 
 	if start_time > 0 && end_timer > 0 {
 		sql = fmt.Sprintf("%s AND UNIX_TIMESTAMP(detail.updated_at) >= %d AND UNIX_TIMESTAMP(detail.updated_at) <= %d ", sql, start_time, end_timer)
@@ -62,7 +64,7 @@ func (c *CompanyStream) GetList(o *gorm.DB, page, pageSize, start_time, end_time
 		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
 	}
 
-	sql = fmt.Sprintf("%s ORDER BY detail.id LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
+	sql = fmt.Sprintf("%s ORDER BY detail.id desc LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
 
 	rows, err := o.Raw(sql).Rows()
 	defer rows.Close()
@@ -76,8 +78,7 @@ func (c *CompanyStream) GetList(o *gorm.DB, page, pageSize, start_time, end_time
 		data.Items = make([]resp.CompanyStreamInfoResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
-				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				data.Items = append(data.Items, item)
 			}
 		}

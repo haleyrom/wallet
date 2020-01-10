@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
-	"github.com/haleyrom/wallet/internal/controllers/api"
+	"github.com/haleyrom/wallet/internal/controllers/base"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
@@ -70,7 +70,7 @@ func JoinRecharge(c *gin.Context) {
 			},
 		}
 
-		if err = api.CreateUser(param); err != nil {
+		if err = base.CreateUser(param); err != nil {
 			core.GResp.Failure(c, resp.CodeNotUser)
 			return
 		}
@@ -259,7 +259,7 @@ func AudioRecharge(c *gin.Context) {
 			company_stream := &models.CompanyStream{
 				Code:        models.CodeWithdrawal,
 				Uid:         account_detail.Uid,
-				AccountId:   account_detail.ID,
+				AccountId:   account_detail.AccountId,
 				Balance:     account_detail.Balance,
 				LastBalance: account_detail.LastBalance,
 				Income:      account_detail.Income,

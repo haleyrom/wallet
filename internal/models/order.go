@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
@@ -97,11 +98,11 @@ func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startT
 		endTime = 10000000000000
 	}
 
-	count_sql := fmt.Sprintf("select count(*) as num from %s o left join %s u on o.uid = u.id  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
-	sql := fmt.Sprintf("SELECT o.id,o.uid,o.currency_id,o.exchange_id,o.updated_at,o.balance as value,o.status,o.ratio,u.name,u.email FROM %s o LEFT JOIN %s u on u.id = o.uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
+	count_sql := fmt.Sprintf("select count(*) as num from %s o left join %s u on o.uid = u.id  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
+	sql := fmt.Sprintf("SELECT o.id,o.uid,o.currency_id,o.exchange_id,o.updated_at,TRUNCATE(o.balance,6) as value,o.status,o.ratio,u.name,u.email FROM %s o LEFT JOIN %s u on u.id = o.uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
 	if key != "" {
-		count_sql += " and o.name like  '%" + key + "%' "
-		sql += " and o.name like  '%" + key + "%' "
+		count_sql += " and u.name like  '%" + key + "%' "
+		sql += " and u.name like  '%" + key + "%' "
 	}
 	sql = sql + fmt.Sprintf("order by o.id desc limit %d offset %d", pageSize, (page-1)*pageSize)
 	rows, err := o.Raw(sql).Rows()
@@ -122,8 +123,7 @@ func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startT
 
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
-				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				if _, ok := currencty[item.CurrencyId]; ok == true {
 					item.CurrencySymbol = currencty[item.CurrencyId]
 				}

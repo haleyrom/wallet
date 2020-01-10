@@ -11,6 +11,7 @@ func RegisterAdminRouter(r *gin.RouterGroup) {
 	v1 := r.Group("admin")
 	{
 		v1.Use(middleware.HttpInterceptor(middleware.AdminJwt))
+		v1.GET("/account/list", admin.AccountList)
 		v1.GET("/account/user/list", admin.AccountUserList)
 		v1.GET("/account/withdrawal/list", admin.AccountWithdrawalList)
 		v1.GET("/account/user/deposit-list", admin.DepositDetailList)

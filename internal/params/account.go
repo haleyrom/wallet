@@ -46,6 +46,9 @@ type AccountWithdrawalParam struct {
 	WithdrawalAddrId uint       `json:"withdrawal_addr_id" form:"withdrawal_addr_id" binding:"required"`
 }
 
+// AccountListParam 钱包列表
+type AccountListParam BaseListParam
+
 // AccountUserListParam 用户钱包列表
 type AccountUserListParam BaseListParam
 

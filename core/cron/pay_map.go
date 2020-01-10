@@ -2,7 +2,6 @@ package cron
 
 import (
 	"fmt"
-	"github.com/astaxie/beego/logs"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
 	"time"
@@ -25,7 +24,7 @@ func (g *gcPayMap) Spec() string {
 
 // Job 按时间LRU策略回收支付map
 func (g *gcPayMap) Job() {
-	logs.Debug("gc pay map")
+	//logs.Debug("gc pay map")
 	// TODO
 
 	timer := time.Now().Unix()

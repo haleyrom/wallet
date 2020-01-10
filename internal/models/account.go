@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 	"math"
@@ -32,14 +33,14 @@ func NewAccount() *Account {
 // GetUserAvailableBalance 获取用户可用余额
 func (a *Account) GetUserAvailableBalance(o *gorm.DB) (float64, error) {
 	var money float64
-	err := o.Raw(fmt.Sprintf("SELECT (cur.balance-cur.blocked_balance) as balance from %s cur where cur.uid = ? and  currency_id = ?", GetAccountTable()), a.Uid, a.CurrencyId).Row().Scan(&money)
+	err := o.Raw(fmt.Sprintf("SELECT TRUNCATE(cur.balance-cur.blocked_balance,6) as balance from %s cur where cur.uid = ? and  currency_id = ?", GetAccountTable()), a.Uid, a.CurrencyId).Row().Scan(&money)
 	return money, err
 }
 
 // GetUserBalance 获取用户余额
 func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, error) {
 	data := make([]resp.AccountInfoResp, 0)
-	rows, err := o.Raw(fmt.Sprintf("SELECT acc.uid,acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ?", GetCurrencyTable(), GetAccountTable()), uid).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT acc.uid,acc.id as account_id,acc.currency_id,TRUNCATE(acc.balance-acc.blocked_balance,6) as balance,TRUNCATE(acc.blocked_balance,6) as blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ?", GetCurrencyTable(), GetAccountTable()), uid).Rows()
 	defer rows.Close()
 
 	if err == nil {
@@ -49,8 +50,7 @@ func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, 
 		)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
-				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				data = append(data, item)
 			}
 		}
@@ -61,16 +61,16 @@ func (a *Account) GetUserBalance(o *gorm.DB, uid uint) ([]resp.AccountInfoResp, 
 // GetUserTFORBalance 获取用户TFOR余额
 func (a *Account) GetUserTFORBalance(o *gorm.DB, uid uint) (resp.AccountInfoResp, error) {
 	var data resp.AccountInfoResp
-	rows := o.Raw(fmt.Sprintf("SELECT acc.uid,acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable()), uid, "TFOR").Row()
+	rows := o.Raw(fmt.Sprintf("SELECT acc.uid,acc.id as account_id,acc.currency_id,TRUNCATE(acc.balance-acc.blocked_balance,6) as balance,TRUNCATE(acc.blocked_balance,6) as blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable()), uid, "TFOR").Row()
 	err := rows.Scan(&data.Uid, &data.AccountId, &data.CurrencyId, &data.Balance, &data.BlockedBalance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
-	timer, _ := time.Parse("2006-01-02T15:04:05+08:00", data.UpdatedAt)
+	timer, _ := time.Parse("2006-01-02T15:04:05:08Z", data.UpdatedAt)
 	data.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 	return data, err
 }
 
 // GetUserTFORBalanceList 获取用户TFOR余额列表
 func (a *Account) GetUserTFORBalanceList(o *gorm.DB, uids []string) (resp.AccountTFORListResp, error) {
-	rows, err := o.Raw(fmt.Sprintf("SELECT u.uid ,acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id LEFT JOIN %s u on acc.uid = u.id where u.uid in(?) AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable(), GetUserTable()), uids, "TFOR").Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT u.uid ,acc.id as account_id,acc.currency_id,TRUNCATE(acc.balance-acc.blocked_balance,6) as balance,TRUNCATE(acc.blocked_balance,6) as blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id LEFT JOIN %s u on acc.uid = u.id where u.uid in(?) AND cur.symbol = ?", GetCurrencyTable(), GetAccountTable(), GetUserTable()), uids, "TFOR").Rows()
 	defer rows.Close()
 
 	var (
@@ -81,8 +81,7 @@ func (a *Account) GetUserTFORBalanceList(o *gorm.DB, uids []string) (resp.Accoun
 	data.Items = make(map[string]resp.AccountTFORListInfoResp, 0)
 	for rows.Next() {
 		if err = o.ScanRows(rows, &item); err == nil {
-			timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
-			item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+			item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 			data.Items[item.Uid] = item
 		}
 	}
@@ -93,9 +92,9 @@ func (a *Account) GetUserTFORBalanceList(o *gorm.DB, uids []string) (resp.Accoun
 // GetUserAccountBalance 获取用户钱包余额
 func (a *Account) GetUserAccountBalance(o *gorm.DB) (resp.AccountInfoResp, error) {
 	var data resp.AccountInfoResp
-	rows := o.Raw(fmt.Sprintf("SELECT acc.uid,acc.id as account_id,acc.currency_id,(acc.balance-acc.blocked_balance) as balance,acc.blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND acc.id = ?", GetCurrencyTable(), GetAccountTable()), a.Uid, a.ID).Row()
+	rows := o.Raw(fmt.Sprintf("SELECT acc.uid,acc.id as account_id,acc.currency_id,TRUNCATE(acc.balance-acc.blocked_balance,6) as balance,TRUNCATE(acc.blocked_balance,6) as blocked_balance,cur.symbol,cur.decimals,cur.name,acc.updated_at from %s cur LEFT JOIN %s acc on acc.currency_id = cur.id where acc.uid = ? AND acc.id = ?", GetCurrencyTable(), GetAccountTable()), a.Uid, a.ID).Row()
 	err := rows.Scan(&data.Uid, &data.AccountId, &data.CurrencyId, &data.Balance, &data.BlockedBalance, &data.Symbol, &data.Decimals, &data.Name, &data.UpdatedAt)
-	timer, _ := time.Parse("2006-01-02T15:04:05+08:00", data.UpdatedAt)
+	timer, _ := time.Parse("2006-01-02T15:04:05:08Z", data.UpdatedAt)
 	data.UpdatedAt = timer.Format("2006-01-02 15:04:05")
 	return data, err
 }
@@ -204,7 +203,7 @@ func (a *Account) UpdateWithdrawalBalance(o *gorm.DB, balance, block_balance flo
 // GetAccountUserList 获取用户钱包列表
 func (a *Account) GetAccountUserList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.AccountUserDetailListResp, error) {
 	data := resp.AccountUserDetailListResp{}
-	sql := fmt.Sprintf("SELECT detail.id as id,user.id as uid,user.name,user.email,detail.income,detail.spend,detail.balance, detail.last_balance, currency.symbol,detail.updated_at FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.id > 0 ", GetAccountDetailTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable())
+	sql := fmt.Sprintf("SELECT detail.id as id,user.id as uid,user.name,user.email,TRUNCATE(detail.income,6) as income,TRUNCATE(detail.spend,6) as spend,TRUNCATE(detail.balance,6) as balance, TRUNCATE(detail.last_balance,6) as last_balance, currency.symbol,detail.updated_at FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.id > 0 ", GetAccountDetailTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable())
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 ", GetAccountDetailTable(), GetUserTable())
 
 	if start_time > 0 && end_timer > 0 {
@@ -231,12 +230,53 @@ func (a *Account) GetAccountUserList(o *gorm.DB, page, pageSize, start_time, end
 		data.Items = make([]resp.AccountUserDetailInfoResp, 0)
 		for rows.Next() {
 			if err = o.ScanRows(rows, &item); err == nil {
-				timer, _ = time.Parse("2006-01-02T15:04:05+08:00", item.UpdatedAt)
-				item.UpdatedAt = timer.Format("2006-01-02 15:04:05")
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
 				data.Items = append(data.Items, item)
 			}
 		}
 
+	}
+	_ = o.Raw(count_sql).Row().Scan(&data.Page.Count)
+	data.Page.PageSize = len(data.Items)
+	data.Page.CurrentPage = page
+	data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))
+	return data, err
+}
+
+// GetAdminAccountList 获取后台用户钱包列表
+func (a *Account) GetAdminAccountList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.AccountListResp, error) {
+	data := resp.AccountListResp{}
+	sql := fmt.Sprintf("SELECT account.id AS id,user.id AS uid,user.name,user.email, TRUNCATE(account.balance,6) AS balance, TRUNCATE ( account.blocked_balance, 6 ) AS blocked_balance, currency.symbol, account.updated_at FROM %s account LEFT JOIN %s user ON account.uid = user.id LEFT JOIN %s currency ON currency.id = account.currency_id where account.id > 0 ", GetAccountTable(), GetUserTable(), GetCurrencyTable())
+	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s account LEFT JOIN %s user ON account.uid = user.id where account.id > 0 ", GetAccountTable(), GetUserTable())
+
+	if start_time > 0 && end_timer > 0 {
+		sql = fmt.Sprintf("%s AND UNIX_TIMESTAMP(account.updated_at) >= %d AND UNIX_TIMESTAMP(account.updated_at) <= %d ", sql, start_time, end_timer)
+		count_sql = fmt.Sprintf("%s AND UNIX_TIMESTAMP(account.updated_at) >= %d AND UNIX_TIMESTAMP(account.updated_at) <= %d ", count_sql, start_time, end_timer)
+	}
+
+	if len(keyword) > 0 {
+		sql = fmt.Sprintf("%s AND user.name like '%s'", sql, "%"+keyword+"%")
+		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
+	}
+
+	sql = fmt.Sprintf("%s ORDER BY account.id desc LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
+
+	rows, err := o.Raw(sql).Rows()
+	defer rows.Close()
+
+	if err == nil {
+		var (
+			item  resp.AccountAdminInfoResp
+			timer time.Time
+		)
+
+		data.Items = make([]resp.AccountAdminInfoResp, 0)
+		for rows.Next() {
+			if err = o.ScanRows(rows, &item); err == nil {
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
+				data.Items = append(data.Items, item)
+			}
+		}
 	}
 	_ = o.Raw(count_sql).Row().Scan(&data.Page.Count)
 	data.Page.PageSize = len(data.Items)

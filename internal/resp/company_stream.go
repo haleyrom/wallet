@@ -13,7 +13,7 @@ type CompanyStreamInfoResp struct {
 	LastBalance float64 `json:"last_balance"` // 之前余额
 	Symbol      string  `json:"symbol"`       // 币种
 	OrderId     string  `json:"order_id"`     // 订单号
-	UpdatedAt   string  `json:"update_at"`    // 时间
+	UpdatedAt   string  `json:"updated_at"`   // 时间
 }
 
 // CompanyStreamListResp 公司流水列表

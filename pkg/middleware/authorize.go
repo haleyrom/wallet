@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
-	"github.com/haleyrom/wallet/internal/controllers/api"
+	"github.com/haleyrom/wallet/internal/controllers/base"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/jwt"
@@ -60,7 +60,7 @@ func HttpInterceptor(j *jwt.JWT) gin.HandlerFunc {
 				// 判断用户id是否未空
 				if len(info.Claims.UserID) == core.DefaultNilNum {
 					err = errors.Errorf("%d", resp.CodeIllegalToken)
-				} else if err = api.CreateUser(info); err == nil {
+				} else if err = base.CreateUser(info); err == nil {
 					core.UserInfoPool.Put(info)
 				}
 			}

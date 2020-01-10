@@ -10,11 +10,8 @@ import (
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
-	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
-	"sync"
 	"time"
 )
 
@@ -25,55 +22,6 @@ const failure_timer = time.Minute * 1
 func Check(c *gin.Context) {
 	core.GResp.Success(c, "ok")
 	return
-}
-
-// CreateUser 创建用户
-func CreateUser(p *params.BaseParam) error {
-	user := models.User{
-		Uid:   p.Claims.UserID,
-		Name:  p.Claims.Name,
-		Email: p.Claims.Email,
-	}
-
-	o := core.Orm.New()
-	if err := user.IsExistUser(o); err != nil {
-		o = o.Begin()
-		// 不存在用户，创建
-		if err = user.CreateUser(o); err != nil {
-			o.Rollback()
-			return err
-		} else if err = o.Commit().Error; err == nil {
-			var wg sync.WaitGroup
-			wg.Add(2)
-
-			go func(id uint, o *gorm.DB) {
-				defer wg.Done()
-				// 创建账本
-				ids, _ := models.NewCurrency().GetIdAll(o)
-				account := models.Account{
-					Uid: id,
-				}
-
-				if err := account.CreateAccount(o, ids); err != nil {
-					logrus.Errorf("create account uid %d, failure: %v", id, err)
-				}
-
-			}(user.ID, core.Orm.New())
-
-			go func(id uint, o *gorm.DB) {
-				defer wg.Done()
-				_ = CreateDeposit(o, id)
-			}(user.ID, core.Orm.New())
-
-			wg.Wait()
-		}
-	} else if p.Claims.Name != core.DefaultNilString && p.Claims.Email != core.DefaultNilString && (user.Name != p.Claims.Name || user.Email != p.Claims.Email) {
-		user.Name, user.Email = p.Claims.Name, p.Claims.Email
-		_ = user.UpdateInfo(core.Orm.New())
-	}
-
-	p.Uid = user.ID
-	return nil
 }
 
 // UpdatePayPassword 更新支付密码
@@ -195,7 +143,6 @@ func PaymentQrCode(c *gin.Context) {
 	core.PayChan.MapChan[order.OrderUuid] = make(chan int, 1)
 	core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
 	key := int(order.CreatedAt.Add(failure_timer).Unix())
-	fmt.Println("++++++", core.PayChan.MapTime, core.PayChan.MapChan)
 	if len(core.PayChan.MapTime[key]) == core.DefaultNilNum {
 		core.PayChan.MapTime[key] = make([]string, 0)
 	}
