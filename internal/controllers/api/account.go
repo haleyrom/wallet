@@ -528,12 +528,20 @@ func AccountWithdrawal(c *gin.Context) {
 		OrderId:         fmt.Sprintf("%s", uuid.NewV4()),
 		Status:          models.WithdrawalStatusToAudit,
 		Poundage:        poundage,
-		FinancialStatus: coin.FinancialStatus,
-		CustomerStatus:  coin.CustomerStatus,
+		FinancialStatus: models.WithdrawalAudioStatusAwait,
+		CustomerStatus:  models.WithdrawalAudioStatusAwait,
 	}
 
 	// 不需要审核直接提交
-	if coin.FinancialStatus > int8(core.DefaultNilNum) && coin.CustomerStatus > int8(core.DefaultNilNum) {
+	if coin_info.FinancialStatus > int8(core.DefaultNilNum) {
+		withdrawal_detail.FinancialStatus = models.WithdrawalAudioStatusOk
+	}
+	if coin_info.CustomerStatus > int8(core.DefaultNilNum) {
+		withdrawal_detail.CustomerStatus = models.WithdrawalAudioStatusOk
+	}
+
+	if withdrawal_detail.FinancialStatus == models.WithdrawalAudioStatusOk && coin.CustomerStatus == models.WithdrawalAudioStatusOk {
+		withdrawal_detail.CustomerStatus, withdrawal_detail.FinancialStatus = models.WithdrawalAudioStatusOk, models.WithdrawalAudioStatusOk
 		withdrawal_detail.Status = models.WithdrawalStatusThrough
 		if msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
 			withdrawal_detail.Remark = msg

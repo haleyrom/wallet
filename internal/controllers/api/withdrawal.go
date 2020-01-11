@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/base"
@@ -267,15 +268,20 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
+	jsonStr, _ = json.Marshal(c.Request.PostForm)
+	detail.CallbackStatus, detail.CallbackJson = p.Code, string(jsonStr)
+	fmt.Println(data, detail, "============")
 	switch p.Code {
 	case "105004":
 		// 已提交
 		detail.TransactionHash = p.TransactionHash
-		// 入账
-		if err := base.AccountInsertDetail(o, detail); err != nil {
-			o.Rollback()
-			core.GResp.CustomFailure(c, err)
-			return
+		if detail.Status == models.WithdrawalStatusThrough {
+			// 入账
+			if err := base.AccountInsertDetail(o, detail); err != nil {
+				o.Rollback()
+				core.GResp.CustomFailure(c, err)
+				return
+			}
 		}
 
 		o.Commit()
@@ -312,54 +318,6 @@ func WithdrawalCallback(c *gin.Context) {
 		core.GResp.CustomFailure(c, err)
 		return
 	}
-
-	account := models.NewAccount()
-	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
-	if err := account.GetOrderUidCurrencyIdByInfo(o); err != nil {
-		o.Callback()
-		core.GResp.CustomFailure(c, err)
-		return
-	}
-
-	// 入账金额
-	//money := detail.Value + detail.Poundage
-	// Fixme:待启用
-	//// 冻结支出
-	//block_detail := &models.BlockDetail{
-	//	Uid:         detail.Uid,
-	//	AccountId:   detail.AccountId,
-	//	Balance:     account.BlockedBalance - money,
-	//	LastBalance: account.BlockedBalance,
-	//	Spend:       money,
-	//}
-	//
-	//if err := block_detail.CreateBlockDetail(o); err != nil {
-	//	o.Callback()
-	//	core.GResp.CustomFailure(c, err)
-	//	return
-	//}
-	//
-	//account_detail := &models.AccountDetail{
-	//	Uid:         detail.Uid,
-	//	AccountId:   detail.AccountId,
-	//	Balance:     account.Balance - money,
-	//	LastBalance: account.Balance,
-	//	Spend:       money,
-	//	Type:        resp.AccountDetailOut,
-	//}
-	//if err := account_detail.CreateAccountDetail(o); err != nil {
-	//	o.Callback()
-	//	core.GResp.CustomFailure(c, err)
-	//	return
-	//}
-	//
-	//// 入账
-	//if err := account.UpdateWithdrawalBalance(o, money, money, core.OperateToOut, core.OperateToOut); err != nil {
-	//	o.Callback()
-	//	core.GResp.CustomFailure(c, err)
-	//	return
-	//}
-	//
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
 	return
