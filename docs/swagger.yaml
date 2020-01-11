@@ -2020,6 +2020,26 @@ paths:
         name: contract_address
         required: true
         type: string
+      - description: 充值状态0：开启；1:关闭
+        in: formData
+        name: withdrawal_status
+        required: true
+        type: number
+      - description: 提笔状态0：开启；1:关闭
+        in: formData
+        name: deposit_status
+        required: true
+        type: number
+      - description: 客服状态:0 必须1：不必须
+        in: formData
+        name: customer_status
+        required: true
+        type: number
+      - description: 财务状态:0 必须1：不必须
+        in: formData
+        name: financial_status
+        required: true
+        type: number
       produces:
       - application/json
       responses:

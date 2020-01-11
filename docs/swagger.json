@@ -1912,6 +1912,34 @@
                         "name": "contract_address",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "充值状态0：开启；1:关闭",
+                        "name": "withdrawal_status",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "提笔状态0：开启；1:关闭",
+                        "name": "deposit_status",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "客服状态:0 必须1：不必须",
+                        "name": "customer_status",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "财务状态:0 必须1：不必须",
+                        "name": "financial_status",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
