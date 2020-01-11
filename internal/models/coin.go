@@ -73,7 +73,26 @@ func (c *Coin) IsExistCoin(o *gorm.DB) error {
 // UpdateCoin  更新代币
 func (c *Coin) UpdateCoin(o *gorm.DB) error {
 	c.UpdatedAt = time.Now()
-	if err := o.Model(c).Where("id = ? and status < ?", c.ID, vStatusRm).Update(c).Error; err != nil {
+	fmt.Println(c)
+	if err := o.Table(GetCoinTable()).Where("id = ? and status < ?", c.ID, vStatusRm).Update(map[string]interface{}{
+		"symbol":              c.Symbol,
+		"name":                c.Name,
+		"currency_id":         c.CurrencyId,
+		"block_chain_id":      c.BlockChainId,
+		"type":                c.Type,
+		"confirm_count":       c.ConfirmCount,
+		"min_deposit":         c.MinDeposit,
+		"min_withdrawal":      c.MinWithdrawal,
+		"withdrawal_fee":      c.WithdrawalFee,
+		"withdrawal_fee_type": c.WithdrawalFeeType,
+		"contract_address":    c.ContractAddress,
+		"abi":                 c.Abi,
+		"withdrawal_status":   c.WithdrawalStatus,
+		"deposit_status":      c.DepositStatus,
+		"customer_status":     c.CustomerStatus,
+		"financial_status":    c.FinancialStatus,
+		"updated_at":          time.Now(),
+	}).Error; err != nil {
 		return err
 	}
 	return nil

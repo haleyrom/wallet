@@ -267,6 +267,9 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
+	jsonStr, _ = json.Marshal(c.Request.PostForm)
+	detail.CallbackStatus, detail.CallbackJson = p.Code, string(jsonStr)
+
 	switch p.Code {
 	case "105004":
 		// 已提交
