@@ -533,7 +533,14 @@ func AccountWithdrawal(c *gin.Context) {
 	}
 
 	// 不需要审核直接提交
-	if coin.FinancialStatus > int8(core.DefaultNilNum) && coin.CustomerStatus > int8(core.DefaultNilNum) {
+	if coin_info.FinancialStatus > int8(core.DefaultNilNum) {
+		withdrawal_detail.FinancialStatus = models.WithdrawalAudioStatusOk
+	}
+	if coin_info.CustomerStatus > int8(core.DefaultNilNum) {
+		withdrawal_detail.CustomerStatus = models.WithdrawalAudioStatusOk
+	}
+
+	if withdrawal_detail.FinancialStatus == models.WithdrawalAudioStatusOk && coin.CustomerStatus == models.WithdrawalAudioStatusOk {
 		withdrawal_detail.CustomerStatus, withdrawal_detail.FinancialStatus = models.WithdrawalAudioStatusOk, models.WithdrawalAudioStatusOk
 		withdrawal_detail.Status = models.WithdrawalStatusThrough
 		if msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
