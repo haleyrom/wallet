@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/base"
@@ -269,7 +270,7 @@ func WithdrawalCallback(c *gin.Context) {
 
 	jsonStr, _ = json.Marshal(c.Request.PostForm)
 	detail.CallbackStatus, detail.CallbackJson = p.Code, string(jsonStr)
-
+	fmt.Println(data, detail, "============")
 	switch p.Code {
 	case "105004":
 		// 已提交
