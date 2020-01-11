@@ -85,10 +85,10 @@ func ReadCoinInfo(c *gin.Context) {
 // @Param withdrawal_fee formData number true "提现手续费"
 // @Param withdrawal_fee_type formData int true "手续费类型 1：百分比;2：固定类型"
 // @Param contract_address formData string true "合约地址 如该是type=token，这里必须输入"
-// @Param withdrawal_status formData number "充值状态0：开启；1:关闭"
-// @Param deposit_status formData number "提笔状态0：开启；1:关闭"
-// @Param customer_status formData number "客服状态:0 必须1：不必须"
-// @Param financial_status formData number "财务状态:0 必须1：不必须"
+// @Param withdrawal_status formData number true "充值状态0：开启；1:关闭"
+// @Param deposit_status formData number  true "提笔状态0：开启；1:关闭"
+// @Param customer_status formData number true "客服状态:0 必须1：不必须"
+// @Param financial_status formData number true "财务状态:0 必须1：不必须"
 // @Success 200
 // @Router /coin/update [POST]
 func UpdateCoin(c *gin.Context) {

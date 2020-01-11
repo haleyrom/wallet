@@ -667,14 +667,11 @@ func AccountPersonTransfer(c *gin.Context) {
 	}
 
 	user := models.NewUser()
-	user.ID = param.Uid
-	if err = user.GetInfo(o); err != nil {
-		o.Callback()
-		core.GResp.Failure(c, resp.CodeNotUser)
-		return
-	}
+	user.ID = p.Base.Uid
+	_ = user.GetInfo(o)
 
-	if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(data.UserId, 1)) {
+	if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
+		fmt.Println(user.PayPassword, tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)), p.Base.Claims.UserID)
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeErrorPayPassword)
 		return
