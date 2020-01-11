@@ -15,7 +15,7 @@ type UpdateCoinParam struct {
 	ConfirmCount      int        `json:"confirm_count" form:"confirm_count" binding:"required"`             // 充值入帐的区块链确认数
 	MinDeposit        float64    `json:"min_deposit" form:"min_deposit" binding:"required"`                 // 最小充值金额，小于该金额不入账
 	MinWithdrawal     float64    `json:"min_withdrawal" form:"min_withdrawal" binding:"required"`           // 小于该金额不能提
-	WithdrawalFee     float64    `json:"withdrawal_fee" form:"withdrawal_fee" binding:"required"`           // 提现手续费
+	WithdrawalFee     float64    `json:"withdrawal_fee" form:"withdrawal_fee"`                              // 提现手续费
 	WithdrawalFeeType string     `json:"withdrawal_fee_type" form:"withdrawal_fee_type" binding:"required"` // 手续费类型 fixed 按百分百比,percent 固定收取
 	ContractAddress   string     `json:"contract_address" form:"contract_address" binding:"required"`       // 合约地址:如该是type=token，这里必须输入
 	Abi               string     `json:"abi" form:"abi"`                                                    // 字节数
