@@ -31,6 +31,8 @@ type WithdrawalDetail struct {
 	CustomerId      uint    `gorm:"column:customer_id;index;default:0;comment:'客服id'"`      // 客服id
 	FinancialId     uint    `gorm:"column:financial_id;index;default:0;comment:'财务id'"`     // 财务id
 	Remark          string  `gorm:"size:200;column:remark;comment:'备注'"`                    // 备注
+	CallbackStatus  int     `gorm:"column:callback_status;comment:'回调状态码'"`                 // 回调状态码
+	CallbackJson    string  `gorm:"type(context);column:callback_json;comment:'回调json数据'"`  // 回调json数据
 }
 
 const (
