@@ -515,20 +515,6 @@ func AccountWithdrawal(c *gin.Context) {
 		return
 	}
 
-	var financial, customer int8
-	status := models.WithdrawalStatusToAudit
-	fmt.Println(coin)
-	if coin.FinancialStatus == int8(core.DefaultNilNum) {
-		financial = 1
-	}
-	if coin.CustomerStatus == int8(core.DefaultNilNum) {
-		customer = 1
-	}
-
-	if financial > int8(core.DefaultNilNum) && customer > int8(core.DefaultNilNum) {
-		status = models.WithdrawalStatusThrough
-	}
-
 	// TODO: 对接提现
 	withdrawal_detail := &models.WithdrawalDetail{
 		Uid:             p.Base.Uid,
@@ -540,14 +526,16 @@ func AccountWithdrawal(c *gin.Context) {
 		Symbol:          coin_info.Symbol,
 		Type:            coin_info.Type,
 		OrderId:         fmt.Sprintf("%s", uuid.NewV4()),
-		Status:          status,
+		Status:          models.WithdrawalStatusToAudit,
 		Poundage:        poundage,
-		FinancialStatus: financial,
-		CustomerStatus:  customer,
+		FinancialStatus: models.WithdrawalAudioStatusAwait,
+		CustomerStatus:  models.WithdrawalAudioStatusAwait,
 	}
 
+	fmt.Println(coin, "++++++")
 	// 不需要审核直接提交
-	if coin.FinancialStatus > int8(core.DefaultNilNum) && coin.CustomerStatus > int8(core.DefaultNilNum) {
+	if coin.FinancialStatus == int8(core.DefaultNilNum) && coin.CustomerStatus == int8(core.DefaultNilNum) {
+		withdrawal_detail.CustomerStatus, withdrawal_detail.FinancialStatus = models.WithdrawalAudioStatusOk, models.WithdrawalAudioStatusOk
 		withdrawal_detail.Status = models.WithdrawalStatusThrough
 		if msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
 			withdrawal_detail.Remark = msg
