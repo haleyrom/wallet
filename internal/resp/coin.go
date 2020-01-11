@@ -63,5 +63,4 @@ type ReadCoinDepositInfoResp struct {
 	DepositStatus     int8    `json:"deposit_status"`      // 提现状态：0开启;1:停用;
 	CustomerStatus    int8    `json:"customer_status"`     // 客服状态:0 必须1：不必须
 	FinancialStatus   int8    `json:"financial_status"`    // 财务状态:0 必须1：不必须
-
 }
