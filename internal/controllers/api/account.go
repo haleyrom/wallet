@@ -516,11 +516,16 @@ func AccountWithdrawal(c *gin.Context) {
 	}
 
 	var financial, customer int8
+	status := models.WithdrawalStatusToAudit
 	if coin.FinancialStatus == int8(core.DefaultNilNum) {
 		financial = 1
 	}
 	if coin.CustomerStatus == int8(core.DefaultNilNum) {
 		customer = 1
+	}
+
+	if financial > int8(core.DefaultNilNum) && customer > int8(core.DefaultNilNum) {
+		status = models.WithdrawalStatusThrough
 	}
 
 	// TODO: 对接提现
@@ -534,7 +539,7 @@ func AccountWithdrawal(c *gin.Context) {
 		Symbol:          coin_info.Symbol,
 		Type:            coin_info.Type,
 		OrderId:         fmt.Sprintf("%s", uuid.NewV4()),
-		Status:          models.WithdrawalStatusToAudit,
+		Status:          status,
 		Poundage:        poundage,
 		FinancialStatus: financial,
 		CustomerStatus:  customer,
