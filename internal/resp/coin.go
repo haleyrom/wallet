@@ -19,7 +19,11 @@ type ReadCoinListResp struct {
 	WithdrawalFeeType string  `json:"withdrawal_fee_type"` // 手续费类型 fixed 按百分百比,percent 固定收取
 	ContractAddress   string  `json:"contract_address"`    // 合约地址:如该是type=token，这里必须输入
 	UpdatedAt         string  `json:"updated_at"`          // 更新时间
-	Status            int     `json:"status"`              // 状态
+	Status            int     `json:"status"`              // 状态 // 状态：0开启;1:停用;2:删除
+	WithdrawalStatus  int8    `json:"withdrawal_status"`   // 充值状态：0开启;1:停用;
+	DepositStatus     int8    `json:"deposit_status"`      // 提现状态：0开启;1:停用;
+	CustomerStatus    int8    `json:"customer_status"`     // 客服状态:0 必须1：不必须
+	FinancialStatus   int8    `json:"financial_status"`    // 财务状态:0 必须1：不必须
 }
 
 // ReadCoinInfoResp 代币信息
@@ -38,6 +42,10 @@ type ReadCoinInfoResp struct {
 	ContractAddress   string  `json:"contract_address"`    // 合约地址:如该是type=token，这里必须输入
 	Abi               string  `json:"abi"`                 //
 	Status            int     `json:"status"`              // 状态
+	WithdrawalStatus  int8    `json:"withdrawal_status"`   // 充值状态：0开启;1:停用;
+	DepositStatus     int8    `json:"deposit_status"`      // 提现状态：0开启;1:停用;
+	CustomerStatus    int8    `json:"customer_status"`     // 客服状态:0 必须1：不必须
+	FinancialStatus   int8    `json:"financial_status"`    // 财务状态:0 必须1：不必须
 }
 
 // ReadCoinDepositInfoResp 代币提现地址
@@ -51,5 +59,9 @@ type ReadCoinDepositInfoResp struct {
 	Symbol            string  `json:"symbol"`              // 币种代号
 	Type              string  `json:"type"`                // 标识 coin,token
 	Status            int     `json:"status"`              // 状态
+	WithdrawalStatus  int8    `json:"withdrawal_status"`   // 充值状态：0开启;1:停用;
+	DepositStatus     int8    `json:"deposit_status"`      // 提现状态：0开启;1:停用;
+	CustomerStatus    int8    `json:"customer_status"`     // 客服状态:0 必须1：不必须
+	FinancialStatus   int8    `json:"financial_status"`    // 财务状态:0 必须1：不必须
 
 }

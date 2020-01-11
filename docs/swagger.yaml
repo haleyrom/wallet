@@ -381,6 +381,15 @@ definitions:
       currency_id:
         description: 币种id
         type: integer
+      customer_status:
+        description: 客服状态:0 必须1：不必须
+        type: integer
+      deposit_status:
+        description: 提现状态：0开启;1:停用;
+        type: integer
+      financial_status:
+        description: 财务状态:0 必须1：不必须
+        type: integer
       min_withdrawal:
         description: 小于该金额不能提
         type: number
@@ -402,6 +411,9 @@ definitions:
       withdrawal_fee_type:
         description: 手续费类型 fixed 按百分百比,percent 固定收取
         type: string
+      withdrawal_status:
+        description: 充值状态：0开启;1:停用;
+        type: integer
     type: object
   resp.ReadCoinInfoResp:
     properties:
@@ -421,6 +433,15 @@ definitions:
         type: string
       currency_id:
         description: 货币id
+        type: integer
+      customer_status:
+        description: 客服状态:0 必须1：不必须
+        type: integer
+      deposit_status:
+        description: 提现状态：0开启;1:停用;
+        type: integer
+      financial_status:
+        description: 财务状态:0 必须1：不必须
         type: integer
       min_deposit:
         description: 最小充值金额，小于该金额不入账
@@ -446,6 +467,9 @@ definitions:
       withdrawal_fee_type:
         description: 手续费类型 fixed 按百分百比,percent 固定收取
         type: string
+      withdrawal_status:
+        description: 充值状态：0开启;1:停用;
+        type: integer
     type: object
   resp.ReadCoinListResp:
     properties:
@@ -476,6 +500,15 @@ definitions:
       currency_name:
         description: 代币名称
         type: string
+      customer_status:
+        description: 客服状态:0 必须1：不必须
+        type: integer
+      deposit_status:
+        description: 提现状态：0开启;1:停用;
+        type: integer
+      financial_status:
+        description: 财务状态:0 必须1：不必须
+        type: integer
       min_deposit:
         description: 最小充值金额，小于该金额不入账
         type: number
@@ -486,7 +519,7 @@ definitions:
         description: 币种名称
         type: string
       status:
-        description: 状态
+        description: 状态 // 状态：0开启;1:停用;2:删除
         type: integer
       symbol:
         description: 币种代号
@@ -503,6 +536,9 @@ definitions:
       withdrawal_fee_type:
         description: 手续费类型 fixed 按百分百比,percent 固定收取
         type: string
+      withdrawal_status:
+        description: 充值状态：0开启;1:停用;
+        type: integer
     type: object
   resp.ReadCurrencyListResp:
     properties:
@@ -2155,6 +2191,26 @@ paths:
         name: contract_address
         required: true
         type: string
+      - description: 充值状态0：开启；1:关闭
+        in: formData
+        name: withdrawal_status
+        required: true
+        type: number
+      - description: 提笔状态0：开启；1:关闭
+        in: formData
+        name: deposit_status
+        required: true
+        type: number
+      - description: 客服状态:0 必须1：不必须
+        in: formData
+        name: customer_status
+        required: true
+        type: number
+      - description: 财务状态:0 必须1：不必须
+        in: formData
+        name: financial_status
+        required: true
+        type: number
       produces:
       - application/json
       responses:

@@ -517,18 +517,29 @@ func AccountWithdrawal(c *gin.Context) {
 
 	// TODO: 对接提现
 	withdrawal_detail := &models.WithdrawalDetail{
-		Uid:        p.Base.Uid,
-		Address:    withdrawal_addr.Address,
-		CoinId:     p.CoinId,
-		CurrencyId: p.CurrencyId,
-		AccountId:  account.ID,
-		Value:      p.Money,
-		Symbol:     coin_info.Symbol,
-		Type:       coin_info.Type,
-		OrderId:    fmt.Sprintf("%s", uuid.NewV4()),
-		Status:     models.WithdrawalStatusToAudit,
-		Poundage:   poundage,
+		Uid:             p.Base.Uid,
+		Address:         withdrawal_addr.Address,
+		CoinId:          p.CoinId,
+		CurrencyId:      p.CurrencyId,
+		AccountId:       account.ID,
+		Value:           p.Money,
+		Symbol:          coin_info.Symbol,
+		Type:            coin_info.Type,
+		OrderId:         fmt.Sprintf("%s", uuid.NewV4()),
+		Status:          models.WithdrawalStatusToAudit,
+		Poundage:        poundage,
+		FinancialStatus: coin.FinancialStatus,
+		CustomerStatus:  coin.CustomerStatus,
 	}
+
+	// 不需要审核直接提交
+	if coin.FinancialStatus > int8(core.DefaultNilNum) && coin.CustomerStatus > int8(core.DefaultNilNum) {
+		withdrawal_detail.Status = models.WithdrawalStatusThrough
+		if msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
+			withdrawal_detail.Remark = msg
+		}
+	}
+
 	if err := withdrawal_detail.CreateWithdrawalDetail(o); err != nil {
 		o.Callback()
 		core.GResp.Failure(c, err)
@@ -656,14 +667,11 @@ func AccountPersonTransfer(c *gin.Context) {
 	}
 
 	user := models.NewUser()
-	user.ID = param.Uid
-	if err = user.GetInfo(o); err != nil {
-		o.Callback()
-		core.GResp.Failure(c, resp.CodeNotUser)
-		return
-	}
+	user.ID = p.Base.Uid
+	_ = user.GetInfo(o)
 
-	if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(data.UserId, 1)) {
+	if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
+		fmt.Println(user.PayPassword, tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)), p.Base.Claims.UserID)
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeErrorPayPassword)
 		return
