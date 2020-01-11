@@ -540,7 +540,7 @@ func AccountWithdrawal(c *gin.Context) {
 		withdrawal_detail.CustomerStatus = models.WithdrawalAudioStatusOk
 	}
 
-	if withdrawal_detail.FinancialStatus == models.WithdrawalAudioStatusOk && coin.CustomerStatus == models.WithdrawalAudioStatusOk {
+	if withdrawal_detail.FinancialStatus == models.WithdrawalAudioStatusOk && withdrawal_detail.CustomerStatus == models.WithdrawalAudioStatusOk {
 		withdrawal_detail.Status = models.WithdrawalStatusThrough
 		if msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
 			withdrawal_detail.Remark = msg
