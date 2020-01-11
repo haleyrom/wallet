@@ -280,7 +280,6 @@ func WithdrawalCallback(c *gin.Context) {
 			core.GResp.CustomFailure(c, err)
 			return
 		}
-
 		o.Commit()
 		core.GResp.Success(c, resp.EmptyData())
 		return
@@ -316,13 +315,13 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	account := models.NewAccount()
-	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
-	if err := account.GetOrderUidCurrencyIdByInfo(o); err != nil {
-		o.Callback()
-		core.GResp.CustomFailure(c, err)
-		return
-	}
+	//account := models.NewAccount()
+	//account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId
+	//if err := account.GetOrderUidCurrencyIdByInfo(o); err != nil {
+	//	o.Callback()
+	//	core.GResp.CustomFailure(c, err)
+	//	return
+	//}
 
 	// 入账金额
 	//money := detail.Value + detail.Poundage
