@@ -53,8 +53,5 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, err
 		return core.DefaultNilString, errors.Errorf("%s", result.Msg)
 	}
 
-	// 入账
-	//detail.TransactionHash = result.Data.TransactionHash
-	//_ = AccountInsertDetail(o, detail)
 	return result.Msg, nil
 }

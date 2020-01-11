@@ -515,6 +515,14 @@ func AccountWithdrawal(c *gin.Context) {
 		return
 	}
 
+	var financial, customer int8
+	if coin.FinancialStatus == int8(core.DefaultNilNum) {
+		financial = 1
+	}
+	if coin.CustomerStatus == int8(core.DefaultNilNum) {
+		customer = 1
+	}
+
 	// TODO: 对接提现
 	withdrawal_detail := &models.WithdrawalDetail{
 		Uid:             p.Base.Uid,
@@ -528,8 +536,8 @@ func AccountWithdrawal(c *gin.Context) {
 		OrderId:         fmt.Sprintf("%s", uuid.NewV4()),
 		Status:          models.WithdrawalStatusToAudit,
 		Poundage:        poundage,
-		FinancialStatus: coin.FinancialStatus,
-		CustomerStatus:  coin.CustomerStatus,
+		FinancialStatus: financial,
+		CustomerStatus:  customer,
 	}
 
 	// 不需要审核直接提交
