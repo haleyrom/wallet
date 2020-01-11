@@ -517,6 +517,7 @@ func AccountWithdrawal(c *gin.Context) {
 
 	var financial, customer int8
 	status := models.WithdrawalStatusToAudit
+	fmt.Println(coin)
 	if coin.FinancialStatus == int8(core.DefaultNilNum) {
 		financial = 1
 	}
