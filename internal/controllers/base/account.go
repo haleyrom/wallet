@@ -61,16 +61,18 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 
 	go func() {
 		company_stream := &models.CompanyStream{
-			Code:        models.CodeWithdrawal,
-			Uid:         account_detail.Uid,
-			AccountId:   account_detail.AccountId,
-			Balance:     account_detail.Balance,
-			LastBalance: account_detail.LastBalance,
-			Income:      account_detail.Income,
-			Spend:       account_detail.Spend,
-			Type:        account_detail.Type,
-			Address:     detail.Address,
-			OrderId:     detail.OrderId,
+			Code:           models.CodeWithdrawal,
+			Uid:            account_detail.Uid,
+			AccountId:      account_detail.AccountId,
+			Balance:        account_detail.Balance,
+			LastBalance:    account_detail.LastBalance,
+			Income:         account_detail.Income,
+			Spend:          account_detail.Spend,
+			Type:           account_detail.Type,
+			Address:        detail.Address,
+			OrderId:        detail.OrderId,
+			CallbackJson:   detail.CallbackJson,
+			CallbackStatus: detail.CallbackStatus,
 		}
 		_ = company_stream.CreateCompanyStream(core.Orm.New())
 	}()
