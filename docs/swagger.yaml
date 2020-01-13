@@ -708,6 +708,27 @@ definitions:
       address:
         description: 地址
         type: string
+      address_source:
+        description: 来源 0:未知 1:本站 2:外站
+        type: integer
+      balance:
+        description: 此时可用余额
+        type: number
+      block_count:
+        description: 确认数
+        type: integer
+      callback_json:
+        description: 回调json数据
+        type: string
+      callback_status:
+        description: 回调状态码
+        type: string
+      coin_id:
+        description: 代币id
+        type: integer
+      currency_id:
+        description: 货币id
+        type: integer
       customer_status:
         description: 客服审核状态 0：审核中;1：审核通过;2：审核不通过
         type: integer
@@ -717,6 +738,9 @@ definitions:
       financial_status:
         description: 财务审核状态 0：审核中;1：审核通过;2：审核不通过
         type: integer
+      from_address:
+        description: 出金地址
+        type: string
       id:
         description: 明细id
         type: integer
@@ -734,6 +758,9 @@ definitions:
         type: integer
       symbol:
         description: 代币代号
+        type: string
+      type:
+        description: 链类型
         type: string
       uid:
         description: 用户id

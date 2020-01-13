@@ -191,7 +191,7 @@ func (w *WithdrawalDetail) UpdateRemark(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).
 		Where("id = ? ", w.ID).
 		Update(map[string]interface{}{
-			"from_address ":    w.FromAddress,
+			"from_address":     w.FromAddress,
 			"customer_status":  w.CustomerStatus,
 			"financial_status": w.FinancialStatus,
 			"status":           w.Status,
