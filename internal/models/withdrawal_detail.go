@@ -35,6 +35,9 @@ type WithdrawalDetail struct {
 	CallbackStatus  string  `gorm:"column:callback_status;comment:'回调状态码'"`                      // 回调状态码
 	CallbackJson    string  `gorm:"type(context);column:callback_json;comment:'回调json数据'"`       // 回调json数据
 	AddressSource   int8    `gorm:"size:3;column:address_source;default:0;commit:'来源0未知1本站2外站'"` // 来源0未知1本站2外站
+	Balance         float64 `gorm:"column:balance;default:0;comment:'当前可用余额';"`                  // 当前可用余额
+	FromAddress     string  `gorm:"column:from_address;comment:'出金地址';"`                         // 出金地址
+	BlockNumber     int     `gorm:"column:block_number;default:0;comment:'区块高度'"`                // 区块高度
 }
 
 const (
@@ -110,7 +113,7 @@ func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.Wit
 // GetAllPageList 获取全部分页列表
 func (w *WithdrawalDetail) GetAllPageList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.WithdrawalDetailAllListResp, error) {
 	data := resp.WithdrawalDetailAllListResp{}
-	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,TRUNCATE(detail.value,6) as value,detail.status,detail.updated_at,detail.address_source FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
+	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,TRUNCATE(detail.value,6) as value,detail.status,detail.updated_at,detail.address_source,detail.coin_id,detail.currency_id,detail.type,detail.address,detail.from_address,TRUNCATE(detail.balance,6) as balance,detail.callback_status,detail.callback_json FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 
 	if start_time > 0 && end_timer > 0 {
@@ -188,6 +191,7 @@ func (w *WithdrawalDetail) UpdateRemark(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).
 		Where("id = ? ", w.ID).
 		Update(map[string]interface{}{
+			"from_address ":    w.FromAddress,
 			"customer_status":  w.CustomerStatus,
 			"financial_status": w.FinancialStatus,
 			"status":           w.Status,

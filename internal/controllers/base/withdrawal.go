@@ -14,25 +14,25 @@ import (
 )
 
 // WithdrawalAudioOK 提现处理
-func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, error) {
+func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, string, error) {
 	// TODO: 等待调试提币接口
 	consul_service, err := consul.ConsulGetServer("blockchain-pay.tfor")
 	if err != nil {
-		return core.DefaultNilString, err
+		return core.DefaultNilString, core.DefaultNilString, err
 	}
 
 	coin := models.NewCoin()
 	coin.Symbol = detail.Symbol
 	contract_address, err := coin.GetConTractAddress(o)
 	if err != nil {
-		return core.DefaultNilString, err
+		return core.DefaultNilString, core.DefaultNilString, err
 	}
 
 	company_addr := models.NewCompanyAddr()
 	company_addr.Symbol, company_addr.Code = detail.Symbol, models.CodeWithdrawal
 	address, err := company_addr.GetOrderSymbolByAddress(o)
 	if err != nil {
-		return fmt.Sprintf("%s", resp.CodeNotCompanyAddress), resp.CodeNotCompanyAddress
+		return core.DefaultNilString, fmt.Sprintf("%s", resp.CodeNotCompanyAddress), resp.CodeNotCompanyAddress
 	}
 
 	url := fmt.Sprintf("%s%s", consul_service, "/api/v1/blockchain-pay/ethtereum/withdrawal")
@@ -50,8 +50,8 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, err
 	result, err := tools.WithdrawalAudio(data, url, viper.GetString("deposit.Srekey"))
 
 	if result == nil || err != nil || result.Code != http.StatusOK {
-		return core.DefaultNilString, errors.Errorf("%s", result.Msg)
+		return core.DefaultNilString, core.DefaultNilString, errors.Errorf("%s", result.Msg)
 	}
 
-	return result.Msg, nil
+	return address, result.Msg, nil
 }

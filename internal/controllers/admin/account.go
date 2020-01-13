@@ -257,11 +257,11 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 		// 同时审核成功进行处理
 		if detail.FinancialStatus == models.WithdrawalAudioStatusOk {
 			// 调取提现接口
-			msg, err := base.WithdrawalAudioOK(o, detail)
+			address, msg, err := base.WithdrawalAudioOK(o, detail)
 			// 提交成功
 			if err != nil {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
-				detail.CustomerStatus = models.WithdrawalAudioStatusAwait
+				detail.CustomerStatus, detail.FromAddress = models.WithdrawalAudioStatusAwait, address
 				_ = detail.UpdateRemark(o)
 				// 退款
 				if err = WithdrawalAudioRefund(o, detail); err != nil {
@@ -273,7 +273,7 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 				core.GResp.CustomFailure(c, err)
 				return
 			} else {
-				detail.Status = models.WithdrawalStatusSubmit
+				detail.Status, detail.FromAddress = models.WithdrawalStatusSubmit, address
 			}
 		} else {
 			detail.Status = models.WithdrawalStatusInAudit
@@ -342,11 +342,11 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 		// 同时审核成功进行处理
 		if detail.CustomerStatus == models.WithdrawalAudioStatusOk {
 			// 调取提现接口
-			msg, err := base.WithdrawalAudioOK(o, detail)
+			address, msg, err := base.WithdrawalAudioOK(o, detail)
 			// 提交成功
 			if err != nil {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
-				detail.FinancialStatus = models.WithdrawalAudioStatusAwait
+				detail.FinancialStatus, detail.FromAddress = models.WithdrawalAudioStatusAwait, address
 				_ = detail.UpdateRemark(o)
 
 				if err = WithdrawalAudioRefund(o, detail); err != nil {
@@ -360,7 +360,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 				return
 			}
 			// 提交成功后，现在已通过状态
-			detail.Status = models.WithdrawalStatusThrough
+			detail.Status, detail.FromAddress = models.WithdrawalStatusThrough, address
 		} else {
 			detail.Status = models.WithdrawalStatusInAudit
 		}

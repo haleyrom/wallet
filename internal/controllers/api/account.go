@@ -531,6 +531,7 @@ func AccountWithdrawal(c *gin.Context) {
 		FinancialStatus: models.WithdrawalAudioStatusAwait,
 		CustomerStatus:  models.WithdrawalAudioStatusAwait,
 		AddressSource:   withdrawal_addr.AddressSource,
+		Balance:         account.Balance - account.BlockedBalance,
 	}
 
 	// 不需要审核直接提交
@@ -543,8 +544,10 @@ func AccountWithdrawal(c *gin.Context) {
 
 	if withdrawal_detail.FinancialStatus == models.WithdrawalAudioStatusOk && withdrawal_detail.CustomerStatus == models.WithdrawalAudioStatusOk {
 		withdrawal_detail.Status = models.WithdrawalStatusThrough
-		if msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
+		if address, msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
 			withdrawal_detail.Remark = msg
+		} else {
+			withdrawal_detail.Address = address
 		}
 	}
 

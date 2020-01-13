@@ -33,6 +33,9 @@ type WithdrawalDetailAdminResp struct {
 	Name            string  `json:"name"`             // 帐号
 	Email           string  `json:"email"`            // 邮箱
 	Uid             int     `json:"uid"`              // 用户id
+	CoinId          int     `json:"coin_id"`          // 代币id
+	CurrencyId      int     `json:"currency_id"`      // 货币id
+	Type            string  `json:"type"`             // 链类型
 	Address         string  `json:"address"`          // 地址
 	Value           float64 `json:"value"`            // 金额
 	Symbol          string  `json:"symbol"`           // 代币代号
@@ -43,6 +46,11 @@ type WithdrawalDetailAdminResp struct {
 	OrderId         string  `json:"order_id"`         // 订单id
 	Remark          string  `json:"remark"`           // 备注
 	AddressSource   int8    `json:"address_source"`   // 来源 0:未知 1:本站 2:外站
+	FromAddress     string  `json:"from_address"`     // 出金地址
+	Balance         float64 `json:"balance"`          // 此时可用余额
+	BlockCount      int     `json:"block_count"`      // 确认数
+	CallbackStatus  string  `json:"callback_status"`  // 回调状态码
+	CallbackJson    string  `json:"callback_json"`    // 回调json数据
 }
 
 // WithdrawalDetailAllListResp 提现详情列表
