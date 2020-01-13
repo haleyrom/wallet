@@ -67,6 +67,7 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 			Balance:     account_detail.Balance,
 			LastBalance: account_detail.LastBalance,
 			Income:      account_detail.Income,
+			Spend:       account_detail.Spend,
 			Type:        account_detail.Type,
 			Address:     detail.Address,
 			OrderId:     detail.OrderId,
