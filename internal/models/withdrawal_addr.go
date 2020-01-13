@@ -12,13 +12,23 @@ import (
 // WithdrawalAddr  提现地址
 type WithdrawalAddr struct {
 	gorm.Model
-	Uid          uint   `gorm:"column:uid;default:0;comment:'用户id';"`
-	BlockChainId uint   `gorm:"column:block_chain_id;default:0;comment:'链id'"`
-	Name         string `gorm:"column:name;comment:'名称'"`
-	CurrencyId   uint   `gorm:"column:currency_id;default:0;comment:'币种id';"` // 账户id
-	Address      string `gorm:"size:255;column:address;comment:'地址'"`
-	Status       int8   `gorm:"size:3;column:status;default:0;commit:'状态(0开启,1:停用,2:删除)'"` // 状态：0开启;1:停用;2:删除
+	Uid           uint   `gorm:"column:uid;default:0;comment:'用户id';"`
+	BlockChainId  uint   `gorm:"column:block_chain_id;default:0;comment:'链id'"`
+	Name          string `gorm:"column:name;comment:'名称'"`
+	CurrencyId    uint   `gorm:"column:currency_id;default:0;comment:'币种id';"` // 账户id
+	Address       string `gorm:"size:255;column:address;comment:'地址'"`
+	Status        int8   `gorm:"size:3;column:status;default:0;commit:'状态(0开启,1:停用,2:删除)'"`   // 状态：0开启;1:停用;2:删除
+	AddressSource int8   `gorm:"size:3;column:address_source;default:0;commit:'来源0未知1本站2外站'"` // 来源0未知1本站2外站
 }
+
+const (
+	// WithdrawalAddrUnknown 未知
+	WithdrawalAddrUnknown int8 = 0 + iota
+	// WithdrawalAddrLocal 本站
+	WithdrawalAddrLocal
+	// WithdrawalAddrBack 站外
+	WithdrawalAddrBack
+)
 
 // GetWithdrawalAddrTable 提现地址
 func GetWithdrawalAddrTable() string {

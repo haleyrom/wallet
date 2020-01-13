@@ -12,9 +12,9 @@ type UpdateCoinParam struct {
 	Name              string     `json:"name" form:"name" binding:"required"`                               // 币种名称
 	BlockChainId      uint       `json:"block_chain_id" form:"block_chain_id" binding:"required"`           // 区块链名称
 	Type              string     `json:"type" form:"type" binding:"required"`                               // 标识 coin,token
-	ConfirmCount      int        `json:"confirm_count" form:"confirm_count" binding:"required"`             // 充值入帐的区块链确认数
-	MinDeposit        float64    `json:"min_deposit" form:"min_deposit" binding:"required"`                 // 最小充值金额，小于该金额不入账
-	MinWithdrawal     float64    `json:"min_withdrawal" form:"min_withdrawal" binding:"required"`           // 小于该金额不能提
+	ConfirmCount      int        `json:"confirm_count" form:"confirm_count" `                               // 充值入帐的区块链确认数
+	MinDeposit        float64    `json:"min_deposit" form:"min_deposit" `                                   // 最小充值金额，小于该金额不入账
+	MinWithdrawal     float64    `json:"min_withdrawal" form:"min_withdrawal" `                             // 小于该金额不能提
 	WithdrawalFee     float64    `json:"withdrawal_fee" form:"withdrawal_fee"`                              // 提现手续费
 	WithdrawalFeeType string     `json:"withdrawal_fee_type" form:"withdrawal_fee_type" binding:"required"` // 手续费类型 fixed 按百分百比,percent 固定收取
 	ContractAddress   string     `json:"contract_address" form:"contract_address" binding:"required"`       // 合约地址:如该是type=token，这里必须输入

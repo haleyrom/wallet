@@ -42,6 +42,7 @@ type WithdrawalDetailAdminResp struct {
 	UpdatedAt       string  `json:"updated_at"`       // 更新时间
 	OrderId         string  `json:"order_id"`         // 订单id
 	Remark          string  `json:"remark"`           // 备注
+	AddressSource   int8    `json:"address_source"`   // 来源 0:未知 1:本站 2:外站
 }
 
 // WithdrawalDetailAllListResp 提现详情列表

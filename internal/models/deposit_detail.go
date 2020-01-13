@@ -13,24 +13,25 @@ import (
 // DepositDetail  充值记录
 type DepositDetail struct {
 	gorm.Model
-	Uid             uint    `gorm:"column:uid;comment:'用户id'"`                               // 用户id
-	CoinId          uint    `gorm:"column:coin_id;default:0comment:'币种id'"`                  // 币种id
-	CurrencyId      uint    `gorm:"column:currency_id;default:0comment:'货币id'"`              //
-	Address         string  `gorm:"size:255;column:address;index;comment:'地址'"`              // 地址
-	Value           float64 `gorm:"column:value;default:0;comment:'充值金额'"`                   // 充值金额
-	BlockNumber     int     `gorm:"column:block_number;default:0;comment:'充值区块高度'"`          // 充值区块高度
-	BlockCount      int     `gorm:"column:block_count;default:0;comment:'区块确认数'"`            // 当区块确认数达到最小确认时，入账。
-	TransactionHash string  `gorm:"size:255;column:transaction_hash;index;comment:'事务hash'"` // 事务hash
-	Symbol          string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                  // 代币代号
-	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                     // 标识 coin,token
-	Status          int8    `gorm:"size:3;column:status;default:0;comment:'入账状态'"`           // 入账状态：0未入账,1已入账,2审核不通过。
-	ContractAddress string  `gorm:"size:200;column:contract_address;comment:'合约地址'"`         // 合约地址
-	Source          int8    `gorm:"size:3;column:source;default:0;comment:'来源(0充值，1手充)'"`    // 来源(0充值1手充)
-	FinancialStatus int8    `gorm:"column:financial_status;index;default:0;comment:'财务状态'"`  // 财务状态:0 待审核1：通过2：不通过
-	FinancialId     uint    `gorm:"column:financial_id;index;default:0;comment:'财务id'"`      // 财务id
-	FinancialRemark string  `gorm:"column:financial_remark;comment:'财务备注'"`                  // 财务备注
-	Deleted         int8    `gorm:"column:deleted;default:0;comment:'删除状态（0不删除1删除）'"`        // 删除状态（0不删除1删除）
-	Md5Keys         string  `gorm:"column:md5key;default:0;unique_index;comment:'md5key'"`   //
+	Uid             uint    `gorm:"column:uid;comment:'用户id'"`                                   // 用户id
+	CoinId          uint    `gorm:"column:coin_id;default:0comment:'币种id'"`                      // 币种id
+	CurrencyId      uint    `gorm:"column:currency_id;default:0comment:'货币id'"`                  //
+	Address         string  `gorm:"size:255;column:address;index;comment:'地址'"`                  // 地址
+	Value           float64 `gorm:"column:value;default:0;comment:'充值金额'"`                       // 充值金额
+	BlockNumber     int     `gorm:"column:block_number;default:0;comment:'充值区块高度'"`              // 充值区块高度
+	BlockCount      int     `gorm:"column:block_count;default:0;comment:'区块确认数'"`                // 当区块确认数达到最小确认时，入账。
+	TransactionHash string  `gorm:"size:255;column:transaction_hash;index;comment:'事务hash'"`     // 事务hash
+	Symbol          string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                      // 代币代号
+	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                         // 标识 coin,token
+	Status          int8    `gorm:"size:3;column:status;default:0;comment:'入账状态'"`               // 入账状态：0未入账,1已入账,2审核不通过。
+	ContractAddress string  `gorm:"size:200;column:contract_address;comment:'合约地址'"`             // 合约地址
+	Source          int8    `gorm:"size:3;column:source;default:0;comment:'来源(0充值，1手充)'"`        // 来源(0充值1手充)
+	FinancialStatus int8    `gorm:"column:financial_status;index;default:0;comment:'财务状态'"`      // 财务状态:0 待审核1：通过2：不通过
+	FinancialId     uint    `gorm:"column:financial_id;index;default:0;comment:'财务id'"`          // 财务id
+	FinancialRemark string  `gorm:"column:financial_remark;comment:'财务备注'"`                      // 财务备注
+	Deleted         int8    `gorm:"column:deleted;default:0;comment:'删除状态（0不删除1删除）'"`            // 删除状态（0不删除1删除）
+	Md5Keys         string  `gorm:"column:md5key;default:0;unique_index;comment:'md5key'"`       //
+	AddressSource   int8    `gorm:"size:3;column:address_source;default:0;commit:'来源0未知1本站2外站'"` // 来源0未知1本站2外站
 }
 
 const (

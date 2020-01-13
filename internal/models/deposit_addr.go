@@ -13,8 +13,8 @@ type DepositAddr struct {
 	Uid          uint   `gorm:"column:uid;comment:'用户id'"`                                 // 用户id
 	AccountId    uint   `gorm:"column:account_id;default:0;comment:'账户id';"`               // 账户id
 	BlockChainId uint   `gorm:"column:block_chain_id;default:0;comment:'链id'"`             // 币种id
-	Address      string `gorm:"size:255;column:address;comment:'充值地址'"`                    // 充值地址
-	OrderId      string `gorm:"size:255;column:order_id;comment:'订单号'"`                    // 生成该地址的订单号
+	Address      string `gorm:"size:200;column:address;index;comment:'充值地址'"`              // 充值地址
+	OrderId      string `gorm:"size:200;column:order_id;comment:'订单号'"`                    // 生成该地址的订单号
 	Status       int8   `gorm:"size:3;column:status;default:0;commit:'状态(0开启,1:停用,2:删除)'"` // 状态：0开启;1:停用;2:删除
 
 }
@@ -73,6 +73,14 @@ func (d *DepositAddr) ReadWithdrawalAddr(o *gorm.DB) (resp.ReadDepositAddrResp, 
 // GetAddressByInfo 根据地址获取信息
 func (d *DepositAddr) GetAddressByInfo(o *gorm.DB) error {
 	if err := o.Table(GetDepositAddrTable()).Where("address = ? ", d.Address).First(&d).Error; err == nil && d.Uid > 0 {
+		return nil
+	}
+	return fmt.Errorf("%s", "address not exist")
+}
+
+// IsExistAddress 判断是否存在
+func (d *DepositAddr) IsAddress(o *gorm.DB) error {
+	if err := o.Model(d).Where("address = ? ", d.Address).Select("id").First(&d).Error; err == nil {
 		return nil
 	}
 	return fmt.Errorf("%s", "address not exist")

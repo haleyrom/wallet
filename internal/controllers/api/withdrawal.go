@@ -94,12 +94,20 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	}
 
 	withdrawal := &models.WithdrawalAddr{
-		Uid:          p.Base.Uid,
-		BlockChainId: p.BlockChainId,
-		Address:      p.Address,
-		CurrencyId:   p.CurrencyId,
-		Name:         p.Name,
+		Uid:           p.Base.Uid,
+		BlockChainId:  p.BlockChainId,
+		Address:       p.Address,
+		CurrencyId:    p.CurrencyId,
+		Name:          p.Name,
+		AddressSource: models.WithdrawalAddrBack,
 	}
+
+	deposit := models.NewDepositAddr()
+	deposit.Address = p.Address
+	if err := deposit.IsAddress(o); err == nil {
+		withdrawal.AddressSource = models.WithdrawalAddrLocal
+	}
+
 	if err := withdrawal.CreateWithdrawalAddr(o); err != nil {
 		core.GResp.Failure(c, err)
 		return

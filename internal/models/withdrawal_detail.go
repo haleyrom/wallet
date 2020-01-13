@@ -13,27 +13,28 @@ import (
 // WithdrawalDetail  提现记录
 type WithdrawalDetail struct {
 	gorm.Model
-	Uid             uint    `gorm:"column:uid;default:0;comment:'用户id'"`                      // 用户id
-	Address         string  `gorm:"size:255;column:address;comment:'地址'"`                     // 地址
-	CoinId          uint    `gorm:"column:coin_id;default:0;comment:'代币id'"`                  // 代币id
-	CurrencyId      uint    `gorm:"column:currency_id;default:0;comment:'货币id'"`              // 货币id
-	AccountId       uint    `gorm:"column:account_id;default:0;comment:'帐号id'"`               // 钱包id
-	Value           float64 `gorm:"column:value;default:0;comment:'提现金额'"`                    // 提现金额
-	Symbol          string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                   // 代币代号
-	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                      // 标识 coin,token
-	OrderId         string  `gorm:"size:255;column:order_id;comment:'订单号'"`                   // 生成该地址的订单号
-	TransactionHash string  `gorm:"size:255;column:transaction_hash;comment:'事务hash'"`        // 事务
-	Status          int8    `gorm:"size:3;column:status;default:0;index;comment:'状态'"`        // 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败
-	Poundage        float64 `gorm:"column:poundage;default:0;comment:'手续费'"`                  // 手续费
-	CustomerStatus  int8    `gorm:"column:customer_status;index;default:0;comment:'客服状态'"`    // 客服状态:0 待审核1：通过2：不通过
-	FinancialStatus int8    `gorm:"column:financial_status;index;default:0;comment:'财务状态'"`   // 财务状态:0 待审核1：通过2：不通过
-	BlockCount      int     `gorm:"column:block_count;default:0;comment:'确认数'"`               // 充值入帐的区块链确认数
-	CustomerId      uint    `gorm:"column:customer_id;index;default:0;comment:'客服id'"`        // 客服id
-	FinancialId     uint    `gorm:"column:financial_id;index;default:0;comment:'财务id'"`       // 财务id
-	Remark          string  `gorm:"size:200;column:remark;comment:'备注'"`                      // 备注
-	RefundStatus    int8    `gorm:"size:4;column:refund_status;comment:'退款状态0不可退款1可退款2退款成功'"` //退款状态（0不可退款1可退款2退款成功）
-	CallbackStatus  string  `gorm:"column:callback_status;comment:'回调状态码'"`                   // 回调状态码
-	CallbackJson    string  `gorm:"type(context);column:callback_json;comment:'回调json数据'"`    // 回调json数据
+	Uid             uint    `gorm:"column:uid;default:0;comment:'用户id'"`                         // 用户id
+	Address         string  `gorm:"size:255;column:address;comment:'地址'"`                        // 地址
+	CoinId          uint    `gorm:"column:coin_id;default:0;comment:'代币id'"`                     // 代币id
+	CurrencyId      uint    `gorm:"column:currency_id;default:0;comment:'货币id'"`                 // 货币id
+	AccountId       uint    `gorm:"column:account_id;default:0;comment:'帐号id'"`                  // 钱包id
+	Value           float64 `gorm:"column:value;default:0;comment:'提现金额'"`                       // 提现金额
+	Symbol          string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                      // 代币代号
+	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                         // 标识 coin,token
+	OrderId         string  `gorm:"size:255;column:order_id;comment:'订单号'"`                      // 生成该地址的订单号
+	TransactionHash string  `gorm:"size:255;column:transaction_hash;comment:'事务hash'"`           // 事务
+	Status          int8    `gorm:"size:3;column:status;default:0;index;comment:'状态'"`           // 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败
+	Poundage        float64 `gorm:"column:poundage;default:0;comment:'手续费'"`                     // 手续费
+	CustomerStatus  int8    `gorm:"column:customer_status;index;default:0;comment:'客服状态'"`       // 客服状态:0 待审核1：通过2：不通过
+	FinancialStatus int8    `gorm:"column:financial_status;index;default:0;comment:'财务状态'"`      // 财务状态:0 待审核1：通过2：不通过
+	BlockCount      int     `gorm:"column:block_count;default:0;comment:'确认数'"`                  // 充值入帐的区块链确认数
+	CustomerId      uint    `gorm:"column:customer_id;index;default:0;comment:'客服id'"`           // 客服id
+	FinancialId     uint    `gorm:"column:financial_id;index;default:0;comment:'财务id'"`          // 财务id
+	Remark          string  `gorm:"size:200;column:remark;comment:'备注'"`                         // 备注
+	RefundStatus    int8    `gorm:"size:4;column:refund_status;comment:'退款状态0不可退款1可退款2退款成功'"`    //退款状态（0不可退款1可退款2退款成功）
+	CallbackStatus  string  `gorm:"column:callback_status;comment:'回调状态码'"`                      // 回调状态码
+	CallbackJson    string  `gorm:"type(context);column:callback_json;comment:'回调json数据'"`       // 回调json数据
+	AddressSource   int8    `gorm:"size:3;column:address_source;default:0;commit:'来源0未知1本站2外站'"` // 来源0未知1本站2外站
 }
 
 const (
@@ -109,7 +110,7 @@ func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.Wit
 // GetAllPageList 获取全部分页列表
 func (w *WithdrawalDetail) GetAllPageList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.WithdrawalDetailAllListResp, error) {
 	data := resp.WithdrawalDetailAllListResp{}
-	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,TRUNCATE(detail.value,6) as value,detail.status,detail.updated_at FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
+	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,TRUNCATE(detail.value,6) as value,detail.status,detail.updated_at,detail.address_source FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 
 	if start_time > 0 && end_timer > 0 {

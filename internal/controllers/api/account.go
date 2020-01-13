@@ -530,6 +530,7 @@ func AccountWithdrawal(c *gin.Context) {
 		Poundage:        poundage,
 		FinancialStatus: models.WithdrawalAudioStatusAwait,
 		CustomerStatus:  models.WithdrawalAudioStatusAwait,
+		AddressSource:   withdrawal_addr.AddressSource,
 	}
 
 	// 不需要审核直接提交

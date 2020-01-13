@@ -24,7 +24,7 @@ const (
 	CodeOk StatusCode = http.StatusOK
 
 	// CodeAuth 暂无权限
-	CodeAuth StatusCode = http.StatusUnauthorized
+	CodeAuth StatusCode = 101102
 
 	// CodeInternalServerError 内部服务出错
 	CodeInternalServerError StatusCode = http.StatusInternalServerError
@@ -36,7 +36,7 @@ const (
 	CodeNoToken StatusCode = 101101
 
 	// CodeIllegalToken token不合法
-	CodeIllegalToken StatusCode = 101102
+	CodeIllegalToken StatusCode = http.StatusUnauthorized
 
 	// CodeNotTeam 团队不存在
 	CodeNotTeam StatusCode = 101103
