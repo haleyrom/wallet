@@ -16,7 +16,7 @@ type Order struct {
 	gorm.Model
 	Uid         uint    `gorm:"column:uid;default:0;comment:'用户id'"`                    // 用户id
 	ExchangeUid uint    `gorm:"column:exchange_uid;default:0;comment:'转入用户id'"`         // 转入用户id
-	Context     string  `gorm:"type(context);column:context;comment:'文本'"`              // 文本
+	Context     string  `gorm:"type:text;column:context;comment:'文本'"`                  // 文本
 	CurrencyId  uint    `gorm:"column:currency_id;default:0;comment:'币种id'"`            // 币种id
 	ExchangeId  uint    `gorm:"column:exchange_id;default:0;comment:'兑换id'"`            // 兑换币种id
 	Balance     float64 `gorm:"column:balance;default:0;comment:'余额';"`                 // 余额

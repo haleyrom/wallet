@@ -13,18 +13,18 @@ import (
 // CompanyStream 公司流水
 type CompanyStream struct {
 	gorm.Model
-	Code           string  `gorm:"column:code;comment:'code'"`                            // 账户名称
-	Uid            uint    `gorm:"column:uid;default:0;comment:'用户id'"`                   // 用户id
-	AccountId      uint    `gorm:"column:account_id;default:0;comment:'账本id';"`           // 账本id
-	Balance        float64 `gorm:"column:balance;default:0;comment:'本期余额';"`              // 本期余额
-	LastBalance    float64 `gorm:"column:last_balance;default:0;comment:'上期余额';"`         // 上期余额
-	Income         float64 `gorm:"column:income;default:0;comment:'本期收入';"`               // 本期收入
-	Spend          float64 `gorm:"column:spend;default:0;comment:'本期支出';"`                // 本期支出
-	Type           int8    `gorm:"size:3;column:type;default:0;comment:'明细类型'"`           // 明细类型
-	OrderId        string  `gorm:"column:order_id;comment:'订单id'"`                        // 订单id
-	Address        string  `gorm:"column:address;comment:'充值地址'"`                         // 充值地址
-	CallbackStatus string  `gorm:"column:callback_status;comment:'回调状态码'"`                // 回调状态码
-	CallbackJson   string  `gorm:"type(context);column:callback_json;comment:'回调json数据'"` // 回调json数据
+	Code           string  `gorm:"column:code;comment:'code'"`                        // 账户名称
+	Uid            uint    `gorm:"column:uid;default:0;comment:'用户id'"`               // 用户id
+	AccountId      uint    `gorm:"column:account_id;default:0;comment:'账本id';"`       // 账本id
+	Balance        float64 `gorm:"column:balance;default:0;comment:'本期余额';"`          // 本期余额
+	LastBalance    float64 `gorm:"column:last_balance;default:0;comment:'上期余额';"`     // 上期余额
+	Income         float64 `gorm:"column:income;default:0;comment:'本期收入';"`           // 本期收入
+	Spend          float64 `gorm:"column:spend;default:0;comment:'本期支出';"`            // 本期支出
+	Type           int8    `gorm:"size:3;column:type;default:0;comment:'明细类型'"`       // 明细类型
+	OrderId        string  `gorm:"column:order_id;comment:'订单id'"`                    // 订单id
+	Address        string  `gorm:"column:address;comment:'充值地址'"`                     // 充值地址
+	CallbackStatus string  `gorm:"column:callback_status;comment:'回调状态码'"`            // 回调状态码
+	CallbackJson   string  `gorm:"type:text;column:callback_json;comment:'回调json数据'"` // 回调json数据
 }
 
 const (

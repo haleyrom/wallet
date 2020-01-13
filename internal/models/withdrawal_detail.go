@@ -33,7 +33,7 @@ type WithdrawalDetail struct {
 	Remark          string  `gorm:"size:200;column:remark;comment:'备注'"`                         // 备注
 	RefundStatus    int8    `gorm:"size:4;column:refund_status;comment:'退款状态0不可退款1可退款2退款成功'"`    //退款状态（0不可退款1可退款2退款成功）
 	CallbackStatus  string  `gorm:"column:callback_status;comment:'回调状态码'"`                      // 回调状态码
-	CallbackJson    string  `gorm:"type(context);column:callback_json;comment:'回调json数据'"`       // 回调json数据
+	CallbackJson    string  `gorm:"type:text;column:callback_json;comment:'回调json数据'"`           // 回调json数据
 	AddressSource   int8    `gorm:"size:3;column:address_source;default:0;commit:'来源0未知1本站2外站'"` // 来源0未知1本站2外站
 	Balance         float64 `gorm:"column:balance;default:0;comment:'当前可用余额';"`                  // 当前可用余额
 	FromAddress     string  `gorm:"column:from_address;comment:'出金地址';"`                         // 出金地址
