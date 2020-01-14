@@ -2164,6 +2164,40 @@
                 }
             }
         },
+        "/coin/symbol": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "根据symbol获取coin",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BlockChain 链"
+                ],
+                "summary": "根据symbol获取coin接口",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "链标识",
+                        "name": "symbol",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ReadOrderSymbolByCoinResp"
+                        }
+                    }
+                }
+            }
+        },
         "/coin/update": {
             "post": {
                 "security": [
@@ -4460,6 +4494,31 @@
                 },
                 "name": {
                     "description": "链名称",
+                    "type": "string"
+                }
+            }
+        },
+        "resp.ReadOrderSymbolByCoinResp": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "chain_code": {
+                    "description": "链标识",
+                    "type": "string"
+                },
+                "min_deposit": {
+                    "description": "最小提币数量",
+                    "type": "number"
+                },
+                "symbol": {
+                    "description": "链名称",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "类型",
                     "type": "string"
                 }
             }

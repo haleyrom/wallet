@@ -55,6 +55,7 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.POST("/coin/status", api.UpdateCoinStatus)
 	r.POST("/coin/remove", api.RemoveCoin)
 	r.GET("/coin/deposit", api.ReadCoinDepositInfo)
+	r.GET("/coin/symbol", api.ReadListSymbolCoin)
 
 	r.GET("/deposit/list", api.ReadDepositAddList)
 	r.POST("/deposit/join", api.JoinDepositDetail)

@@ -706,6 +706,24 @@ definitions:
         description: 链名称
         type: string
     type: object
+  resp.ReadOrderSymbolByCoinResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      chain_code:
+        description: 链标识
+        type: string
+      min_deposit:
+        description: 最小提币数量
+        type: number
+      symbol:
+        description: 链名称
+        type: string
+      type:
+        description: 类型
+        type: string
+    type: object
   resp.UserPayInfoResp:
     properties:
       email:
@@ -2251,6 +2269,27 @@ paths:
       summary: 更新代币状态接口
       tags:
       - Coin 代币功能
+  /coin/symbol:
+    get:
+      description: 根据symbol获取coin
+      parameters:
+      - description: 链标识
+        in: formData
+        name: symbol
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadOrderSymbolByCoinResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据symbol获取coin接口
+      tags:
+      - BlockChain 链
   /coin/update:
     post:
       description: 更新代币

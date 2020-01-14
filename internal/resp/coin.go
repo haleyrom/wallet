@@ -64,3 +64,12 @@ type ReadCoinDepositInfoResp struct {
 	CustomerStatus    int8    `json:"customer_status"`     // 客服状态:0 必须1：不必须
 	FinancialStatus   int8    `json:"financial_status"`    // 财务状态:0 必须1：不必须
 }
+
+// ReadOrderSymbolByCoinResp 读取代笔列表结果
+type ReadOrderSymbolByCoinResp struct {
+	ChainCode  string  `json:"chain_code"`  // 链标识
+	Symbol     string  `json:"symbol"`      // 链名称
+	Type       string  `json:"type"`        // 类型
+	Address    string  `json:"address"`     // 地址
+	MinDeposit float64 `json:"min_deposit"` // 最小提币数量
+}

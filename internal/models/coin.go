@@ -168,6 +168,24 @@ func (c *Coin) GetOrderSymbolByChain(o *gorm.DB) ([]resp.ReadOrderSymbolByChainR
 	return data, nil
 }
 
+// GetOrderSymbolByCoin  根据symbol获取coin
+func (c *Coin) GetOrderSymbolByCoin(o *gorm.DB, uid uint) ([]resp.ReadOrderSymbolByCoinResp, error) {
+	data := make([]resp.ReadOrderSymbolByCoinResp, 0)
+	rows, err := o.Raw(fmt.Sprintf("SELECT chain.chain_code,coin.symbol,coin.type,addr.address,coin.min_deposit FROM %s coin LEFT JOIN %s addr on addr.block_chain_id = coin.block_chain_id LEFT JOIN %s chain ON chain.id = coin.block_chain_id WHERE coin.symbol = ? and addr.uid = ? and coin.deposit_status = ? ", GetCoinTable(), GetDepositAddrTable(), GetBlockChain()), c.Symbol, uid, 0).Rows()
+	defer rows.Close()
+
+	if err == nil {
+		var (
+			item resp.ReadOrderSymbolByCoinResp
+		)
+		for rows.Next() {
+			_ = o.ScanRows(rows, &item)
+			data = append(data, item)
+		}
+	}
+	return data, nil
+}
+
 // GetOrderSymbolTypeByCoin 获取symbol/type获取信息
 func (c *Coin) GetOrderSymbolTypeByCoin(o *gorm.DB) error {
 	return o.Table(GetCoinTable()).Where("symbol = ? and type = ?", c.Symbol, c.Type).Find(c).Error
