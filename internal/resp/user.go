@@ -39,4 +39,7 @@ type UserPayInfoResp struct {
 type ChangeInfoResp struct {
 	Money   float64 `json:"money"`    // 金额
 	OrderId string  `json:"order_id"` // 订单id
+	Code    uint    `json:"code"`     // 支付标示
+	Symbol  string  `json:"symbol" `  // 代币标示
+	From    string  `json:"from" `    // 来源
 }

@@ -140,7 +140,7 @@ func PaymentQrCode(c *gin.Context) {
 
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
 
-	core.PayChan.MapChan[order.OrderUuid] = make(chan float64, 1)
+	core.PayChan.MapChan[order.OrderUuid] = make(chan resp.ChangeInfoResp, 1)
 	//core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
 	key := int(order.CreatedAt.Add(failure_timer).Unix())
 	if len(core.PayChan.MapTime[key]) == core.DefaultNilNum {
@@ -317,7 +317,7 @@ func UserChange(c *gin.Context) {
 			return
 		}
 		//// 设置订单金额 0再支付
-		//core.PayChan.MapChan[order.OrderUuid] <- float64(core.DefaultNilNum)
+		//core.PayChan.MapChan[order.OrderUuid] <- resp.ChangeInfoResp{}
 	} else {
 		currency := models.NewCurrency()
 		currency.ID = list[p.Base.Uid].CurrencyId
@@ -387,17 +387,14 @@ func UserPayQrCodeStatus(c *gin.Context) {
 
 	for {
 		select {
-		case money := <-core.PayChan.MapChan[p.OrderId]:
+		case info := <-core.PayChan.MapChan[p.OrderId]:
 			// 已经输入金额
-			if money > float64(core.DefaultNilNum) {
+			if info.Money > float64(core.DefaultNilNum) {
 				delete(core.PayChan.MapChan, p.OrderId)
-				core.GResp.Success(c, resp.ChangeInfoResp{
-					Money:   money,
-					OrderId: p.OrderId,
-				})
+				core.GResp.Success(c, info)
 			} else {
 				core.GResp.Failure(c, resp.CodeWaitPayQrCode)
-				core.PayChan.MapChan[p.OrderId] <- float64(core.DefaultNilNum)
+				core.PayChan.MapChan[p.OrderId] <- info
 			}
 			return
 		case <-time.After(10 * time.Second):
@@ -450,7 +447,13 @@ func UserSetPaymentMoney(c *gin.Context) {
 		return
 	}
 
-	core.PayChan.MapChan[p.OrderId] <- p.Money
+	core.PayChan.MapChan[p.OrderId] <- resp.ChangeInfoResp{
+		Money:   p.Money,
+		OrderId: p.OrderId,
+		Code:    p.Base.Uid,
+		Symbol:  order.Symbol,
+		From:    "payment",
+	}
 
 	core.GResp.Success(c, resp.EmptyData())
 	return
