@@ -280,7 +280,7 @@ func WithdrawalCallback(c *gin.Context) {
 	detail.CallbackStatus, detail.CallbackJson = p.Code, string(postStr)
 	switch p.Code {
 	case "105004":
-		fmt.Println(detail.CallbackJson)
+		fmt.Println(detail.CallbackJson, detail)
 		// 已提交
 		detail.TransactionHash = p.TransactionHash
 		if detail.Status == models.WithdrawalStatusThrough {
