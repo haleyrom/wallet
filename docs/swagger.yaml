@@ -2802,6 +2802,28 @@ paths:
       summary: 设置支付密码接口
       tags:
       - 支付密码
+  /user/pay/set_money:
+    post:
+      description: 设置付款码金额接口
+      parameters:
+      - description: 订单id
+        in: formData
+        name: order_id
+        type: string
+      - description: 金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 设置付款码金额接口
+      tags:
+      - User 用户
   /user/pay/status:
     get:
       description: 付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码

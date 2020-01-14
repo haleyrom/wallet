@@ -10,7 +10,7 @@ import (
 
 // PaymentChannel 支付channel
 type PaymentChannel struct {
-	MapChan map[string]chan int
+	MapChan map[string]chan float64
 	MapTime map[int][]string
 }
 
@@ -57,7 +57,7 @@ func init() {
 	}
 
 	PayChan = PaymentChannel{
-		MapChan: make(map[string]chan int, 0),
+		MapChan: make(map[string]chan float64, 0),
 		MapTime: make(map[int][]string, 0),
 	}
 

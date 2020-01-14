@@ -34,3 +34,9 @@ type UserPayInfoResp struct {
 	Email   string `json:"email" form:"email"`       // 邮件
 	Money   string `json:"money" form:"money"`       // money
 }
+
+// ChangeInfoResp 收费信息
+type ChangeInfoResp struct {
+	Money   float64 `json:"money"`    // 金额
+	OrderId string  `json:"order_id"` // 订单id
+}

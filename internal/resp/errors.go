@@ -142,6 +142,9 @@ const (
 
 	// CodeWaitQrCode 二维码等待
 	CodeWaitQrCode StatusCode = 101138
+
+	// CodeWaitPayQrCode 二维码等待支付
+	CodeWaitPayQrCode StatusCode = 101139
 )
 
 // StatusCode 状态码
@@ -208,6 +211,7 @@ func init() {
 		CodeOneselfInto:           "不支持自身互转",
 		CodeFailureQrCode:         "二维码失效",
 		CodeWaitQrCode:            "二维码可用",
+		CodeWaitPayQrCode:         "二维码待支付",
 	}
 }
 

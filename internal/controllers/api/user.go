@@ -140,7 +140,7 @@ func PaymentQrCode(c *gin.Context) {
 
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
 
-	core.PayChan.MapChan[order.OrderUuid] = make(chan int, 1)
+	core.PayChan.MapChan[order.OrderUuid] = make(chan float64, 1)
 	//core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
 	key := int(order.CreatedAt.Add(failure_timer).Unix())
 	if len(core.PayChan.MapTime[key]) == core.DefaultNilNum {
@@ -316,7 +316,8 @@ func UserChange(c *gin.Context) {
 			core.GResp.Failure(c, errors.Errorf("update order fail:%s", err))
 			return
 		}
-		core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
+		//// 设置订单金额 0再支付
+		//core.PayChan.MapChan[order.OrderUuid] <- float64(core.DefaultNilNum)
 	} else {
 		currency := models.NewCurrency()
 		currency.ID = list[p.Base.Uid].CurrencyId
@@ -379,7 +380,6 @@ func UserPayQrCodeStatus(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(core.PayChan.MapChan, core.PayChan.MapChan[p.OrderId])
 	if _, ok := core.PayChan.MapChan[p.OrderId]; ok == false {
 		core.GResp.Failure(c, resp.CodeFailureQrCode)
 		return
@@ -387,13 +387,71 @@ func UserPayQrCodeStatus(c *gin.Context) {
 
 	for {
 		select {
-		case <-core.PayChan.MapChan[p.OrderId]:
-			delete(core.PayChan.MapChan, p.OrderId)
-			core.GResp.Success(c, resp.EmptyData())
+		case money := <-core.PayChan.MapChan[p.OrderId]:
+			// 已经输入金额
+			if money > float64(core.DefaultNilNum) {
+				delete(core.PayChan.MapChan, p.OrderId)
+				core.GResp.Success(c, resp.ChangeInfoResp{
+					Money:   money,
+					OrderId: p.OrderId,
+				})
+			} else {
+				core.GResp.Failure(c, resp.CodeWaitPayQrCode)
+				core.PayChan.MapChan[p.OrderId] <- float64(core.DefaultNilNum)
+			}
 			return
 		case <-time.After(10 * time.Second):
 			core.GResp.Failure(c, resp.CodeWaitQrCode)
 			return
 		}
 	}
+}
+
+// UserSetPaymentMoney 设置付款码金额
+// @Tags  User 用户
+// @Summary 设置付款码金额接口
+// @Description 设置付款码金额接口
+// @Produce json
+// @Security ApiKeyAuth
+// @Param order_id formData string false "订单id"
+// @Param money formData number true "金额"
+// @Success 200
+// @Router /user/pay/set_money [post]
+func UserSetPaymentMoney(c *gin.Context) {
+	p := &params.UserSetPaymentMoneyParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	if _, ok := core.PayChan.MapChan[p.OrderId]; ok == false {
+		core.GResp.Failure(c, resp.CodeFailureQrCode)
+		return
+	}
+
+	o := core.Orm.New()
+	order := models.NewOrder()
+	order.OrderUuid = p.OrderId
+
+	if err := order.IsOrderUuid(o); err != nil {
+		core.GResp.Failure(c, resp.CodeNotOrderId, err)
+		return
+	} else if order.Status == models.OrderStatusOk {
+
+		core.GResp.Failure(c, resp.CodeOrderStatusOK)
+		return
+	} else if order.CreatedAt.Add(failure_timer).Unix() < time.Now().Unix() {
+		_ = order.RemoveOrder(o)
+		core.GResp.Failure(c, resp.CodeFailureQrCode)
+		return
+	}
+
+	core.PayChan.MapChan[p.OrderId] <- p.Money
+
+	core.GResp.Success(c, resp.EmptyData())
+	return
 }

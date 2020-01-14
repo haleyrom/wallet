@@ -3001,6 +3001,41 @@
                 }
             }
         },
+        "/user/pay/set_money": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "设置付款码金额接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User 用户"
+                ],
+                "summary": "设置付款码金额接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "订单id",
+                        "name": "order_id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "金额",
+                        "name": "money",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
         "/user/pay/status": {
             "get": {
                 "security": [
