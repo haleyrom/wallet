@@ -382,7 +382,7 @@ func UserPayQrCodeStatus(c *gin.Context) {
 
 	fmt.Println(core.PayChan.MapChan, "+++++++")
 	if _, ok := core.PayChan.MapChan[p.OrderId]; ok == false {
-		core.GResp.Failure(c, resp.CodeFailureQrCode)
+		core.GResp.Success(c, resp.EmptyData())
 		return
 	}
 
