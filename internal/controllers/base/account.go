@@ -1,6 +1,7 @@
 package base
 
 import (
+	"fmt"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/resp"
@@ -54,10 +55,12 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 		return err
 	}
 
+	fmt.Println("++++++++++++++++++++++++")
 	// 入账
 	if err := account.UpdateWithdrawalBalance(o, money, money, core.OperateToOut, core.OperateToOut); err != nil {
 		return err
 	}
+	fmt.Println("++++++++++++++++++++++++")
 
 	go func() {
 		company_stream := &models.CompanyStream{
