@@ -28,10 +28,13 @@ func RegisterAdminRouter(r *gin.RouterGroup) {
 		v1.POST("/account/company/addr/update", admin.UpdateCompanyAddr)
 		v1.POST("/account/company/addr/status", admin.UpdateCompanyAddrStatus)
 		v1.POST("/account/company/addr/create", admin.CreateCompanyAddr)
+		v1.GET("/account/transfer/list", admin.AccountTransferList)
+
 		v1.POST("/currency/quote/create", admin.CreateCurrencyQuote)
 		v1.POST("/currency/quote/update", admin.UpdateCurrencyQuote)
 		v1.GET("/currency/quote/list", admin.ReadQuotePage)
 		v1.GET("/currency/quote_history/list", admin.ReadQuoteHistoryPage)
+
 		v1.POST("/operate/recharge/join", admin.JoinRecharge)
 		v1.GET("/operate/recharge/list", admin.ReadRechargePage)
 		v1.POST("/operate/recharge/remove", admin.RemoveRecharge)

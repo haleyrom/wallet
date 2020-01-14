@@ -181,3 +181,6 @@ type AccountChargeDetailParam struct {
 	Page     int        `json:"page" form:"page"  binding:"required"`
 	PageSize int        `json:"pageSize" form:"pageSize" binding:"required"`
 }
+
+// AccountTransferListParam 转账列表解析参数
+type AccountTransferListParam BaseListParam

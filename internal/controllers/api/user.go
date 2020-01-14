@@ -131,6 +131,7 @@ func PaymentQrCode(c *gin.Context) {
 		Status:      models.OrderStatusNot,
 		Type:        models.OrderTypePayment,
 		Form:        models.OrderFormPayment,
+		Symbol:      p.Symbol,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
@@ -316,6 +317,10 @@ func UserChange(c *gin.Context) {
 			return
 		}
 	} else {
+		currency := models.NewCurrency()
+		currency.ID = list[p.Base.Uid].CurrencyId
+		_ = currency.IsExistCurrency(o)
+
 		// 创建订单
 		order = &models.Order{
 			Uid:         p.Base.Uid,
@@ -328,6 +333,7 @@ func UserChange(c *gin.Context) {
 			Status:      models.OrderStatusOk,
 			Type:        models.OrderTypePayment,
 			Form:        models.OrderFormPayment,
+			Symbol:      currency.Symbol,
 		}
 		if err := order.CreateOrder(o); err != nil {
 			o.Callback()

@@ -225,6 +225,10 @@ func AccountChange(c *gin.Context) {
 		return
 	}
 
+	currency := models.NewCurrency()
+	currency.ID = p.CurrencyId
+	_ = currency.IsExistCurrency(o)
+
 	ratio, _ := strconv.ParseFloat(p.Ratio, 64)
 	jsonStr, _ := json.Marshal(c.Request.PostForm)
 	order := &models.Order{
@@ -237,6 +241,7 @@ func AccountChange(c *gin.Context) {
 		Ratio:       ratio,
 		Status:      models.OrderStatusOk,
 		Type:        models.OrderTypeChange,
+		Symbol:      currency.Symbol,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
@@ -361,13 +366,15 @@ func AccountShareBonus(c *gin.Context) {
 
 	jsonStr, _ := json.Marshal(c.Request.PostForm)
 	order := models.Order{
-		Uid:        p.Base.Uid,
-		Context:    string(jsonStr),
-		CurrencyId: currency.ID,
-		Balance:    p.Money,
-		Form:       models.OrderFormUsdd,
-		Status:     models.OrderStatusOk,
-		Type:       models.OrderTypeShare,
+		Uid:         p.Base.Uid,
+		Context:     string(jsonStr),
+		CurrencyId:  currency.ID,
+		Balance:     p.Money,
+		Form:        models.OrderFormUsdd,
+		Status:      models.OrderStatusOk,
+		Type:        models.OrderTypeShare,
+		ExchangeUid: p.Base.Uid,
+		Symbol:      p.Symbol,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
@@ -727,6 +734,7 @@ func AccountPersonTransfer(c *gin.Context) {
 		Status:      models.OrderStatusOk,
 		Type:        models.OrderTypeTransfer,
 		Form:        models.OrderFormTransfer,
+		Symbol:      p.Symbol,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
