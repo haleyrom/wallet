@@ -94,7 +94,6 @@ func ChargeQrCode(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Param symbol formData string true "币种标示"
 // @Param money formData number true "金额"
-// @Param code formData number true "code"
 // @Success 200 {object} resp.ChargeQrCodeResp
 // @Router /user/qrcode/pay [get]
 func PaymentQrCode(c *gin.Context) {
@@ -154,6 +153,7 @@ func PaymentQrCode(c *gin.Context) {
 		Email:    p.Base.Claims.Email,
 		Qrcode:   qrcode,
 		MinMoney: currency.MinPayMoney,
+		OrderId:  order.OrderUuid,
 	})
 	return
 

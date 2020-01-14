@@ -121,6 +121,42 @@ definitions:
         description: 时间
         type: string
     type: object
+  resp.AccountTransferInfoResp:
+    properties:
+      adverse_email:
+        description: 对方邮箱
+        type: string
+      adverse_id:
+        description: 对方id
+        type: string
+      adverse_name:
+        description: 对方名
+        type: string
+      balance:
+        description: 金额
+        type: number
+      order_id:
+        description: 订单id
+        type: string
+      status:
+        description: 状态 0未完成 1完成
+        type: integer
+      symbol:
+        description: 币种
+        type: string
+      uid:
+        description: 用户id
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      user_email:
+        description: 用户邮箱
+        type: string
+      user_name:
+        description: 用户名
+        type: string
+    type: object
   resp.AccountUserDetailInfoResp:
     properties:
       balance:
@@ -222,6 +258,9 @@ definitions:
       min_money:
         description: 最小转账金额
         type: number
+      order_id:
+        description: 订单id
+        type: string
       qrcode:
         description: 二维码
         type: string
@@ -1414,6 +1453,44 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 用户钱包列表接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/transfer/list:
+    get:
+      description: 钱包转账流水列表
+      parameters:
+      - description: 长度
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountTransferInfoResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 钱包转账流水列表接口
       tags:
       - Account 后台钱包-用户钱包
   /admin/account/user/deposit-list:
@@ -2804,11 +2881,6 @@ paths:
       - description: 金额
         in: formData
         name: money
-        required: true
-        type: number
-      - description: code
-        in: formData
-        name: code
         required: true
         type: number
       produces:
