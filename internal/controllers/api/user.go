@@ -388,7 +388,7 @@ func UserPayQrCodeStatus(c *gin.Context) {
 		case <-core.PayChan.MapChan[p.OrderId]:
 			delete(core.PayChan.MapChan, p.OrderId)
 			core.GResp.Success(c, resp.EmptyData())
-		case <-time.After(500 * time.Millisecond):
+		case <-time.After(360 * time.Millisecond):
 			core.GResp.Failure(c, resp.CodeWaitQrCode)
 		}
 	}
