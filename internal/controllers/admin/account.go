@@ -273,7 +273,7 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 				core.GResp.CustomFailure(c, err)
 				return
 			} else {
-				detail.Status, detail.FromAddress = models.WithdrawalStatusSubmit, address
+				detail.Status, detail.FromAddress = models.WithdrawalStatusThrough, address
 			}
 		} else {
 			detail.Status = models.WithdrawalStatusInAudit
