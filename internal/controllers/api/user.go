@@ -378,6 +378,7 @@ func UserPayQrCodeStatus(c *gin.Context) {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
 		return
 	}
+
 	fmt.Println(core.PayChan.MapChan, core.PayChan.MapChan[p.OrderId])
 	if _, ok := core.PayChan.MapChan[p.OrderId]; ok == false {
 		core.GResp.Failure(c, resp.CodeFailureQrCode)
@@ -390,7 +391,7 @@ func UserPayQrCodeStatus(c *gin.Context) {
 			delete(core.PayChan.MapChan, p.OrderId)
 			core.GResp.Success(c, resp.EmptyData())
 			return
-		case <-time.After(100 * time.Millisecond):
+		case <-time.After(500 * time.Millisecond):
 			core.GResp.Failure(c, resp.CodeWaitQrCode)
 			return
 		}
