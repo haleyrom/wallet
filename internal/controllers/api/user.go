@@ -140,8 +140,8 @@ func PaymentQrCode(c *gin.Context) {
 
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
 
-	core.PayChan.MapChan[order.OrderUuid] = make(chan int, 1)
-	core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
+	//core.PayChan.MapChan[order.OrderUuid] = make(chan int, 1)
+	//core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
 	key := int(order.CreatedAt.Add(failure_timer).Unix())
 	if len(core.PayChan.MapTime[key]) == core.DefaultNilNum {
 		core.PayChan.MapTime[key] = make([]string, 0)
@@ -316,6 +316,8 @@ func UserChange(c *gin.Context) {
 			core.GResp.Failure(c, errors.Errorf("update order fail:%s", err))
 			return
 		}
+		core.PayChan.MapChan[order.OrderUuid] = make(chan int, 1)
+		core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
 	} else {
 		currency := models.NewCurrency()
 		currency.ID = list[p.Base.Uid].CurrencyId
