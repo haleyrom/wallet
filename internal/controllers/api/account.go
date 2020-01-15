@@ -218,8 +218,9 @@ func AccountChange(c *gin.Context) {
 		return
 	}
 
+	money, _ := strconv.ParseFloat(p.Money, 64)
 	//  校验金额
-	if (data[p.CurrencyId].Balance*100 - data[p.ChangeId].BlockedBalance*100 - p.Money*100) < 0 {
+	if (data[p.CurrencyId].Balance*100 - data[p.ChangeId].BlockedBalance*100 - money*100) < 0 {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
@@ -237,7 +238,7 @@ func AccountChange(c *gin.Context) {
 		CurrencyId:  p.CurrencyId,
 		ExchangeUid: p.Base.Uid,
 		ExchangeId:  p.ChangeId,
-		Balance:     p.Money,
+		Balance:     money,
 		Ratio:       ratio,
 		Status:      models.OrderStatusOk,
 		Type:        models.OrderTypeChange,
@@ -259,10 +260,9 @@ func AccountChange(c *gin.Context) {
 	for _, val := range data {
 		temp.AccountId, temp.LastBalance = val.ID, val.Balance
 		if val.CurrencyId == p.CurrencyId {
-			temp.Income, temp.Spend, temp.Balance = float64(core.DefaultNilNum), float64(p.Money), float64(val.Balance-p.Money)
+			temp.Income, temp.Spend, temp.Balance = float64(core.DefaultNilNum), money, float64(val.Balance-money)
 		} else {
-			money := p.Money * ratio
-			temp.Spend, temp.Income, temp.Balance = float64(core.DefaultNilNum), float64(money), float64(val.Balance+money)
+			temp.Spend, temp.Income, temp.Balance = float64(core.DefaultNilNum), money*ratio, float64(val.Balance+money)
 		}
 		details = append(details, temp)
 	}
@@ -274,13 +274,13 @@ func AccountChange(c *gin.Context) {
 	}
 
 	account.CurrencyId = p.CurrencyId
-	if err := account.UpdateBalance(o, core.OperateToOut, p.Money); err != nil {
+	if err := account.UpdateBalance(o, core.OperateToOut, money); err != nil {
 		o.Callback()
 		core.GResp.Failure(c, err)
 		return
 	} else {
 		account.CurrencyId = p.ChangeId
-		if err = account.UpdateBalance(o, core.OperateToUp, p.Money*ratio); err != nil {
+		if err = account.UpdateBalance(o, core.OperateToUp, money*ratio); err != nil {
 			o.Callback()
 			core.GResp.Failure(c, err)
 			return
