@@ -14,6 +14,7 @@ type WithdrawalAddr struct {
 	gorm.Model
 	Uid           uint   `gorm:"column:uid;default:0;comment:'用户id';"`
 	BlockChainId  uint   `gorm:"column:block_chain_id;default:0;comment:'链id'"`
+	Type          string `gorm:"column:type;comment:'链类型'"`
 	Name          string `gorm:"column:name;comment:'名称'"`
 	CurrencyId    uint   `gorm:"column:currency_id;default:0;comment:'币种id';"` // 账户id
 	Address       string `gorm:"size:255;column:address;comment:'地址'"`

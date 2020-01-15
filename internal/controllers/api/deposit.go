@@ -243,7 +243,6 @@ func TopUpDeposit(c *gin.Context) {
 		}
 	}
 
-	fmt.Println(detail.TransactionHash, detail.BlockCount, block_count, coin.ConfirmCount, "=======")
 	// 确认数量 小于 记录时过滤
 	if block_count <= detail.BlockCount {
 		o.Commit()

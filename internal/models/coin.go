@@ -153,7 +153,7 @@ func (c *Coin) GetDepositInfo(o *gorm.DB) (resp.ReadCoinDepositInfoResp, error) 
 // GetOrderSymbolByChain  根据symbol获取链
 func (c *Coin) GetOrderSymbolByChain(o *gorm.DB) ([]resp.ReadOrderSymbolByChainResp, error) {
 	data := make([]resp.ReadOrderSymbolByChainResp, 0)
-	rows, err := o.Raw(fmt.Sprintf("SELECT chain.id,coin.id as coin_id,chain.chain_code,chain.name FROM %s coin LEFT JOIN %s chain on chain.id = coin.block_chain_id WHERE symbol = ?", GetCoinTable(), GetBlockChain()), c.Symbol).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT chain.id,coin.id as coin_id,chain.chain_code,chain.name,coin.type FROM %s coin LEFT JOIN %s chain on chain.id = coin.block_chain_id WHERE symbol = ?", GetCoinTable(), GetBlockChain()), c.Symbol).Rows()
 	defer rows.Close()
 
 	if err == nil {
