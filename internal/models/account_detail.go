@@ -59,9 +59,9 @@ func (a *AccountDetail) CreateAccountDetailAll(o *gorm.DB, items []AccountDetail
 	for key, value := range items {
 		if len(items)-1 == key {
 			//最后一条数据 以分号结尾
-			sql += fmt.Sprintf("(%d,'%d','%0.2f','%0.2f','%0.2f','%0.2f','%d','%d','%s','%s');", value.Uid, value.AccountId, value.Balance, value.LastBalance, value.Income, value.Spend, value.Type, value.OrderId, timer, timer)
+			sql += fmt.Sprintf("(%d,'%d','%v','%v','%v','%v','%d','%d','%s','%s');", value.Uid, value.AccountId, value.Balance, value.LastBalance, value.Income, value.Spend, value.Type, value.OrderId, timer, timer)
 		} else {
-			sql += fmt.Sprintf("(%d,'%d','%0.2f','%0.2f','%0.2f','%0.2f','%d','%d','%s','%s'),", value.Uid, value.AccountId, value.Balance, value.LastBalance, value.Income, value.Spend, value.Type, value.OrderId, timer, timer)
+			sql += fmt.Sprintf("(%d,'%d','%v','%v','%v','%v','%d','%d','%s','%s'),", value.Uid, value.AccountId, value.Balance, value.LastBalance, value.Income, value.Spend, value.Type, value.OrderId, timer, timer)
 		}
 	}
 	return o.Exec(sql).Error
