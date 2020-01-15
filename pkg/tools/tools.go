@@ -107,7 +107,6 @@ func RegisterWalletAddr(app_id, url, srekey string) (*WalletResp, error) {
 // WithdrawalAudio 提现审核
 func WithdrawalAudio(p map[string]interface{}, url, srekey string) (*WithdrawalAudioDataResp, error) {
 	p["hash"] = GenerateSign(p, srekey)
-	fmt.Println(p, "--------------------")
 	result, err := HttpPostBase(url, p)
 	data := &WithdrawalAudioDataResp{}
 	_ = json.Unmarshal([]byte(string(result)), data)

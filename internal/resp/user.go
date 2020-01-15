@@ -2,13 +2,13 @@ package resp
 
 // UserInfoResp 用户信息解析
 type UserInfoResp struct {
-	Id        string `json:"id" mapstructure:"id"`                // id
-	Nickname  string `json:"nickname" mapstructure:"nickname"`    // nickname
-	Email     string `json:"email" mapstructure:"email"`          // email
-	Rcode     string `json:"rcode" mapstructure:"rcode"`          // rcode
-	FatherId  string `json:"father_id" mapstructure:"father_id"`  // father_id
-	HeadImage string `json:"head_image" mapstructure:"headimage"` // head_image
-	Fans      string `json:"fans" mapstructure:"fans"`            // fans
+	Id        string  `json:"id" mapstructure:"id"`                // id
+	Nickname  string  `json:"nickname" mapstructure:"nickname"`    // nickname
+	Email     string  `json:"email" mapstructure:"email"`          // email
+	Rcode     string  `json:"rcode" mapstructure:"rcode"`          // rcode
+	FatherId  string  `json:"father_id" mapstructure:"father_id"`  // father_id
+	HeadImage string  `json:"head_image" mapstructure:"headimage"` // head_image
+	Fans      float64 `json:"fans" mapstructure:"fans"`            // fans
 }
 
 // GetOrderEmailUserInfoResp 获取用户email信息

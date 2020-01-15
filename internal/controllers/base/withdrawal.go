@@ -46,7 +46,7 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, str
 		"to_address":       detail.Address,
 		"value":            fmt.Sprintf("%f", detail.Value),
 	}
-	fmt.Println(data, "--------++++++++++++")
+
 	result, err := tools.WithdrawalAudio(data, url, viper.GetString("deposit.Srekey"))
 
 	if result == nil || err != nil || result.Code != http.StatusOK {
