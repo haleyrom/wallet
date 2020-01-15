@@ -8,6 +8,7 @@ import (
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/consul"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -189,23 +190,14 @@ func AccountWithdrawalDetail(c *gin.Context) {
 
 	detail := models.NewWithdrawalDetail()
 	detail.ID = p.Id
-	if err := detail.ReadInfo(core.Orm.New()); err != nil {
+	data, err := detail.ReadInfo(core.Orm.New())
+	if err != nil {
 		core.GResp.Failure(c, err)
 		return
 	}
-	timer, _ := time.Parse("2006-01-02 15:04:05 +0800 CST", detail.UpdatedAt.String())
-
-	core.GResp.Success(c, resp.AdminWithdrawalDetailResp{
-		Id:              detail.ID,
-		OrderId:         detail.OrderId,
-		Symbol:          detail.Symbol,
-		Status:          detail.Status,
-		CustomerStatus:  detail.CustomerStatus,
-		FinancialStatus: detail.FinancialStatus,
-		Address:         detail.Address,
-		Value:           detail.Value,
-		UpdatedAt:       timer.Format("2006-01-02 15:04:05"),
-	})
+	var timer time.Time
+	data.UpdatedAt = tools.TimerConvert(timer, data.UpdatedAt)
+	core.GResp.Success(c, data)
 	return
 }
 

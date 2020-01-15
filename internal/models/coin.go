@@ -29,6 +29,7 @@ type Coin struct {
 	DepositStatus     int8    `gorm:"size(3);column:deposit_status;default:0;commit:'提笔状态-0开启1停用'"`    // 状态：0开启;1:停用;
 	CustomerStatus    int8    `gorm:"size(3);column:customer_status;index;default:0;comment:'客服状态'"`   // 客服状态:0 必须1：不必须
 	FinancialStatus   int8    `gorm:"size(3);column:financial_status;index;default:0;comment:'财务状态'"`  // 财务状态:0 必须1：不必须
+	Precision         int     `gorm:"column:precision;default:6;comment:'小数点精度6位'"`                    // 小数点精度默认6位
 }
 
 // GetCoinTable 表

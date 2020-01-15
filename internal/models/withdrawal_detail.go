@@ -153,8 +153,10 @@ func (w *WithdrawalDetail) GetAllPageList(o *gorm.DB, page, pageSize, start_time
 }
 
 // ReadInfo 读取信息
-func (w *WithdrawalDetail) ReadInfo(o *gorm.DB) error {
-	return o.Table(GetWithdrawalDetailTable()).Where("id = ?", w.ID).Find(w).Error
+func (w *WithdrawalDetail) ReadInfo(o *gorm.DB) (resp.AdminWithdrawalDetailResp, error) {
+	var data resp.AdminWithdrawalDetailResp
+	err := o.Raw(fmt.Sprintf("SELECT id,order_id,symbol,status,customer_status,financial_status,address,value,updated_at FROM %s WHERE id = ?", GetWithdrawalDetailTable()), w.ID).Scan(&data).Error
+	return data, err
 }
 
 // IsAudioCustomer 判断是否客服审核

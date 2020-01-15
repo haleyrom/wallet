@@ -206,6 +206,6 @@ func TimerConvert(timer time.Time, datetime string) string {
 	} else if index = strings.LastIndex(datetime, "Z"); index > 0 {
 		timer, _ = time.Parse("2006-01-02T15:04:05Z", datetime)
 	}
-	fmt.Println(timer, timer.Format("2006-01-02 15:04:05"))
+	//fmt.Println(timer, timer.Format("2006-01-02 15:04:05"))
 	return timer.Format("2006-01-02 15:04:05")
 }
