@@ -529,7 +529,7 @@ func AccountWithdrawal(c *gin.Context) {
 		CoinId:          p.CoinId,
 		CurrencyId:      p.CurrencyId,
 		AccountId:       account.ID,
-		Value:           p.Money,
+		Value:           strconv.FormatFloat(p.Money, 'E', -1, 64),
 		Symbol:          coin_info.Symbol,
 		Type:            coin_info.Type,
 		OrderId:         fmt.Sprintf("%s", uuid.NewV4()),

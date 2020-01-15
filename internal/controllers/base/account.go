@@ -1,12 +1,12 @@
 package base
 
 import (
-	"fmt"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
+	"strconv"
 )
 
 // AccountInsertDetail 插入钱包明细
@@ -22,8 +22,9 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 		return err
 	}
 
+	value, _ := strconv.ParseFloat(detail.Value, 64)
 	// 入账金额
-	money := detail.Value + detail.Poundage
+	money := value + detail.Poundage
 
 	if account.Balance*100 < money*100 || account.BlockedBalance*100 < money*100 || money*100 > (account.Balance-account.BlockedBalance)*100 {
 		logrus.Error("money gt account balance or blocked_balance, %f > %f or %f", money, account.Balance, account.BlockedBalance)
@@ -55,12 +56,10 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 		return err
 	}
 
-	fmt.Println("++++++++++++++++++++++++")
 	// 入账
 	if err := account.UpdateWithdrawalBalance(o, money, money, core.OperateToOut, core.OperateToOut); err != nil {
 		return err
 	}
-	fmt.Println("++++++++++++++++++++++++")
 
 	go func() {
 		company_stream := &models.CompanyStream{
