@@ -193,13 +193,13 @@ func UserPayInfo(c *gin.Context) {
 
 	result, err := consul.GetUserInfo(user.Uid, c.Request.Header.Get(core.HttpHeadToken))
 	var data resp.UserInfoResp
-
+	fmt.Println(result, err)
 	if err != nil {
 		o.Rollback()
-		core.GResp.Failure(c, resp.CodeNotUser)
+		core.GResp.Failure(c, resp.CodeNotUser, err)
 		return
 	} else if err = mapstructure.Decode(result, &data); err != nil {
-		core.GResp.Failure(c, resp.CodeNotUser)
+		core.GResp.Failure(c, resp.CodeNotUser, err)
 		return
 	}
 
