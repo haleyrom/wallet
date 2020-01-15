@@ -6,7 +6,6 @@ import (
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
-	"strconv"
 )
 
 // AccountInsertDetail 插入钱包明细
@@ -22,9 +21,8 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 		return err
 	}
 
-	value, _ := strconv.ParseFloat(detail.Value, 64)
 	// 入账金额
-	money := value + detail.Poundage
+	money := detail.Value + detail.Poundage
 
 	if account.Balance*100 < money*100 || account.BlockedBalance*100 < money*100 || money*100 > (account.Balance-account.BlockedBalance)*100 {
 		logrus.Error("money gt account balance or blocked_balance, %f > %f or %f", money, account.Balance, account.BlockedBalance)

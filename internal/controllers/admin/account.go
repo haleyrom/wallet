@@ -10,7 +10,6 @@ import (
 	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
-	"strconv"
 	"time"
 )
 
@@ -375,8 +374,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 
 // WithdrawalAudioRefund 提现退款
 func WithdrawalAudioRefund(o *gorm.DB, detail *models.WithdrawalDetail) error {
-	value, _ := strconv.ParseFloat(detail.Value, 64)
-	money := value + detail.Poundage
+	money := detail.Value + detail.Poundage
 
 	account := models.NewAccount()
 	account.ID, account.Uid, account.CurrencyId = detail.AccountId, detail.Uid, detail.CurrencyId

@@ -18,7 +18,7 @@ type WithdrawalDetail struct {
 	CoinId          uint    `gorm:"column:coin_id;default:0;comment:'代币id'"`                     // 代币id
 	CurrencyId      uint    `gorm:"column:currency_id;default:0;comment:'货币id'"`                 // 货币id
 	AccountId       uint    `gorm:"column:account_id;default:0;comment:'帐号id'"`                  // 钱包id
-	Value           string  `gorm:"column:value;default:0;comment:'提现金额'"`                       // 提现金额
+	Value           float64 `gorm:"column:value;default:0;comment:'提现金额'"`                       // 提现金额
 	Symbol          string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                      // 代币代号
 	Type            string  `gorm:"size:255;column:type;comment:'币类型';"`                         // 标识 coin,token
 	OrderId         string  `gorm:"size:255;column:order_id;comment:'订单号'"`                      // 生成该地址的订单号
