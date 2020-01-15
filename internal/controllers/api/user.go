@@ -262,7 +262,11 @@ func UserChange(c *gin.Context) {
 	}
 
 	if (p.From == "payment" && p.Money < currency.MinPayMoney) == false {
-		if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
+		if len(user.PayPassword) == core.DefaultNilNum {
+			o.Callback()
+			core.GResp.Failure(c, resp.CodeInitPayPassword)
+			return
+		} else if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
 			o.Callback()
 			core.GResp.Failure(c, resp.CodeErrorPayPassword)
 			return
