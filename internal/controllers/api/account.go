@@ -620,7 +620,12 @@ func AccountCurrencyDetail(c *gin.Context) {
 			core.GResp.Failure(c, err)
 			return
 		}
-		data.Info.BlockChainId = coin.BlockChainId
+
+		currency := models.NewCurrency()
+		currency.Symbol = "USDD"
+		_ = currency.GetSymbolById(o)
+
+		data.Info.BlockChainId, data.Info.ChangeId = coin.BlockChainId, currency.ID
 		core.GResp.Success(c, data)
 		return
 	default:

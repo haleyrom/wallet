@@ -35,6 +35,7 @@ type AccountInfoResp struct {
 	UpdatedAt      string `json:"updated_at"`      // 时间
 	BlockedBalance string `json:"blocked_balance"` // 冻结金额
 	BlockChainId   uint   `json:"block_chain_id"`  // 链id
+	ChangeId       uint   `json:"change_id"`       //  兑换id
 }
 
 // AccountDetailResp 帐号详情

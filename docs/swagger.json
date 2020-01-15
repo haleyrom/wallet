@@ -3623,6 +3623,10 @@
                     "description": "冻结金额",
                     "type": "string"
                 },
+                "change_id": {
+                    "description": "兑换id",
+                    "type": "integer"
+                },
                 "currency_id": {
                     "description": "币种id",
                     "type": "integer"
@@ -4494,6 +4498,10 @@
                 },
                 "name": {
                     "description": "链名称",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "链类型",
                     "type": "string"
                 }
             }
