@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/base"
@@ -250,6 +251,7 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 		if detail.FinancialStatus == models.WithdrawalAudioStatusOk {
 			// 调取提现接口
 			address, msg, err := base.WithdrawalAudioOK(o, detail)
+			fmt.Println(address, msg, err)
 			// 提交成功
 			if err != nil {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
