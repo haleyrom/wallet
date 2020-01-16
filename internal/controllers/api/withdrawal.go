@@ -75,17 +75,10 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	o := core.Orm.New()
 	coin := models.NewCoin()
 	coin.BlockChainId, coin.CurrencyId = p.BlockChainId, p.CurrencyId
-	if err := coin.IsExistCoin(o); err != nil {
+	if err := coin.GetOrderChainIdByInfo(o); err != nil {
 		core.GResp.Failure(c, resp.CodeNotChain)
 		return
 	}
-
-	//chain := models.NewBlockChain()
-	//chain.ID = p.BlockChainId
-	//if err := chain.IsExistBlockChain(o); err != nil {
-	//	core.GResp.Failure(c, resp.CodeNotChain)
-	//	return
-	//}
 
 	currency := models.NewCurrency()
 	currency.ID = p.CurrencyId

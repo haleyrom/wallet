@@ -65,7 +65,7 @@ func CreateUser(c *gin.Context, p *params.BaseParam) error {
 func UpdateUserInfo(c *gin.Context, p *params.BaseParam, user models.User) {
 	data, err := GetConsulUserInfo(c, p.Claims.UserID)
 	if err == nil {
-		if p.Claims.Name != core.DefaultNilString && p.Claims.Email != core.DefaultNilString && (data.Nickname != p.Claims.Name || data.Email != p.Claims.Email) {
+		if data.Nickname != core.DefaultNilString && data.Email != core.DefaultNilString && (data.Nickname != user.Name || data.Email != user.Email) {
 			user.Name, user.Email = data.Nickname, data.Email
 			_ = user.UpdateInfo(core.Orm.New())
 		}
