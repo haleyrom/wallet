@@ -24,7 +24,6 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, str
 	coin := models.NewCoin()
 	coin.Symbol = detail.Symbol
 	contract_address, err := coin.GetConTractAddress(o)
-	fmt.Println(contract_address, err, 1)
 	if err != nil {
 		return core.DefaultNilString, core.DefaultNilString, err
 	}
@@ -32,7 +31,6 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, str
 	company_addr := models.NewCompanyAddr()
 	company_addr.Symbol, company_addr.Code = detail.Symbol, models.CodeWithdrawal
 	address, err := company_addr.GetOrderSymbolByAddress(o)
-	fmt.Println(contract_address, err, 2)
 
 	if err != nil {
 		return core.DefaultNilString, fmt.Sprintf("%s", resp.CodeNotCompanyAddress), resp.CodeNotCompanyAddress
@@ -51,9 +49,11 @@ func WithdrawalAudioOK(o *gorm.DB, detail *models.WithdrawalDetail) (string, str
 	}
 
 	result, err := tools.WithdrawalAudio(data, url, viper.GetString("deposit.Srekey"))
-	fmt.Println(result, err, 3)
 
 	if result == nil || err != nil || result.Code != http.StatusOK {
+		if len(result.Msg) == 0 {
+			result.Msg = "result error"
+		}
 		return core.DefaultNilString, core.DefaultNilString, errors.Errorf("%s", result.Msg)
 	}
 
