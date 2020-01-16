@@ -76,10 +76,14 @@ func ChargeQrCode(c *gin.Context) {
 		return
 	}
 
+	user := models.NewUser()
+	user.Uid = p.Base.Claims.UserID
+	_ = user.IsExistUser(core.Orm.New())
+
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "changre")
 	core.GResp.Success(c, resp.ChargeQrCodeResp{
-		UserName: p.Base.Claims.Name,
-		Email:    p.Base.Claims.Email,
+		UserName: user.Name,
+		Email:    user.Email,
 		Qrcode:   qrcode,
 	})
 	return

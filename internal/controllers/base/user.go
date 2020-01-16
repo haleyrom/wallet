@@ -1,7 +1,6 @@
 package base
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
@@ -65,7 +64,7 @@ func CreateUser(c *gin.Context, p *params.BaseParam) error {
 // UpdateUserInfo 根据用户信息
 func UpdateUserInfo(c *gin.Context, p *params.BaseParam, user models.User) {
 	data, err := GetConsulUserInfo(c, p.Claims.UserID)
-	fmt.Println(data, err, data.Nickname, user.Name, data.Email, user.Email)
+
 	if err == nil {
 		if data.Nickname != core.DefaultNilString && data.Email != core.DefaultNilString && (data.Nickname != user.Name || data.Email != user.Email) {
 			user.Name, user.Email = data.Nickname, data.Email
