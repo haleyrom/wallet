@@ -344,7 +344,7 @@ func WithdrawalCallback(c *gin.Context) {
 // @Description 根据type获取充值地址
 // @Produce json
 // @Security ApiKeyAuth
-// @Param type type int true "类型"
+// @Param type query string true "类型"
 // @Success 200
 // @Router /withdrawal/type [get]
 func WithdrawalOrderTypeByAddr(c *gin.Context) {
@@ -359,6 +359,13 @@ func WithdrawalOrderTypeByAddr(c *gin.Context) {
 	}
 
 	withdrawal_addr := models.NewWithdrawalAddr()
-	withdrawal_addr.Uid, withdrawal_addr.Type = p.Base.Uid, p.Type
-
+	withdrawal_addr.Uid, withdrawal_addr.Type = p.Base.Uid, p.Types
+	if err := withdrawal_addr.GetTypeByInfo(core.Orm.New()); err != nil {
+		core.GResp.Failure(c, resp.CodeNotData, err)
+		return
+	}
+	core.GResp.Success(c, resp.WithdrawalOrderTypeByAddrResp{
+		Address: withdrawal_addr.Address,
+	})
+	return
 }

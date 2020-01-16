@@ -683,7 +683,7 @@ func AccountPersonTransfer(c *gin.Context) {
 		},
 	}
 
-	if err = base.CreateUser(param); err != nil {
+	if err = base.CreateUser(c, param); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeNotUser)
 		return

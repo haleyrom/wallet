@@ -56,6 +56,6 @@ type WithdrawalCallbackParam struct {
 
 // WithdrawalOrderTypeByAddrParam 根据type获取地址
 type WithdrawalOrderTypeByAddrParam struct {
-	Base *BaseParam `json:"claims" form:"claims" `
-	Type string     `json:"type" form:"type"  binding:"required"`
+	Base  *BaseParam `json:"claims" form:"claims" `
+	Types string     `json:"type" form:"type"  binding:"required"`
 }

@@ -1,16 +1,20 @@
 package base
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
+	"github.com/haleyrom/wallet/internal/resp"
+	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 	"sync"
 )
 
 // CreateUser 创建用户
-func CreateUser(p *params.BaseParam) error {
+func CreateUser(c *gin.Context, p *params.BaseParam) error {
 	user := models.User{
 		Uid:   p.Claims.UserID,
 		Name:  p.Claims.Name,
@@ -49,11 +53,35 @@ func CreateUser(p *params.BaseParam) error {
 
 			wg.Wait()
 		}
-	} else if p.Claims.Name != core.DefaultNilString && p.Claims.Email != core.DefaultNilString && (user.Name != p.Claims.Name || user.Email != p.Claims.Email) {
-		user.Name, user.Email = p.Claims.Name, p.Claims.Email
-		_ = user.UpdateInfo(core.Orm.New())
+	} else {
+		go UpdateUserInfo(c, p, user)
 	}
 
 	p.Uid = user.ID
 	return nil
+}
+
+// UpdateUserInfo 根据用户信息
+func UpdateUserInfo(c *gin.Context, p *params.BaseParam, user models.User) {
+	data, err := GetConsulUserInfo(c, p.Claims.UserID)
+	if err == nil {
+		if p.Claims.Name != core.DefaultNilString && p.Claims.Email != core.DefaultNilString && (data.Nickname != p.Claims.Name || data.Email != p.Claims.Email) {
+			user.Name, user.Email = data.Nickname, data.Email
+			_ = user.UpdateInfo(core.Orm.New())
+		}
+	}
+}
+
+// GetConsulUserInfo 获取consul用户信息
+func GetConsulUserInfo(c *gin.Context, uid string) (resp.UserInfoResp, error) {
+	var data resp.UserInfoResp
+	// 查询用户创建用户
+	result, err := consul.GetUserInfo(uid, c.Request.Header.Get(core.HttpHeadToken))
+
+	if err != nil {
+		return data, resp.CodeNotUser
+	} else if err = mapstructure.Decode(result, &data); err != nil {
+		return data, resp.CodeNotUser
+	}
+	return data, nil
 }

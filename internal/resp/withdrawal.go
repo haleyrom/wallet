@@ -71,3 +71,8 @@ type AdminWithdrawalDetailResp struct {
 	Value           string `json:"value"`            // 金额
 	UpdatedAt       string `json:"updated_at"`       // 更新时间
 }
+
+// WithdrawalOrderTypeByAddrResp 根据type获取地址
+type WithdrawalOrderTypeByAddrResp struct {
+	Address string `json:"address"` // 地址
+}
