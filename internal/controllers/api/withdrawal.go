@@ -73,12 +73,19 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	}
 
 	o := core.Orm.New()
-	chain := models.NewBlockChain()
-	chain.ID = p.BlockChainId
-	if err := chain.IsExistBlockChain(o); err != nil {
+	coin := models.NewCoin()
+	coin.BlockChainId, coin.CurrencyId = p.BlockChainId, p.CurrencyId
+	if err := coin.IsExistCoin(o); err != nil {
 		core.GResp.Failure(c, resp.CodeNotChain)
 		return
 	}
+
+	//chain := models.NewBlockChain()
+	//chain.ID = p.BlockChainId
+	//if err := chain.IsExistBlockChain(o); err != nil {
+	//	core.GResp.Failure(c, resp.CodeNotChain)
+	//	return
+	//}
 
 	currency := models.NewCurrency()
 	currency.ID = p.CurrencyId
@@ -100,6 +107,7 @@ func CreateWithdrawalAddr(c *gin.Context) {
 		CurrencyId:    p.CurrencyId,
 		Name:          p.Name,
 		AddressSource: models.WithdrawalAddrBack,
+		Type:          coin.Type,
 	}
 
 	deposit := models.NewDepositAddr()
@@ -328,4 +336,29 @@ func WithdrawalCallback(c *gin.Context) {
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
 	return
+}
+
+// WithdrawalOrderTypeByAddr 根据type获取充值地址
+// @Tags Withdrawal 提现功能
+// @Summary 根据type获取充值地址接口
+// @Description 根据type获取充值地址
+// @Produce json
+// @Security ApiKeyAuth
+// @Param type type int true "类型"
+// @Success 200
+// @Router /withdrawal/type [get]
+func WithdrawalOrderTypeByAddr(c *gin.Context) {
+	p := &params.WithdrawalOrderTypeByAddrParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	withdrawal_addr := models.NewWithdrawalAddr()
+	withdrawal_addr.Uid, withdrawal_addr.Type = p.Base.Uid, p.Type
+
 }

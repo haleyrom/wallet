@@ -220,7 +220,7 @@ func AccountChange(c *gin.Context) {
 
 	money, _ := strconv.ParseFloat(p.Money, 64)
 	//  校验金额
-	if (data[p.CurrencyId].Balance*100 - data[p.ChangeId].BlockedBalance*100 - money*100) < 0 {
+	if (data[p.CurrencyId].Balance*100 - data[p.CurrencyId].BlockedBalance*100 - money*100) < 0 {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return

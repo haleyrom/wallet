@@ -69,4 +69,5 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.POST("/withdrawal/addr/update", api.UpdateWithdrawalAddr)
 	r.POST("/withdrawal/addr/remove", api.RemoveWithdrawalAddr)
 	r.POST("/withdrawal/callback", api.WithdrawalCallback)
+	r.GET("/withdrawal/type", api.WithdrawalOrderTypeByAddr)
 }

@@ -74,8 +74,11 @@ func (w *WithdrawalAddr) CreateWithdrawalAddr(o *gorm.DB) error {
 
 // UpdateWithdrawalAddr  更新提现地址
 func (w *WithdrawalAddr) UpdateWithdrawalAddr(o *gorm.DB) error {
-	w.UpdatedAt = time.Now()
-	if err := o.Model(w).Where("id = ? and uid = ? and status < ?", w.ID, w.Uid, vStatusRm).Update(w).Error; err != nil {
+	if err := o.Model(w).Where("id = ? and uid = ? and status < ?", w.ID, w.Uid, vStatusRm).Update(map[string]interface{}{
+		"updated_at": time.Now(),
+		"name":       w.Name,
+		"address":    w.Address,
+	}).Error; err != nil {
 		return err
 	}
 	return nil
@@ -101,4 +104,9 @@ func (w *WithdrawalAddr) GetInfo(o *gorm.DB) error {
 // GetUsableInfo 获取可用信息
 func (w *WithdrawalAddr) GetUsableInfo(o *gorm.DB) error {
 	return o.Table(GetWithdrawalAddrTable()).Where("id = ? and status = ?", w.ID, vStatusOk).Find(w).Error
+}
+
+// GetTypeByInfo 获取type可用信息
+func (w *WithdrawalAddr) GetTypeByInfo(o *gorm.DB) error {
+	return o.Table(GetWithdrawalAddrTable()).Where("uid = ? and status = ? and type = ?", w.Uid, vStatusOk, w.Type).Find(w).Error
 }
