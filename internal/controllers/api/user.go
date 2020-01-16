@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
+	"github.com/haleyrom/wallet/internal/controllers/base"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
-	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
-	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"time"
 )
@@ -77,10 +76,14 @@ func ChargeQrCode(c *gin.Context) {
 		return
 	}
 
+	user := models.NewUser()
+	user.Uid = p.Base.Claims.UserID
+	_ = user.IsExistUser(core.Orm.New())
+
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "changre")
 	core.GResp.Success(c, resp.ChargeQrCodeResp{
-		UserName: p.Base.Claims.Name,
-		Email:    p.Base.Claims.Email,
+		UserName: user.Name,
+		Email:    user.Email,
 		Qrcode:   qrcode,
 	})
 	return
@@ -191,13 +194,8 @@ func UserPayInfo(c *gin.Context) {
 		return
 	}
 
-	result, err := consul.GetUserInfo(user.Uid, c.Request.Header.Get(core.HttpHeadToken))
-	var data resp.UserInfoResp
-
+	data, err := base.GetConsulUserInfo(c, user.Uid)
 	if err != nil {
-		core.GResp.Failure(c, resp.CodeNotUser, err)
-		return
-	} else if err = mapstructure.Decode(result, &data); err != nil {
 		core.GResp.Failure(c, resp.CodeNotUser, err)
 		return
 	}

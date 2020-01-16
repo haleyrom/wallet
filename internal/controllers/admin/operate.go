@@ -10,9 +10,7 @@ import (
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
-	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/jwt"
-	"github.com/mitchellh/mapstructure"
 	"strconv"
 	"time"
 )
@@ -49,15 +47,10 @@ func JoinRecharge(c *gin.Context) {
 
 	if err = user.IsExistUser(o); err != nil {
 		// 查询用户创建用户
-		result, err := consul.GetUserInfo(p.Uid, c.Request.Header.Get(core.HttpHeadToken))
-		var data resp.UserInfoResp
-
+		data, err := base.GetConsulUserInfo(c, p.Uid)
 		if err != nil {
 			o.Rollback()
-			core.GResp.Failure(c, resp.CodeNotUser)
-			return
-		} else if err = mapstructure.Decode(result, &data); err != nil {
-			core.GResp.Failure(c, resp.CodeNotUser)
+			core.GResp.Failure(c, resp.CodeNotUser, err)
 			return
 		}
 
@@ -70,7 +63,7 @@ func JoinRecharge(c *gin.Context) {
 			},
 		}
 
-		if err = base.CreateUser(param); err != nil {
+		if err = base.CreateUser(c, param); err != nil {
 			core.GResp.Failure(c, resp.CodeNotUser)
 			return
 		}

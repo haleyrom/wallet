@@ -212,8 +212,8 @@ func (a *Account) GetAccountUserList(o *gorm.DB, page, pageSize, start_time, end
 	}
 
 	if len(keyword) > 0 {
-		sql = fmt.Sprintf("%s AND user.name like '%s'", sql, "%"+keyword+"%")
-		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
+		sql = fmt.Sprintf("%s  AND ((user.name like '%s') or (user.email like '%s') or (user.uid like '%s')) ", sql, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
+		count_sql = fmt.Sprintf("%s AND ((user.name like '%s') or (user.email like '%s') or (user.uid like '%s')) ", count_sql, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
 	}
 
 	sql = fmt.Sprintf("%s ORDER BY detail.id desc LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
@@ -255,8 +255,8 @@ func (a *Account) GetAdminAccountList(o *gorm.DB, page, pageSize, start_time, en
 	}
 
 	if len(keyword) > 0 {
-		sql = fmt.Sprintf("%s AND user.name like '%s'", sql, "%"+keyword+"%")
-		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
+		sql = fmt.Sprintf("%s AND ((user.name like '%s') or (user.email like '%s') or (user.uid like '%s')) ", sql, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
+		count_sql = fmt.Sprintf("%s AND ((user.name like '%s') or (user.email like '%s') or (user.uid like '%s')) ", count_sql, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
 	}
 
 	sql = fmt.Sprintf("%s ORDER BY account.id desc LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)

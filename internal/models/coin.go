@@ -208,3 +208,8 @@ func (c *Coin) GetOrderSymbolByInfo(o *gorm.DB) error {
 func (c *Coin) GetOrderCurrencyIdByInfo(o *gorm.DB) error {
 	return o.Table(GetCoinTable()).Where("currency_id = ?", c.CurrencyId).Find(c).Error
 }
+
+// GetOrderChainIdByInfo 根据coin获取信息
+func (c *Coin) GetOrderChainIdByInfo(o *gorm.DB) error {
+	return o.Table(GetCoinTable()).Where("block_chain_id = ? and currency_id = ?", c.BlockChainId, c.CurrencyId).Find(c).Error
+}

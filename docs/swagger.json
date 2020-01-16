@@ -3525,6 +3525,35 @@
                     }
                 }
             }
+        },
+        "/withdrawal/type": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "根据type获取充值地址",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdrawal 提现功能"
+                ],
+                "summary": "根据type获取充值地址接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "类型",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
         }
     },
     "definitions": {
@@ -3580,7 +3609,7 @@
                 },
                 "income": {
                     "description": "本期收入",
-                    "type": "number"
+                    "type": "string"
                 },
                 "name": {
                     "description": "名称",
@@ -3588,7 +3617,7 @@
                 },
                 "spend": {
                     "description": "上期支出",
-                    "type": "number"
+                    "type": "string"
                 },
                 "symbol": {
                     "description": "币种标识",
@@ -3715,7 +3744,7 @@
                 },
                 "balance": {
                     "description": "金额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "order_id": {
                     "description": "订单id",
@@ -3752,7 +3781,7 @@
             "properties": {
                 "balance": {
                     "description": "现余额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "block_chain_id": {
                     "description": "链id",
@@ -3768,11 +3797,11 @@
                 },
                 "income": {
                     "description": "入账",
-                    "type": "number"
+                    "type": "string"
                 },
                 "last_balance": {
                     "description": "之前余额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "name": {
                     "description": "用户帐号",
@@ -3780,7 +3809,7 @@
                 },
                 "spend": {
                     "description": "支出",
-                    "type": "number"
+                    "type": "string"
                 },
                 "symbol": {
                     "description": "币种",
@@ -3850,7 +3879,7 @@
                 },
                 "value": {
                     "description": "金额",
-                    "type": "number"
+                    "type": "string"
                 }
             }
         },
@@ -3909,7 +3938,7 @@
                 },
                 "balance": {
                     "description": "现余额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "email": {
                     "description": "邮件",
@@ -3921,11 +3950,11 @@
                 },
                 "income": {
                     "description": "入账",
-                    "type": "number"
+                    "type": "string"
                 },
                 "last_balance": {
                     "description": "之前余额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "name": {
                     "description": "用户帐号",
@@ -3937,7 +3966,7 @@
                 },
                 "spend": {
                     "description": "支出",
-                    "type": "number"
+                    "type": "string"
                 },
                 "symbol": {
                     "description": "币种",
@@ -3987,7 +4016,7 @@
                 },
                 "price": {
                     "description": "金额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "quote_currency": {
                     "description": "基础货币",
@@ -4057,7 +4086,7 @@
                 },
                 "value": {
                     "description": "金额",
-                    "type": "number"
+                    "type": "string"
                 }
             }
         },
@@ -4128,7 +4157,7 @@
                 },
                 "money": {
                     "description": "可提现金额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "status": {
                     "description": "状态",
@@ -4196,11 +4225,11 @@
                 },
                 "min_deposit": {
                     "description": "最小充值金额，小于该金额不入账",
-                    "type": "number"
+                    "type": "string"
                 },
                 "min_withdrawal": {
                     "description": "小于该金额不能提",
-                    "type": "number"
+                    "type": "string"
                 },
                 "name": {
                     "description": "币种名称",
@@ -4220,7 +4249,7 @@
                 },
                 "withdrawal_fee": {
                     "description": "提现手续费",
-                    "type": "number"
+                    "type": "string"
                 },
                 "withdrawal_fee_type": {
                     "description": "手续费类型 fixed 按百分百比,percent 固定收取",
@@ -4285,11 +4314,11 @@
                 },
                 "min_deposit": {
                     "description": "最小充值金额，小于该金额不入账",
-                    "type": "number"
+                    "type": "string"
                 },
                 "min_withdrawal": {
                     "description": "小于该金额不能提",
-                    "type": "number"
+                    "type": "string"
                 },
                 "name": {
                     "description": "币种名称",
@@ -4313,7 +4342,7 @@
                 },
                 "withdrawal_fee": {
                     "description": "提现手续费",
-                    "type": "number"
+                    "type": "string"
                 },
                 "withdrawal_fee_type": {
                     "description": "手续费类型 fixed 按百分百比,percent 固定收取",
@@ -4338,7 +4367,7 @@
                 },
                 "money": {
                     "description": "可用金额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "name": {
                     "description": "名字",
@@ -4460,7 +4489,7 @@
                 },
                 "value": {
                     "description": "金额",
-                    "type": "number"
+                    "type": "string"
                 }
             }
         },
@@ -4519,7 +4548,7 @@
                 },
                 "min_deposit": {
                     "description": "最小提币数量",
-                    "type": "number"
+                    "type": "string"
                 },
                 "symbol": {
                     "description": "链名称",
@@ -4594,7 +4623,7 @@
                 },
                 "balance": {
                     "description": "此时可用余额",
-                    "type": "number"
+                    "type": "string"
                 },
                 "block_count": {
                     "description": "确认数",
@@ -4670,7 +4699,7 @@
                 },
                 "value": {
                     "description": "金额",
-                    "type": "number"
+                    "type": "string"
                 }
             }
         },
@@ -4717,7 +4746,7 @@
                 },
                 "poundage": {
                     "description": "手续费",
-                    "type": "number"
+                    "type": "string"
                 },
                 "status": {
                     "description": "状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败",
@@ -4737,7 +4766,7 @@
                 },
                 "value": {
                     "description": "金额",
-                    "type": "number"
+                    "type": "string"
                 }
             }
         }

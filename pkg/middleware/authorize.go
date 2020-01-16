@@ -60,7 +60,7 @@ func HttpInterceptor(j *jwt.JWT) gin.HandlerFunc {
 				// 判断用户id是否未空
 				if len(info.Claims.UserID) == core.DefaultNilNum {
 					err = errors.Errorf("%d", resp.CodeIllegalToken)
-				} else if err = base.CreateUser(info); err == nil {
+				} else if err = base.CreateUser(c, info); err == nil {
 					core.UserInfoPool.Put(info)
 				}
 			}
