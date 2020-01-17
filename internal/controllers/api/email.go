@@ -96,6 +96,11 @@ func ReSetPayWordHandler(c *gin.Context) {
 	// 绑定参数
 	if err = c.ShouldBind(p); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+	if p.Email != p.Base.Claims.Email {
+		core.GResp.Failure(c, resp.NotCountEmail)
+		return
 	}
 	//查找验证码是否正确
 	emailCode := models.NewEmailCode()
@@ -152,8 +157,13 @@ func SendEmailPayHandler(c *gin.Context) {
 	// 绑定参数
 	if err := c.ShouldBind(p); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
 	}
-
+	//判断是否本人email
+	if email != p.Base.Claims.Email {
+		core.GResp.Failure(c, resp.NotCountEmail)
+		return
+	}
 	code := tools.RandStr()
 	duration, _ := time.ParseDuration("5m")
 	sms := models.EmailCode{
