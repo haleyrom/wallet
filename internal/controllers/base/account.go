@@ -23,8 +23,7 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 
 	// 入账金额
 	money := detail.Value + detail.Poundage
-
-	if account.Balance*100 < money*100 || account.BlockedBalance*100 < money*100 || money*100 > (account.Balance-account.BlockedBalance)*100 {
+	if account.Balance*100 < money*100 || account.BlockedBalance*100 < money*100 {
 		logrus.Error("money gt account balance or blocked_balance, %f > %f or %f", money, account.Balance, account.BlockedBalance)
 		return resp.CodeLessMoney
 	}

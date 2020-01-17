@@ -16,7 +16,10 @@ import (
 	"time"
 )
 
-var srv *http.Server
+var (
+	// srv srv
+	srv *http.Server
+)
 
 // init init
 func init() {

@@ -71,5 +71,6 @@ func (r *Resp) CustomFailure(c *gin.Context, err error) {
 		Msg:  err.Error(),
 		Data: "",
 	})
+	logrus.Errorf("request url: %s,  err: %v", c.Request.URL, err)
 	return
 }
