@@ -219,6 +219,7 @@ func init() {
 		CodeWaitQrCode:            "二维码可用",
 		CodeWaitPayQrCode:         "二维码待支付",
 		CodeInitPayPassword:       "支付密码未设置",
+		NotCountEmail:             "请输入本帐号邮箱",
 	}
 }
 

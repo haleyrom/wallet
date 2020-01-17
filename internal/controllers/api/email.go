@@ -159,11 +159,13 @@ func SendEmailPayHandler(c *gin.Context) {
 		core.GResp.Failure(c, resp.CodeIllegalParam, err)
 		return
 	}
+
 	//判断是否本人email
 	if email != p.Base.Claims.Email {
 		core.GResp.Failure(c, resp.NotCountEmail)
 		return
 	}
+
 	code := tools.RandStr()
 	duration, _ := time.ParseDuration("5m")
 	sms := models.EmailCode{
