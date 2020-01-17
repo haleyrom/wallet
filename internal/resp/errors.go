@@ -148,6 +148,9 @@ const (
 
 	// CodeInitPayPassword 初始化支付密码
 	CodeInitPayPassword StatusCode = 101140
+
+	//NotCountEmail  非本人账号
+	NotCountEmail StatusCode = 101141
 )
 
 // StatusCode 状态码
