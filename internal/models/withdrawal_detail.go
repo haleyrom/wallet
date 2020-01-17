@@ -85,7 +85,7 @@ func (w *WithdrawalDetail) CreateWithdrawalDetail(o *gorm.DB) error {
 // GetPageList 获取分页列表
 func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.WithdrawalDetailListResp, error) {
 	data := resp.WithdrawalDetailListResp{}
-	rows, err := o.Raw(fmt.Sprintf("SELECT address,TRUNCATE(value,6) as value,symbol,poundage,status,type,updated_at FROM %s  where uid = ? ORDER BY id desc LIMIT ?,?", GetWithdrawalDetailTable()), w.Uid, (page-1)*pageSize, pageSize).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT address,value,symbol,poundage,status,type,updated_at FROM %s  where uid = ? ORDER BY id desc LIMIT ?,?", GetWithdrawalDetailTable()), w.Uid, (page-1)*pageSize, pageSize).Rows()
 	defer rows.Close()
 
 	if err == nil {
@@ -113,7 +113,7 @@ func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.Wit
 // GetAllPageList 获取全部分页列表
 func (w *WithdrawalDetail) GetAllPageList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.WithdrawalDetailAllListResp, error) {
 	data := resp.WithdrawalDetailAllListResp{}
-	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,TRUNCATE(detail.value,6) as value,detail.status,detail.updated_at,detail.address_source,detail.coin_id,detail.currency_id,detail.type,detail.address,detail.from_address,TRUNCATE(detail.balance,6) as balance,detail.callback_status,detail.callback_json FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
+	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,detail.value,detail.status,detail.updated_at,detail.address_source,detail.coin_id,detail.currency_id,detail.type,detail.address,detail.from_address,detail.balance,detail.callback_status,detail.callback_json FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 
 	if start_time > 0 && end_timer > 0 {

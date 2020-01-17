@@ -131,7 +131,7 @@ func (d *DepositDetail) GetAllPageList(o *gorm.DB, page, pageSize int, endTime, 
 		endTime = 10000000000000
 	}
 	count_sql := fmt.Sprintf("select count(*) as num from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d and a.deleted = %d", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
-	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,TRUNCATE(a.value,6) as value,a.transaction_hash,a.status,a.updated_at,a.source from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
+	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,a.value,a.transaction_hash,a.status,a.updated_at,a.source from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted)
 	if key != "" {
 		count_sql += "and  ((b.name like '%" + key + "%') or (b.email like '%" + key + "%') or (b.uid like '%" + key + "%') ) "
 		sql += "and  ((b.name like '%" + key + "%') or (b.email like '%" + key + "%') or (b.uid like '%" + key + "%') ) "
@@ -166,7 +166,7 @@ func (d *DepositDetail) GetAllRechargePageList(o *gorm.DB, page, pageSize int, e
 		endTime = 10000000000000
 	}
 	count_sql := fmt.Sprintf("select count(*) as num from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d and a.deleted = %d and a.source = %d and a.uid > 0 ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted, DepositSourceAdmin)
-	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,TRUNCATE(a.value,6) as value,a.transaction_hash,a.status,a.updated_at,b.name,a.source from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d  and a.source = %d and a.uid > 0 ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted, DepositSourceAdmin)
+	sql := fmt.Sprintf("select a.id as order_id,a.uid,b.name,a.symbol,a.type,a.value,a.transaction_hash,a.status,a.updated_at,b.name,a.source from %s a left join %s b on a.uid = b.id where UNIX_TIMESTAMP(a.updated_at) >= %d and UNIX_TIMESTAMP(a.updated_at) <= %d  and a.deleted = %d  and a.source = %d and a.uid > 0 ", GetDepositDetailTable(), GetUserTable(), startTime, endTime, DepositStatusNotDeleted, DepositSourceAdmin)
 	if key != "" {
 		count_sql += "and ((b.name = '%" + key + "%') or (b.email = '%" + key + "%') or (b.uid = '%" + key + "%'))"
 		sql += "and ((b.name = '%" + key + "%') or (b.email = '%" + key + "%') or (b.uid = '%" + key + "%'))"

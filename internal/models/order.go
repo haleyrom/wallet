@@ -100,7 +100,7 @@ func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startT
 	}
 
 	count_sql := fmt.Sprintf("select count(*) as num from %s o left join %s u on o.uid = u.id  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
-	sql := fmt.Sprintf("SELECT o.id,o.uid,o.currency_id,o.exchange_id,o.updated_at,TRUNCATE(o.balance,6) as value,o.status,o.ratio,u.name,u.email FROM %s o LEFT JOIN %s u on u.id = o.uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
+	sql := fmt.Sprintf("SELECT o.id,o.uid,o.currency_id,o.exchange_id,o.updated_at,o.balance as value,o.status,o.ratio,u.name,u.email FROM %s o LEFT JOIN %s u on u.id = o.uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
 	if key != "" {
 		count_sql += " and  ((u.name like '%" + key + "%') or (u.email like '%" + key + "%') or (u.uid like '%" + key + "%') )  "
 		sql += " and  ((u.name like '%" + key + "%') or (u.email like '%" + key + "%') or (u.uid like '%" + key + "%') )  "
@@ -165,7 +165,7 @@ func (r *Order) GetAccountTransferList(o *gorm.DB, page, pageSize int, endTime, 
 	}
 
 	count_sql := fmt.Sprintf("select count(*) as num from %s o left join %s u on o.uid = u.id LEFT JOIN %s us on us.id = o.exchange_uid where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d ", GetOrderTable(), GetUserTable(), GetUserTable(), OrderTypeTransfer, startTime, endTime)
-	sql := fmt.Sprintf("SELECT o.order_uuid as order_id,u.uid as uid,u.name as user_name,u.email as user_email,us.uid as adverse_id,us.name as adverse_name,us.email as adverse_email,TRUNCATE(o.balance,6) as balance,o.status,o.updated_at,o.symbol FROM %s o LEFT JOIN %s u on u.id = o.uid LEFT JOIN %s us on us.id = o.exchange_uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), GetUserTable(), OrderTypeTransfer, startTime, endTime)
+	sql := fmt.Sprintf("SELECT o.order_uuid as order_id,u.uid as uid,u.name as user_name,u.email as user_email,us.uid as adverse_id,us.name as adverse_name,us.email as adverse_email,o.balance,o.status,o.updated_at,o.symbol FROM %s o LEFT JOIN %s u on u.id = o.uid LEFT JOIN %s us on us.id = o.exchange_uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), GetUserTable(), OrderTypeTransfer, startTime, endTime)
 	if key != "" {
 		count_sql += " and ((u.name like  '%" + key + "%') or (u.email like  '%" + key + "%') or (u.uid like  '%" + key + "%') or (us.name like  '%" + key + "%') or (us.email like  '%" + key + "%') or (us.uid like  '%" + key + "%')) "
 		sql += " and ((u.name like  '%" + key + "%' )  or (u.email like  '%" + key + "%') or (u.uid like  '%" + key + "%') or (us.name like  '%" + key + "%' ) or (us.email like  '%" + key + "%') or (us.uid like  '%" + key + "%') ) "

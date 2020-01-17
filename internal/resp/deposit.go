@@ -40,16 +40,16 @@ type ReadDepositDetailResp struct {
 
 //后台查看全部用户明细
 type ReadAllDepositDetailInfoResp struct {
-	OrderId         int    `json:"order_id"`         // 订单id
-	Name            string `json:"name"`             //用户名
-	Uid             string `json:"uid"`              //用户id
-	Value           string `json:"value"`            // 金额
-	Status          int8   `json:"status"`           // 状态 0确认中,1已确定
-	UpdatedAt       string `json:"updated_at"`       // 更新时间
-	TransactionHash string `json:"transaction_hash"` // hash
-	Symbol          string `json:"symbol"`           // 代币代号
-	Type            string `json:"type"`             // 标识 coin,token
-	Source          int8   `json:"source"`           // 来源 0：充值1：后台充值
+	OrderId         int             `json:"order_id"`         // 订单id
+	Name            string          `json:"name"`             //用户名
+	Uid             string          `json:"uid"`              //用户id
+	Value           decimal.Decimal `json:"value"`            // 金额
+	Status          int8            `json:"status"`           // 状态 0确认中,1已确定
+	UpdatedAt       string          `json:"updated_at"`       // 更新时间
+	TransactionHash string          `json:"transaction_hash"` // hash
+	Symbol          string          `json:"symbol"`           // 代币代号
+	Type            string          `json:"type"`             // 标识 coin,token
+	Source          int8            `json:"source"`           // 来源 0：充值1：后台充值
 }
 
 //后台查看全部用户，分页

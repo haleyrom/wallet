@@ -14,13 +14,13 @@ type WithdrawalAddrResp struct {
 
 // WithdrawalDetailResp 提现详情信息
 type WithdrawalDetailResp struct {
-	Address   string `json:"address"`    // 地址
-	Value     string `json:"value"`      // 金额
-	Symbol    string `json:"symbol"`     // 代币代号
-	Type      string `json:"type"`       // 标识 coin,token
-	Status    int8   `json:"status"`     // 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败
-	Poundage  string `json:"poundage"`   // 手续费
-	UpdatedAt string `json:"updated_at"` // 更新时间
+	Address   string          `json:"address"`    // 地址
+	Value     decimal.Decimal `json:"value"`      // 金额
+	Symbol    string          `json:"symbol"`     // 代币代号
+	Type      string          `json:"type"`       // 标识 coin,token
+	Status    int8            `json:"status"`     // 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败
+	Poundage  string          `json:"poundage"`   // 手续费
+	UpdatedAt string          `json:"updated_at"` // 更新时间
 }
 
 // WithdrawalDetailListResp 提现详情列表
