@@ -1,5 +1,7 @@
 package resp
 
+import "github.com/shopspring/decimal"
+
 // ReadCoinListResp 读取币列表结果
 type ReadCoinListResp struct {
 	CurrencyId        int    `json:"currency_id"`         // 代币id
@@ -50,19 +52,19 @@ type ReadCoinInfoResp struct {
 
 // ReadCoinDepositInfoResp 代币提现地址
 type ReadCoinDepositInfoResp struct {
-	Money             string  `json:"money"`               // 可提现金额
-	CurrencyId        uint    `json:"currency_id"`         // 币种id
-	CoinId            uint    `json:"coin_id"`             // 代币id
-	MinWithdrawal     float64 `json:"min_withdrawal"`      // 小于该金额不能提
-	WithdrawalFee     float64 `json:"withdrawal_fee"`      // 提现手续费
-	WithdrawalFeeType string  `json:"withdrawal_fee_type"` // 手续费类型 fixed 按百分百比,percent 固定收取
-	Symbol            string  `json:"symbol"`              // 币种代号
-	Type              string  `json:"type"`                // 标识 coin,token
-	Status            int     `json:"status"`              // 状态
-	WithdrawalStatus  int8    `json:"withdrawal_status"`   // 充值状态：0开启;1:停用;
-	DepositStatus     int8    `json:"deposit_status"`      // 提现状态：0开启;1:停用;
-	CustomerStatus    int8    `json:"customer_status"`     // 客服状态:0 必须1：不必须
-	FinancialStatus   int8    `json:"financial_status"`    // 财务状态:0 必须1：不必须
+	Money             decimal.Decimal `json:"money"`               // 可提现金额
+	CurrencyId        uint            `json:"currency_id"`         // 币种id
+	CoinId            uint            `json:"coin_id"`             // 代币id
+	MinWithdrawal     float64         `json:"min_withdrawal"`      // 小于该金额不能提
+	WithdrawalFee     float64         `json:"withdrawal_fee"`      // 提现手续费
+	WithdrawalFeeType string          `json:"withdrawal_fee_type"` // 手续费类型 fixed 按百分百比,percent 固定收取
+	Symbol            string          `json:"symbol"`              // 币种代号
+	Type              string          `json:"type"`                // 标识 coin,token
+	Status            int             `json:"status"`              // 状态
+	WithdrawalStatus  int8            `json:"withdrawal_status"`   // 充值状态：0开启;1:停用;
+	DepositStatus     int8            `json:"deposit_status"`      // 提现状态：0开启;1:停用;
+	CustomerStatus    int8            `json:"customer_status"`     // 客服状态:0 必须1：不必须
+	FinancialStatus   int8            `json:"financial_status"`    // 财务状态:0 必须1：不必须
 }
 
 // ReadOrderSymbolByCoinResp 读取代笔列表结果

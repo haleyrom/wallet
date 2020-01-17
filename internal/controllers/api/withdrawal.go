@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/base"
@@ -12,6 +11,7 @@ import (
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"strconv"
 )
@@ -279,9 +279,9 @@ func WithdrawalCallback(c *gin.Context) {
 
 	postStr, _ := json.Marshal(c.Request.PostForm)
 	detail.CallbackStatus, detail.CallbackJson = p.Code, string(postStr)
+	logrus.Info(detail.CallbackJson)
 	switch p.Code {
 	case "105004":
-		fmt.Println(detail.CallbackJson, detail, detail.Status)
 		// 已提交
 		detail.TransactionHash = p.TransactionHash
 		if detail.Status == models.WithdrawalStatusThrough {
@@ -313,9 +313,18 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	if detail.FinancialStatus != models.WithdrawalAudioStatusOk || detail.CustomerStatus != models.WithdrawalAudioStatusOk || detail.Status != models.WithdrawalStatusSubmit {
+	if detail.FinancialStatus != models.WithdrawalAudioStatusOk || detail.CustomerStatus != models.WithdrawalAudioStatusOk || (detail.Status != models.WithdrawalStatusSubmit && detail.Status != models.WithdrawalStatusThrough) {
 		o.Rollback()
 		core.GResp.CustomFailure(c, errors.New("order status not submit"))
+		return
+	} else if detail.Status == models.WithdrawalStatusThrough {
+		if err := base.AccountInsertDetail(o, detail); err != nil {
+			o.Rollback()
+			core.GResp.CustomFailure(c, err)
+			return
+		}
+		o.Commit()
+		core.GResp.CustomFailure(c, resp.CodeNotData)
 		return
 	}
 

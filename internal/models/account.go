@@ -6,6 +6,7 @@ import (
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
+	"github.com/shopspring/decimal"
 	"github.com/spf13/viper"
 	"math"
 	"time"
@@ -31,8 +32,8 @@ func NewAccount() *Account {
 }
 
 // GetUserAvailableBalance 获取用户可用余额
-func (a *Account) GetUserAvailableBalance(o *gorm.DB) (string, error) {
-	var money string
+func (a *Account) GetUserAvailableBalance(o *gorm.DB) (decimal.Decimal, error) {
+	var money decimal.Decimal
 	err := o.Raw(fmt.Sprintf("SELECT cur.balance-cur.blocked_balance as balance from %s cur where cur.uid = ? and  currency_id = ?", GetAccountTable()), a.Uid, a.CurrencyId).Row().Scan(&money)
 	return money, err
 }
