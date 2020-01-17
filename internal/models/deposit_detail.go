@@ -99,7 +99,7 @@ func (d *DepositDetail) UpdateBlockCount(o *gorm.DB) error {
 // GetPageList 获取分页列表
 func (d *DepositDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.ReadDepositDetailResp, error) {
 	data := resp.ReadDepositDetailResp{}
-	rows, err := o.Raw(fmt.Sprintf("SELECT TRUNCATE(address,value,6) as value,symbol,status,type,updated_at,block_count FROM %s  where uid = ? and deleted = ? and source = ? ORDER BY id desc LIMIT ?,?", GetDepositDetailTable()), d.Uid, DepositStatusNotDeleted, (page-1)*pageSize, pageSize, DepositSourceRecharge).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT address,value,symbol,status,type,updated_at,block_count FROM %s  where uid = ? and deleted = ? and source = ? ORDER BY id desc LIMIT ?,?", GetDepositDetailTable()), d.Uid, DepositStatusNotDeleted, (page-1)*pageSize, pageSize, DepositSourceRecharge).Rows()
 	defer rows.Close()
 
 	if err == nil {
