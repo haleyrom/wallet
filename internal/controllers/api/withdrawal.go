@@ -89,8 +89,8 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	}
 
 	// 判断地址是否合法
-	if err := consul.IsWalletAddress(strings.ToLower(p.Address)); err != nil {
-		core.GResp.Failure(c, resp.CodeIllegalAddr)
+	if err := consul.IsWalletAddress(p.Address); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalAddr, err)
 		return
 	}
 
@@ -149,8 +149,8 @@ func UpdateWithdrawalAddr(c *gin.Context) {
 	//}
 
 	// 判断地址是否合法
-	if err := consul.IsWalletAddress(strings.ToLower(p.Address)); err != nil {
-		core.GResp.Failure(c, resp.CodeIllegalAddr)
+	if err := consul.IsWalletAddress(p.Address); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalAddr, err)
 		return
 	}
 
