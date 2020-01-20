@@ -11,7 +11,7 @@ TAGS = jsoniter
 TAGS_PPROF = $(TAGS) pprof
 
 LDFLAGS += -X "github.com/haleyrom/wallet/pkg/version.BuildTime=$(shell date -u '+%Y-%m-%d %I:%M:%S %Z')"
-LDFLAGS += -X "ithub.com/haleyrom/wallet/pkg/version.GitHash=$(shell git rev-parse HEAD)"
+LDFLAGS += -X "github.com/haleyrom/wallet/pkg/version.GitHash=$(shell git rev-parse HEAD)"
 
 .PHONY: start build
 

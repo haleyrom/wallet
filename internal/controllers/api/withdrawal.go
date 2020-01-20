@@ -14,6 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"strconv"
+	"strings"
 )
 
 // ReadWithdrawalAddrList  读取提币地址列表
@@ -88,7 +89,7 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	}
 
 	// 判断地址是否合法
-	if err := consul.IsWalletAddress(p.Address); err != nil {
+	if err := consul.IsWalletAddress(strings.ToLower(p.Address)); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalAddr)
 		return
 	}
@@ -96,7 +97,7 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	withdrawal := &models.WithdrawalAddr{
 		Uid:           p.Base.Uid,
 		BlockChainId:  p.BlockChainId,
-		Address:       p.Address,
+		Address:       strings.ToLower(p.Address),
 		CurrencyId:    p.CurrencyId,
 		Name:          p.Name,
 		AddressSource: models.WithdrawalAddrBack,
@@ -148,13 +149,13 @@ func UpdateWithdrawalAddr(c *gin.Context) {
 	//}
 
 	// 判断地址是否合法
-	if err := consul.IsWalletAddress(p.Address); err != nil {
+	if err := consul.IsWalletAddress(strings.ToLower(p.Address)); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalAddr)
 		return
 	}
 
 	withdrawal := models.NewWithdrawalAddr()
-	withdrawal.Name, withdrawal.Address = p.Name, p.Address
+	withdrawal.Name, withdrawal.Address = p.Name, strings.ToLower(p.Address)
 	withdrawal.CurrencyId = withdrawal.CurrencyId
 	withdrawal.ID, withdrawal.Uid = p.WithdrawalAddrId, p.Base.Uid
 	if err := withdrawal.UpdateWithdrawalAddr(o); err != nil {
