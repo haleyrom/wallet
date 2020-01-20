@@ -142,6 +142,15 @@ const (
 
 	// CodeWaitQrCode 二维码等待
 	CodeWaitQrCode StatusCode = 101138
+
+	// CodeWaitPayQrCode 二维码等待支付
+	CodeWaitPayQrCode StatusCode = 101139
+
+	// CodeInitPayPassword 初始化支付密码
+	CodeInitPayPassword StatusCode = 101140
+
+	//NotCountEmail  非本人账号
+	NotCountEmail StatusCode = 101141
 )
 
 // StatusCode 状态码
@@ -208,6 +217,9 @@ func init() {
 		CodeOneselfInto:           "不支持自身互转",
 		CodeFailureQrCode:         "二维码失效",
 		CodeWaitQrCode:            "二维码可用",
+		CodeWaitPayQrCode:         "二维码待支付",
+		CodeInitPayPassword:       "支付密码未设置",
+		NotCountEmail:             "请输入本帐号邮箱",
 	}
 }
 

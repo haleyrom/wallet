@@ -20,6 +20,7 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.POST("/user/pay/change", api.UserChange)
 	r.GET("/user/pay/info", api.UserPayInfo)
 	r.GET("/user/pay/status", api.UserPayQrCodeStatus)
+	r.POST("/user/pay/set_money", api.UserSetPaymentMoney)
 
 	r.GET("/account/info", api.AccountInfo)
 	r.GET("/account/tfor/info", api.AccountTFORInfo)
@@ -54,6 +55,7 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.POST("/coin/status", api.UpdateCoinStatus)
 	r.POST("/coin/remove", api.RemoveCoin)
 	r.GET("/coin/deposit", api.ReadCoinDepositInfo)
+	r.GET("/coin/symbol", api.ReadListSymbolCoin)
 
 	r.GET("/deposit/list", api.ReadDepositAddList)
 	r.POST("/deposit/join", api.JoinDepositDetail)
@@ -67,4 +69,5 @@ func RegisterApiRouter(r *gin.RouterGroup) {
 	r.POST("/withdrawal/addr/update", api.UpdateWithdrawalAddr)
 	r.POST("/withdrawal/addr/remove", api.RemoveWithdrawalAddr)
 	r.POST("/withdrawal/callback", api.WithdrawalCallback)
+	r.GET("/withdrawal/type", api.WithdrawalOrderTypeByAddr)
 }

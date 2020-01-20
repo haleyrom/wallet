@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
+	"github.com/haleyrom/wallet/internal/controllers/base"
 	"github.com/haleyrom/wallet/internal/models"
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
-	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
-	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"time"
 )
@@ -77,10 +76,14 @@ func ChargeQrCode(c *gin.Context) {
 		return
 	}
 
+	user := models.NewUser()
+	user.Uid = p.Base.Claims.UserID
+	_ = user.IsExistUser(core.Orm.New())
+
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "changre")
 	core.GResp.Success(c, resp.ChargeQrCodeResp{
-		UserName: p.Base.Claims.Name,
-		Email:    p.Base.Claims.Email,
+		UserName: user.Name,
+		Email:    user.Email,
 		Qrcode:   qrcode,
 	})
 	return
@@ -94,7 +97,6 @@ func ChargeQrCode(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Param symbol formData string true "币种标示"
 // @Param money formData number true "金额"
-// @Param code formData number true "code"
 // @Success 200 {object} resp.ChargeQrCodeResp
 // @Router /user/qrcode/pay [get]
 func PaymentQrCode(c *gin.Context) {
@@ -131,6 +133,7 @@ func PaymentQrCode(c *gin.Context) {
 		Status:      models.OrderStatusNot,
 		Type:        models.OrderTypePayment,
 		Form:        models.OrderFormPayment,
+		Symbol:      p.Symbol,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
@@ -140,8 +143,8 @@ func PaymentQrCode(c *gin.Context) {
 
 	qrcode := fmt.Sprintf("code=%d&symbol=%s&type=%d&money=%s&from=%s&order_id=%s", p.Base.Uid, p.Symbol, p.Type, p.Money, "payment", order.OrderUuid)
 
-	core.PayChan.MapChan[order.OrderUuid] = make(chan int, 1)
-	core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
+	core.PayChan.MapChan[order.OrderUuid] = make(chan resp.ChangeInfoResp, 1)
+	//core.PayChan.MapChan[order.OrderUuid] <- core.DefaultNilNum
 	key := int(order.CreatedAt.Add(failure_timer).Unix())
 	if len(core.PayChan.MapTime[key]) == core.DefaultNilNum {
 		core.PayChan.MapTime[key] = make([]string, 0)
@@ -153,6 +156,7 @@ func PaymentQrCode(c *gin.Context) {
 		Email:    p.Base.Claims.Email,
 		Qrcode:   qrcode,
 		MinMoney: currency.MinPayMoney,
+		OrderId:  order.OrderUuid,
 	})
 	return
 
@@ -190,15 +194,9 @@ func UserPayInfo(c *gin.Context) {
 		return
 	}
 
-	result, err := consul.GetUserInfo(user.Uid, c.Request.Header.Get(core.HttpHeadToken))
-	var data resp.UserInfoResp
-
+	data, err := base.GetConsulUserInfo(c, user.Uid)
 	if err != nil {
-		o.Rollback()
-		core.GResp.Failure(c, resp.CodeNotUser)
-		return
-	} else if err = mapstructure.Decode(result, &data); err != nil {
-		core.GResp.Failure(c, resp.CodeNotUser)
+		core.GResp.Failure(c, resp.CodeNotUser, err)
 		return
 	}
 
@@ -262,7 +260,11 @@ func UserChange(c *gin.Context) {
 	}
 
 	if (p.From == "payment" && p.Money < currency.MinPayMoney) == false {
-		if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
+		if len(user.PayPassword) == core.DefaultNilNum {
+			o.Callback()
+			core.GResp.Failure(c, resp.CodeInitPayPassword)
+			return
+		} else if user.PayPassword != tools.Hash256(p.PayPassword, tools.NewPwdSalt(p.Base.Claims.UserID, 1)) {
 			o.Callback()
 			core.GResp.Failure(c, resp.CodeErrorPayPassword)
 			return
@@ -315,7 +317,13 @@ func UserChange(c *gin.Context) {
 			core.GResp.Failure(c, errors.Errorf("update order fail:%s", err))
 			return
 		}
+		//// 设置订单金额 0再支付
+		//core.PayChan.MapChan[order.OrderUuid] <- resp.ChangeInfoResp{}
 	} else {
+		currency := models.NewCurrency()
+		currency.ID = list[p.Base.Uid].CurrencyId
+		_ = currency.IsExistCurrency(o)
+
 		// 创建订单
 		order = &models.Order{
 			Uid:         p.Base.Uid,
@@ -328,6 +336,7 @@ func UserChange(c *gin.Context) {
 			Status:      models.OrderStatusOk,
 			Type:        models.OrderTypePayment,
 			Form:        models.OrderFormPayment,
+			Symbol:      currency.Symbol,
 		}
 		if err := order.CreateOrder(o); err != nil {
 			o.Callback()
@@ -379,12 +388,74 @@ func UserPayQrCodeStatus(c *gin.Context) {
 
 	for {
 		select {
-		case <-core.PayChan.MapChan[p.OrderId]:
-			delete(core.PayChan.MapChan, p.OrderId)
-			core.GResp.Success(c, resp.EmptyData())
-		case <-time.After(500 * time.Millisecond):
+		case info := <-core.PayChan.MapChan[p.OrderId]:
+			// 已经输入金额
+			if info.Money > float64(core.DefaultNilNum) {
+				delete(core.PayChan.MapChan, p.OrderId)
+				core.GResp.Success(c, info)
+			} else {
+				core.GResp.Failure(c, resp.CodeWaitPayQrCode)
+				core.PayChan.MapChan[p.OrderId] <- info
+			}
+			return
+		case <-time.After(10 * time.Second):
 			core.GResp.Failure(c, resp.CodeWaitQrCode)
+			return
 		}
 	}
+}
+
+// UserSetPaymentMoney 设置付款码金额
+// @Tags  User 用户
+// @Summary 设置付款码金额接口
+// @Description 设置付款码金额接口
+// @Produce json
+// @Security ApiKeyAuth
+// @Param order_id formData string false "订单id"
+// @Param money formData number true "金额"
+// @Success 200
+// @Router /user/pay/set_money [post]
+func UserSetPaymentMoney(c *gin.Context) {
+	p := &params.UserSetPaymentMoneyParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	if _, ok := core.PayChan.MapChan[p.OrderId]; ok == false {
+		core.GResp.Failure(c, resp.CodeFailureQrCode)
+		return
+	}
+
+	o := core.Orm.New()
+	order := models.NewOrder()
+	order.OrderUuid = p.OrderId
+
+	if err := order.IsOrderUuid(o); err != nil {
+		core.GResp.Failure(c, resp.CodeNotOrderId, err)
+		return
+	} else if order.Status == models.OrderStatusOk {
+
+		core.GResp.Failure(c, resp.CodeOrderStatusOK)
+		return
+	} else if order.CreatedAt.Add(failure_timer).Unix() < time.Now().Unix() {
+		_ = order.RemoveOrder(o)
+		core.GResp.Failure(c, resp.CodeFailureQrCode)
+		return
+	}
+
+	core.PayChan.MapChan[p.OrderId] <- resp.ChangeInfoResp{
+		Money:   p.Money,
+		OrderId: p.OrderId,
+		Code:    p.Base.Uid,
+		Symbol:  order.Symbol,
+		From:    "payment",
+	}
+
+	core.GResp.Success(c, resp.EmptyData())
 	return
 }

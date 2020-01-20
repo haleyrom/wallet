@@ -32,9 +32,11 @@ func (g *gcPayMap) Job() {
 	for i := 0; i < timer_second*2; i++ {
 		if _, ok := core.PayChan.MapTime[int(timer)-i]; ok == true {
 			for _, v := range core.PayChan.MapTime[int(timer)-i] {
-				delete(core.PayChan.MapChan, v)
-				order.OrderUuid = v
-				_ = order.RemoveOrderUuid(core.Orm.New())
+				if _, o := core.PayChan.MapChan[v]; o == true {
+					delete(core.PayChan.MapChan, v)
+					order.OrderUuid = v
+					_ = order.RemoveOrderUuid(core.Orm.New())
+				}
 			}
 			delete(core.PayChan.MapTime, int(timer)-i)
 		}

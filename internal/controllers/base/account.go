@@ -23,8 +23,7 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 
 	// 入账金额
 	money := detail.Value + detail.Poundage
-
-	if account.Balance*100 < money*100 || account.BlockedBalance*100 < money*100 || money*100 > (account.Balance-account.BlockedBalance)*100 {
+	if account.Balance*100 < money*100 || account.BlockedBalance*100 < money*100 {
 		logrus.Error("money gt account balance or blocked_balance, %f > %f or %f", money, account.Balance, account.BlockedBalance)
 		return resp.CodeLessMoney
 	}
@@ -61,15 +60,18 @@ func AccountInsertDetail(o *gorm.DB, detail *models.WithdrawalDetail) error {
 
 	go func() {
 		company_stream := &models.CompanyStream{
-			Code:        models.CodeWithdrawal,
-			Uid:         account_detail.Uid,
-			AccountId:   account_detail.AccountId,
-			Balance:     account_detail.Balance,
-			LastBalance: account_detail.LastBalance,
-			Income:      account_detail.Income,
-			Type:        account_detail.Type,
-			Address:     detail.Address,
-			OrderId:     detail.OrderId,
+			Code:           models.CodeWithdrawal,
+			Uid:            account_detail.Uid,
+			AccountId:      account_detail.AccountId,
+			Balance:        account_detail.Balance,
+			LastBalance:    account_detail.LastBalance,
+			Income:         account_detail.Income,
+			Spend:          account_detail.Spend,
+			Type:           account_detail.Type,
+			Address:        detail.Address,
+			OrderId:        detail.OrderId,
+			CallbackJson:   detail.CallbackJson,
+			CallbackStatus: detail.CallbackStatus,
 		}
 		_ = company_stream.CreateCompanyStream(core.Orm.New())
 	}()

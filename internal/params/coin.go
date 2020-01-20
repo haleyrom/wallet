@@ -76,3 +76,9 @@ type ReadListAccountCoinParam struct {
 	Base       *BaseParam `json:"claims" form:"claims"`
 	CurrencyId uint       `json:"currency_id" form:"currency_id"  binding:"required"`
 }
+
+// ReadListSymbolBlockCoinParam 读取账本coin列表
+type ReadListSymbolBlockCoinParam struct {
+	Base   *BaseParam `json:"claims" form:"claims"`
+	Symbol string     `json:"symbol" form:"symbol"`
+}

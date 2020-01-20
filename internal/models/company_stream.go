@@ -13,16 +13,18 @@ import (
 // CompanyStream 公司流水
 type CompanyStream struct {
 	gorm.Model
-	Code        string  `gorm:"column:code;comment:'code'"`                    // 账户名称
-	Uid         uint    `gorm:"column:uid;default:0;comment:'用户id'"`           // 用户id
-	AccountId   uint    `gorm:"column:account_id;default:0;comment:'账本id';"`   // 账本id
-	Balance     float64 `gorm:"column:balance;default:0;comment:'本期余额';"`      // 本期余额
-	LastBalance float64 `gorm:"column:last_balance;default:0;comment:'上期余额';"` // 上期余额
-	Income      float64 `gorm:"column:income;default:0;comment:'本期收入';"`       // 本期收入
-	Spend       float64 `gorm:"column:spend;default:0;comment:'本期支出';"`        // 本期支出
-	Type        int8    `gorm:"size:3;column:type;default:0;comment:'明细类型'"`   // 明细类型
-	OrderId     string  `gorm:"column:order_id;comment:'订单id'"`                // 订单id
-	Address     string  `gorm:"column:address;comment:'充值地址'"`                 // 充值地址
+	Code           string  `gorm:"column:code;comment:'code'"`                        // 账户名称
+	Uid            uint    `gorm:"column:uid;default:0;comment:'用户id'"`               // 用户id
+	AccountId      uint    `gorm:"column:account_id;default:0;comment:'账本id';"`       // 账本id
+	Balance        float64 `gorm:"column:balance;default:0;comment:'本期余额';"`          // 本期余额
+	LastBalance    float64 `gorm:"column:last_balance;default:0;comment:'上期余额';"`     // 上期余额
+	Income         float64 `gorm:"column:income;default:0;comment:'本期收入';"`           // 本期收入
+	Spend          float64 `gorm:"column:spend;default:0;comment:'本期支出';"`            // 本期支出
+	Type           int8    `gorm:"size:3;column:type;default:0;comment:'明细类型'"`       // 明细类型
+	OrderId        string  `gorm:"column:order_id;comment:'订单id'"`                    // 订单id
+	Address        string  `gorm:"column:address;comment:'充值地址'"`                     // 充值地址
+	CallbackStatus string  `gorm:"column:callback_status;comment:'回调状态码'"`            // 回调状态码
+	CallbackJson   string  `gorm:"type:text;column:callback_json;comment:'回调json数据'"` // 回调json数据
 }
 
 const (
@@ -50,7 +52,7 @@ func (c *CompanyStream) CreateCompanyStream(o *gorm.DB) error {
 // GetList 获取企业充值列表
 func (c *CompanyStream) GetList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.CompanyStreamListResp, error) {
 	data := resp.CompanyStreamListResp{}
-	sql := fmt.Sprintf("SELECT detail.address,detail.id as id,user.id as uid,user.name,user.email,TRUNCATE(detail.income,6) as income,TRUNCATE(detail.spend,6) as spend,TRUNCATE(detail.balance,6) as balance, TRUNCATE(detail.last_balance,6) as last_balance, currency.symbol,detail.updated_at,detail.order_id FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.order_id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable(), c.Code)
+	sql := fmt.Sprintf("SELECT detail.address,detail.id as id,user.id as uid,user.name,user.email,detail.income,detail.spend,detail.balance,detail.last_balance, currency.symbol,detail.updated_at,detail.order_id FROM %s detail LEFT JOIN %s user ON detail.uid = user.id LEFT JOIN %s account ON detail.account_id = account.id LEFT JOIN %s currency ON currency.id = account.currency_id where detail.order_id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), GetAccountTable(), GetCurrencyTable(), c.Code)
 
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.order_id > 0 AND detail.code = '%s' ", GetCompanyStreamTable(), GetUserTable(), c.Code)
 
@@ -60,8 +62,8 @@ func (c *CompanyStream) GetList(o *gorm.DB, page, pageSize, start_time, end_time
 	}
 
 	if len(keyword) > 0 {
-		sql = fmt.Sprintf("%s AND user.name like '%s'", sql, "%"+keyword+"%")
-		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
+		sql = fmt.Sprintf("%s AND ((user.name like '%s') or (user.email like '%s') or (user.uid like '%s'))", sql, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
+		count_sql = fmt.Sprintf("%s AND ((user.name like '%s') or (user.email like '%s') or (user.uid like '%s'))", count_sql, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
 	}
 
 	sql = fmt.Sprintf("%s ORDER BY detail.id desc LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)

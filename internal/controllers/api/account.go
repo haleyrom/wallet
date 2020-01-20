@@ -218,12 +218,17 @@ func AccountChange(c *gin.Context) {
 		return
 	}
 
+	money, _ := strconv.ParseFloat(p.Money, 64)
 	//  校验金额
-	if (data[p.CurrencyId].Balance*100 - data[p.ChangeId].BlockedBalance*100 - p.Money*100) < 0 {
+	if (data[p.CurrencyId].Balance*100 - data[p.CurrencyId].BlockedBalance*100 - money*100) < 0 {
 		o.Callback()
 		core.GResp.Failure(c, resp.CodeLessMoney)
 		return
 	}
+
+	currency := models.NewCurrency()
+	currency.ID = p.CurrencyId
+	_ = currency.IsExistCurrency(o)
 
 	ratio, _ := strconv.ParseFloat(p.Ratio, 64)
 	jsonStr, _ := json.Marshal(c.Request.PostForm)
@@ -233,10 +238,11 @@ func AccountChange(c *gin.Context) {
 		CurrencyId:  p.CurrencyId,
 		ExchangeUid: p.Base.Uid,
 		ExchangeId:  p.ChangeId,
-		Balance:     p.Money,
+		Balance:     money,
 		Ratio:       ratio,
 		Status:      models.OrderStatusOk,
 		Type:        models.OrderTypeChange,
+		Symbol:      currency.Symbol,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
@@ -254,10 +260,9 @@ func AccountChange(c *gin.Context) {
 	for _, val := range data {
 		temp.AccountId, temp.LastBalance = val.ID, val.Balance
 		if val.CurrencyId == p.CurrencyId {
-			temp.Income, temp.Spend, temp.Balance = float64(core.DefaultNilNum), float64(p.Money), float64(val.Balance-p.Money)
+			temp.Income, temp.Spend, temp.Balance = float64(core.DefaultNilNum), money, float64(val.Balance-money)
 		} else {
-			money := p.Money * ratio
-			temp.Spend, temp.Income, temp.Balance = float64(core.DefaultNilNum), float64(money), float64(val.Balance+money)
+			temp.Spend, temp.Income, temp.Balance = float64(core.DefaultNilNum), money*ratio, float64(val.Balance+money)
 		}
 		details = append(details, temp)
 	}
@@ -269,13 +274,13 @@ func AccountChange(c *gin.Context) {
 	}
 
 	account.CurrencyId = p.CurrencyId
-	if err := account.UpdateBalance(o, core.OperateToOut, p.Money); err != nil {
+	if err := account.UpdateBalance(o, core.OperateToOut, money); err != nil {
 		o.Callback()
 		core.GResp.Failure(c, err)
 		return
 	} else {
 		account.CurrencyId = p.ChangeId
-		if err = account.UpdateBalance(o, core.OperateToUp, p.Money*ratio); err != nil {
+		if err = account.UpdateBalance(o, core.OperateToUp, money*ratio); err != nil {
 			o.Callback()
 			core.GResp.Failure(c, err)
 			return
@@ -361,13 +366,15 @@ func AccountShareBonus(c *gin.Context) {
 
 	jsonStr, _ := json.Marshal(c.Request.PostForm)
 	order := models.Order{
-		Uid:        p.Base.Uid,
-		Context:    string(jsonStr),
-		CurrencyId: currency.ID,
-		Balance:    p.Money,
-		Form:       models.OrderFormUsdd,
-		Status:     models.OrderStatusOk,
-		Type:       models.OrderTypeShare,
+		Uid:         p.Base.Uid,
+		Context:     string(jsonStr),
+		CurrencyId:  currency.ID,
+		Balance:     p.Money,
+		Form:        models.OrderFormUsdd,
+		Status:      models.OrderStatusOk,
+		Type:        models.OrderTypeShare,
+		ExchangeUid: p.Base.Uid,
+		Symbol:      p.Symbol,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()
@@ -531,6 +538,7 @@ func AccountWithdrawal(c *gin.Context) {
 		FinancialStatus: models.WithdrawalAudioStatusAwait,
 		CustomerStatus:  models.WithdrawalAudioStatusAwait,
 		AddressSource:   withdrawal_addr.AddressSource,
+		Balance:         account.Balance - account.BlockedBalance,
 	}
 
 	// 不需要审核直接提交
@@ -543,8 +551,10 @@ func AccountWithdrawal(c *gin.Context) {
 
 	if withdrawal_detail.FinancialStatus == models.WithdrawalAudioStatusOk && withdrawal_detail.CustomerStatus == models.WithdrawalAudioStatusOk {
 		withdrawal_detail.Status = models.WithdrawalStatusThrough
-		if msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
+		if address, msg, err := base.WithdrawalAudioOK(o, withdrawal_detail); err != nil {
 			withdrawal_detail.Remark = msg
+		} else {
+			withdrawal_detail.Address = address
 		}
 	}
 
@@ -610,7 +620,12 @@ func AccountCurrencyDetail(c *gin.Context) {
 			core.GResp.Failure(c, err)
 			return
 		}
-		data.Info.BlockChainId = coin.BlockChainId
+
+		currency := models.NewCurrency()
+		currency.Symbol = "USDD"
+		_ = currency.GetSymbolById(o)
+
+		data.Info.BlockChainId, data.Info.ChangeId = coin.BlockChainId, currency.ID
 		core.GResp.Success(c, data)
 		return
 	default:
@@ -668,7 +683,7 @@ func AccountPersonTransfer(c *gin.Context) {
 		},
 	}
 
-	if err = base.CreateUser(param); err != nil {
+	if err = base.CreateUser(c, param); err != nil {
 		o.Rollback()
 		core.GResp.Failure(c, resp.CodeNotUser)
 		return
@@ -724,6 +739,7 @@ func AccountPersonTransfer(c *gin.Context) {
 		Status:      models.OrderStatusOk,
 		Type:        models.OrderTypeTransfer,
 		Form:        models.OrderFormTransfer,
+		Symbol:      p.Symbol,
 	}
 	if err := order.CreateOrder(o); err != nil {
 		o.Callback()

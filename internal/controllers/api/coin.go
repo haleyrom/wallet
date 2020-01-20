@@ -311,5 +311,35 @@ func ReadCoinDepositInfo(c *gin.Context) {
 	data.Money, _ = account.GetUserAvailableBalance(o)
 	core.GResp.Success(c, data)
 	return
+}
 
+// ReadListSymbolBlockChain 根据symbol获取coin
+// @Tags  BlockChain 链
+// @Summary 根据symbol获取coin接口
+// @Description 根据symbol获取coin
+// @Produce json
+// @Security ApiKeyAuth
+// @Param symbol formData int true "链标识"
+// @Success 200 {object} resp.ReadOrderSymbolByCoinResp
+// @Router /coin/symbol [get]
+func ReadListSymbolCoin(c *gin.Context) {
+	p := &params.ReadListSymbolBlockCoinParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	coin := models.NewCoin()
+	coin.Symbol = p.Symbol
+	data, err := coin.GetOrderSymbolByCoin(core.Orm.New(), p.Base.Uid)
+	if err != nil {
+		core.GResp.Failure(c, err)
+		return
+	}
+	core.GResp.Success(c, data)
+	return
 }

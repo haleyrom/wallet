@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/base"
@@ -8,6 +9,7 @@ import (
 	"github.com/haleyrom/wallet/internal/params"
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/consul"
+	"github.com/haleyrom/wallet/pkg/tools"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -189,23 +191,14 @@ func AccountWithdrawalDetail(c *gin.Context) {
 
 	detail := models.NewWithdrawalDetail()
 	detail.ID = p.Id
-	if err := detail.ReadInfo(core.Orm.New()); err != nil {
+	data, err := detail.ReadInfo(core.Orm.New())
+	if err != nil {
 		core.GResp.Failure(c, err)
 		return
 	}
-	timer, _ := time.Parse("2006-01-02 15:04:05 +0800 CST", detail.UpdatedAt.String())
-
-	core.GResp.Success(c, resp.AdminWithdrawalDetailResp{
-		Id:              detail.ID,
-		OrderId:         detail.OrderId,
-		Symbol:          detail.Symbol,
-		Status:          detail.Status,
-		CustomerStatus:  detail.CustomerStatus,
-		FinancialStatus: detail.FinancialStatus,
-		Address:         detail.Address,
-		Value:           detail.Value,
-		UpdatedAt:       timer.Format("2006-01-02 15:04:05"),
-	})
+	var timer time.Time
+	data.UpdatedAt = tools.TimerConvert(timer, data.UpdatedAt)
+	core.GResp.Success(c, data)
 	return
 }
 
@@ -257,11 +250,12 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 		// 同时审核成功进行处理
 		if detail.FinancialStatus == models.WithdrawalAudioStatusOk {
 			// 调取提现接口
-			msg, err := base.WithdrawalAudioOK(o, detail)
+			address, msg, err := base.WithdrawalAudioOK(o, detail)
+			fmt.Println(address, msg, err)
 			// 提交成功
 			if err != nil {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
-				detail.CustomerStatus = models.WithdrawalAudioStatusAwait
+				detail.CustomerStatus, detail.FromAddress = models.WithdrawalAudioStatusAwait, address
 				_ = detail.UpdateRemark(o)
 				// 退款
 				if err = WithdrawalAudioRefund(o, detail); err != nil {
@@ -273,7 +267,7 @@ func WithdrawalDetailCustomer(c *gin.Context) {
 				core.GResp.CustomFailure(c, err)
 				return
 			} else {
-				detail.Status = models.WithdrawalStatusSubmit
+				detail.Status, detail.FromAddress = models.WithdrawalStatusThrough, address
 			}
 		} else {
 			detail.Status = models.WithdrawalStatusInAudit
@@ -342,11 +336,11 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 		// 同时审核成功进行处理
 		if detail.CustomerStatus == models.WithdrawalAudioStatusOk {
 			// 调取提现接口
-			msg, err := base.WithdrawalAudioOK(o, detail)
+			address, msg, err := base.WithdrawalAudioOK(o, detail)
 			// 提交成功
 			if err != nil {
 				detail.Status, detail.Remark = models.WithdrawalStatusCancel, msg
-				detail.FinancialStatus = models.WithdrawalAudioStatusAwait
+				detail.FinancialStatus, detail.FromAddress = models.WithdrawalAudioStatusAwait, address
 				_ = detail.UpdateRemark(o)
 
 				if err = WithdrawalAudioRefund(o, detail); err != nil {
@@ -360,7 +354,7 @@ func WithdrawalDetailFinancial(c *gin.Context) {
 				return
 			}
 			// 提交成功后，现在已通过状态
-			detail.Status = models.WithdrawalStatusThrough
+			detail.Status, detail.FromAddress = models.WithdrawalStatusThrough, address
 		} else {
 			detail.Status = models.WithdrawalStatusInAudit
 		}
@@ -746,5 +740,35 @@ func CreateCompanyAddr(c *gin.Context) {
 	} else {
 		core.GResp.Failure(c, err)
 	}
+	return
+}
+
+// AccountTransferList 钱包转账流水列表
+// @Tags Account 后台钱包-用户钱包
+// @Summary 钱包转账流水列表接口
+// @Description 钱包转账流水列表
+// @Security ApiKeyAuth
+// @Produce json
+// @Param page_size query int true "长度"
+// @Param page query int true "页数"
+// @Param keyword query string false "搜索帐号"
+// @Param start_time query int false "开始时间"
+// @Param end_time query int false "结束时间"
+// @Success 200 {object} resp.AccountTransferInfoResp
+// @Router /admin/account/transfer/list [get]
+func AccountTransferList(c *gin.Context) {
+	p := &params.AccountTransferListParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	order := models.NewOrder()
+	data, _ := order.GetAccountTransferList(core.Orm.New(), p.Page, p.PageSize, p.StartTime, p.EndTime, p.Keyword)
+	core.GResp.Success(c, data)
 	return
 }

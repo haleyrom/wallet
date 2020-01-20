@@ -24,6 +24,7 @@ type ChargeQrCodeResp struct {
 	Email    string  `json:"email"`     // 邮箱
 	Qrcode   string  `json:"qrcode"`    // 二维码
 	MinMoney float64 `json:"min_money"` // 最小转账金额
+	OrderId  string  `json:"order_id"`  // 订单id
 }
 
 // UserPayInfoResp 用户支付信息输出
@@ -32,4 +33,13 @@ type UserPayInfoResp struct {
 	Symbol  string `json:"symbol" form:"symbol"`     // symbol标示
 	Email   string `json:"email" form:"email"`       // 邮件
 	Money   string `json:"money" form:"money"`       // money
+}
+
+// ChangeInfoResp 收费信息
+type ChangeInfoResp struct {
+	Money   float64 `json:"money"`    // 金额
+	OrderId string  `json:"order_id"` // 订单id
+	Code    uint    `json:"code"`     // 支付标示
+	Symbol  string  `json:"symbol" `  // 代币标示
+	From    string  `json:"from" `    // 来源
 }

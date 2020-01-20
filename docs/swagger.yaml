@@ -38,13 +38,13 @@ definitions:
         type: integer
       income:
         description: 本期收入
-        type: number
+        type: string
       name:
         description: 名称
         type: string
       spend:
         description: 上期支出
-        type: number
+        type: string
       symbol:
         description: 币种标识
         type: string
@@ -69,6 +69,9 @@ definitions:
       blocked_balance:
         description: 冻结金额
         type: string
+      change_id:
+        description: 兑换id
+        type: integer
       currency_id:
         description: 币种id
         type: integer
@@ -121,11 +124,47 @@ definitions:
         description: 时间
         type: string
     type: object
+  resp.AccountTransferInfoResp:
+    properties:
+      adverse_email:
+        description: 对方邮箱
+        type: string
+      adverse_id:
+        description: 对方id
+        type: string
+      adverse_name:
+        description: 对方名
+        type: string
+      balance:
+        description: 金额
+        type: string
+      order_id:
+        description: 订单id
+        type: string
+      status:
+        description: 状态 0未完成 1完成
+        type: integer
+      symbol:
+        description: 币种
+        type: string
+      uid:
+        description: 用户id
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      user_email:
+        description: 用户邮箱
+        type: string
+      user_name:
+        description: 用户名
+        type: string
+    type: object
   resp.AccountUserDetailInfoResp:
     properties:
       balance:
         description: 现余额
-        type: number
+        type: string
       block_chain_id:
         description: 链id
         type: integer
@@ -137,16 +176,16 @@ definitions:
         type: integer
       income:
         description: 入账
-        type: number
+        type: string
       last_balance:
         description: 之前余额
-        type: number
+        type: string
       name:
         description: 用户帐号
         type: string
       spend:
         description: 支出
-        type: number
+        type: string
       symbol:
         description: 币种
         type: string
@@ -197,7 +236,7 @@ definitions:
         type: string
       value:
         description: 金额
-        type: number
+        type: string
     type: object
   resp.BasePageResp:
     properties:
@@ -222,6 +261,9 @@ definitions:
       min_money:
         description: 最小转账金额
         type: number
+      order_id:
+        description: 订单id
+        type: string
       qrcode:
         description: 二维码
         type: string
@@ -236,7 +278,7 @@ definitions:
         type: string
       balance:
         description: 现余额
-        type: number
+        type: string
       email:
         description: 邮件
         type: string
@@ -245,10 +287,10 @@ definitions:
         type: integer
       income:
         description: 入账
-        type: number
+        type: string
       last_balance:
         description: 之前余额
-        type: number
+        type: string
       name:
         description: 用户帐号
         type: string
@@ -257,7 +299,7 @@ definitions:
         type: string
       spend:
         description: 支出
-        type: number
+        type: string
       symbol:
         description: 币种
         type: string
@@ -293,7 +335,7 @@ definitions:
         type: integer
       price:
         description: 金额
-        type: number
+        type: string
       quote_currency:
         description: 基础货币
         type: string
@@ -344,7 +386,7 @@ definitions:
         type: string
       value:
         description: 金额
-        type: number
+        type: string
     type: object
   resp.ReadAllDepositDetailResp:
     properties:
@@ -395,7 +437,7 @@ definitions:
         type: number
       money:
         description: 可提现金额
-        type: number
+        type: string
       status:
         description: 状态
         type: integer
@@ -445,10 +487,10 @@ definitions:
         type: integer
       min_deposit:
         description: 最小充值金额，小于该金额不入账
-        type: number
+        type: string
       min_withdrawal:
         description: 小于该金额不能提
-        type: number
+        type: string
       name:
         description: 币种名称
         type: string
@@ -463,7 +505,7 @@ definitions:
         type: string
       withdrawal_fee:
         description: 提现手续费
-        type: number
+        type: string
       withdrawal_fee_type:
         description: 手续费类型 fixed 按百分百比,percent 固定收取
         type: string
@@ -511,10 +553,10 @@ definitions:
         type: integer
       min_deposit:
         description: 最小充值金额，小于该金额不入账
-        type: number
+        type: string
       min_withdrawal:
         description: 小于该金额不能提
-        type: number
+        type: string
       name:
         description: 币种名称
         type: string
@@ -532,7 +574,7 @@ definitions:
         type: string
       withdrawal_fee:
         description: 提现手续费
-        type: number
+        type: string
       withdrawal_fee_type:
         description: 手续费类型 fixed 按百分百比,percent 固定收取
         type: string
@@ -550,7 +592,7 @@ definitions:
         type: integer
       money:
         description: 可用金额
-        type: number
+        type: string
       name:
         description: 名字
         type: string
@@ -638,7 +680,7 @@ definitions:
         type: string
       value:
         description: 金额
-        type: number
+        type: string
     type: object
   resp.ReadDepositDetailResp:
     properties:
@@ -665,6 +707,27 @@ definitions:
         type: integer
       name:
         description: 链名称
+        type: string
+      type:
+        description: 链类型
+        type: string
+    type: object
+  resp.ReadOrderSymbolByCoinResp:
+    properties:
+      address:
+        description: 地址
+        type: string
+      chain_code:
+        description: 链标识
+        type: string
+      min_deposit:
+        description: 最小提币数量
+        type: string
+      symbol:
+        description: 链名称
+        type: string
+      type:
+        description: 类型
         type: string
     type: object
   resp.UserPayInfoResp:
@@ -708,6 +771,27 @@ definitions:
       address:
         description: 地址
         type: string
+      address_source:
+        description: 来源 0:未知 1:本站 2:外站
+        type: integer
+      balance:
+        description: 此时可用余额
+        type: string
+      block_count:
+        description: 确认数
+        type: integer
+      callback_json:
+        description: 回调json数据
+        type: string
+      callback_status:
+        description: 回调状态码
+        type: string
+      coin_id:
+        description: 代币id
+        type: integer
+      currency_id:
+        description: 货币id
+        type: integer
       customer_status:
         description: 客服审核状态 0：审核中;1：审核通过;2：审核不通过
         type: integer
@@ -717,6 +801,9 @@ definitions:
       financial_status:
         description: 财务审核状态 0：审核中;1：审核通过;2：审核不通过
         type: integer
+      from_address:
+        description: 出金地址
+        type: string
       id:
         description: 明细id
         type: integer
@@ -735,6 +822,9 @@ definitions:
       symbol:
         description: 代币代号
         type: string
+      type:
+        description: 链类型
+        type: string
       uid:
         description: 用户id
         type: integer
@@ -743,7 +833,7 @@ definitions:
         type: string
       value:
         description: 金额
-        type: number
+        type: string
     type: object
   resp.WithdrawalDetailAllListResp:
     properties:
@@ -776,7 +866,7 @@ definitions:
         type: string
       poundage:
         description: 手续费
-        type: number
+        type: string
       status:
         description: 状态 0已提交,1待审核,2审核中,3通过,4不通过,5已完成,6取消,7提现失败
         type: integer
@@ -791,7 +881,7 @@ definitions:
         type: string
       value:
         description: 金额
-        type: number
+        type: string
     type: object
 info:
   contact: {}
@@ -1387,6 +1477,44 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 用户钱包列表接口
+      tags:
+      - Account 后台钱包-用户钱包
+  /admin/account/transfer/list:
+    get:
+      description: 钱包转账流水列表
+      parameters:
+      - description: 长度
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 页数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 搜索帐号
+        in: query
+        name: keyword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.AccountTransferInfoResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 钱包转账流水列表接口
       tags:
       - Account 后台钱包-用户钱包
   /admin/account/user/deposit-list:
@@ -2147,6 +2275,27 @@ paths:
       summary: 更新代币状态接口
       tags:
       - Coin 代币功能
+  /coin/symbol:
+    get:
+      description: 根据symbol获取coin
+      parameters:
+      - description: 链标识
+        in: formData
+        name: symbol
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resp.ReadOrderSymbolByCoinResp'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据symbol获取coin接口
+      tags:
+      - BlockChain 链
   /coin/update:
     post:
       description: 更新代币
@@ -2698,6 +2847,28 @@ paths:
       summary: 设置支付密码接口
       tags:
       - 支付密码
+  /user/pay/set_money:
+    post:
+      description: 设置付款码金额接口
+      parameters:
+      - description: 订单id
+        in: formData
+        name: order_id
+        type: string
+      - description: 金额
+        in: formData
+        name: money
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 设置付款码金额接口
+      tags:
+      - User 用户
   /user/pay/status:
     get:
       description: 付款码激活状态查询 code:200已支付,101138未支付 对接时候返回code为101138时候需要继续请求数据，其他情况下刷新二维码
@@ -2777,11 +2948,6 @@ paths:
       - description: 金额
         in: formData
         name: money
-        required: true
-        type: number
-      - description: code
-        in: formData
-        name: code
         required: true
         type: number
       produces:
@@ -2998,6 +3164,24 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 获取提现明细接口
+      tags:
+      - Withdrawal 提现功能
+  /withdrawal/type:
+    get:
+      description: 根据type获取充值地址
+      parameters:
+      - description: 类型
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200": {}
+      security:
+      - ApiKeyAuth: []
+      summary: 根据type获取充值地址接口
       tags:
       - Withdrawal 提现功能
 securityDefinitions:

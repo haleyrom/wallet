@@ -29,6 +29,7 @@ type Coin struct {
 	DepositStatus     int8    `gorm:"size(3);column:deposit_status;default:0;commit:'提笔状态-0开启1停用'"`    // 状态：0开启;1:停用;
 	CustomerStatus    int8    `gorm:"size(3);column:customer_status;index;default:0;comment:'客服状态'"`   // 客服状态:0 必须1：不必须
 	FinancialStatus   int8    `gorm:"size(3);column:financial_status;index;default:0;comment:'财务状态'"`  // 财务状态:0 必须1：不必须
+	Precision         int     `gorm:"column:precision;default:6;comment:'小数点精度6位'"`                    // 小数点精度默认6位
 }
 
 // GetCoinTable 表
@@ -153,12 +154,30 @@ func (c *Coin) GetDepositInfo(o *gorm.DB) (resp.ReadCoinDepositInfoResp, error) 
 // GetOrderSymbolByChain  根据symbol获取链
 func (c *Coin) GetOrderSymbolByChain(o *gorm.DB) ([]resp.ReadOrderSymbolByChainResp, error) {
 	data := make([]resp.ReadOrderSymbolByChainResp, 0)
-	rows, err := o.Raw(fmt.Sprintf("SELECT chain.id,coin.id as coin_id,chain.chain_code,chain.name FROM %s coin LEFT JOIN %s chain on chain.id = coin.block_chain_id WHERE symbol = ?", GetCoinTable(), GetBlockChain()), c.Symbol).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT chain.id,coin.id as coin_id,chain.chain_code,chain.name,coin.type FROM %s coin LEFT JOIN %s chain on chain.id = coin.block_chain_id WHERE symbol = ?", GetCoinTable(), GetBlockChain()), c.Symbol).Rows()
 	defer rows.Close()
 
 	if err == nil {
 		var (
 			item resp.ReadOrderSymbolByChainResp
+		)
+		for rows.Next() {
+			_ = o.ScanRows(rows, &item)
+			data = append(data, item)
+		}
+	}
+	return data, nil
+}
+
+// GetOrderSymbolByCoin  根据symbol获取coin
+func (c *Coin) GetOrderSymbolByCoin(o *gorm.DB, uid uint) ([]resp.ReadOrderSymbolByCoinResp, error) {
+	data := make([]resp.ReadOrderSymbolByCoinResp, 0)
+	rows, err := o.Raw(fmt.Sprintf("SELECT chain.chain_code,coin.symbol,coin.type,addr.address,coin.min_deposit FROM %s coin LEFT JOIN %s addr on addr.block_chain_id = coin.block_chain_id LEFT JOIN %s chain ON chain.id = coin.block_chain_id WHERE coin.symbol = ? and addr.uid = ? and coin.deposit_status = ? ", GetCoinTable(), GetDepositAddrTable(), GetBlockChain()), c.Symbol, uid, 0).Rows()
+	defer rows.Close()
+
+	if err == nil {
+		var (
+			item resp.ReadOrderSymbolByCoinResp
 		)
 		for rows.Next() {
 			_ = o.ScanRows(rows, &item)
@@ -188,4 +207,9 @@ func (c *Coin) GetOrderSymbolByInfo(o *gorm.DB) error {
 // GetOrderSymbolByInfo 根据symbol获取信息
 func (c *Coin) GetOrderCurrencyIdByInfo(o *gorm.DB) error {
 	return o.Table(GetCoinTable()).Where("currency_id = ?", c.CurrencyId).Find(c).Error
+}
+
+// GetOrderChainIdByInfo 根据coin获取信息
+func (c *Coin) GetOrderChainIdByInfo(o *gorm.DB) error {
+	return o.Table(GetCoinTable()).Where("block_chain_id = ? and currency_id = ?", c.BlockChainId, c.CurrencyId).Find(c).Error
 }

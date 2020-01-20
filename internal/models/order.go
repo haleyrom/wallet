@@ -16,7 +16,7 @@ type Order struct {
 	gorm.Model
 	Uid         uint    `gorm:"column:uid;default:0;comment:'用户id'"`                    // 用户id
 	ExchangeUid uint    `gorm:"column:exchange_uid;default:0;comment:'转入用户id'"`         // 转入用户id
-	Context     string  `gorm:"type(context);column:context;comment:'文本'"`              // 文本
+	Context     string  `gorm:"type:text;column:context;comment:'文本'"`                  // 文本
 	CurrencyId  uint    `gorm:"column:currency_id;default:0;comment:'币种id'"`            // 币种id
 	ExchangeId  uint    `gorm:"column:exchange_id;default:0;comment:'兑换id'"`            // 兑换币种id
 	Balance     float64 `gorm:"column:balance;default:0;comment:'余额';"`                 // 余额
@@ -25,6 +25,7 @@ type Order struct {
 	Status      int8    `gorm:"size(3);column:status;default:0;comment:'状态(0未成功,1成功)'"` // 订单状态
 	Type        int8    `gorm:"size(3);column:type;default:0;comment:'订单类型(0兑换本地的币)'"`  // 订单类型
 	OrderUuid   string  `gorm:"size(200);column:order_uuid;comment:'订单uuid'"`           //订单号
+	Symbol      string  `gorm:"size:255;column:symbol;comment:'代币代号';"`                 // 代币代号
 }
 
 var (
@@ -42,7 +43,7 @@ var (
 	OrderTypePayment int8 = 3
 	//  OrderFormUsdd 算力
 	OrderFormUsdd string = "usdd"
-	// OrderFormTransfer
+	// OrderFormTransfer 个人转账
 	OrderFormTransfer string = "transfer"
 	// OrderFormPayment 支付
 	OrderFormPayment string = "payment"
@@ -92,26 +93,26 @@ func (r *Order) RemoveOrderUuid(o *gorm.DB) error {
 }
 
 // GetAllTransOrder GetAllTransOrder
-func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startTime int, key string) (resp.RespUserTransOrder, error) {
-	data := resp.RespUserTransOrder{}
+func (r *Order) GetAllTransOrder(o *gorm.DB, page, pageSize int, endTime, startTime int, key string) (resp.UserTransOrderResp, error) {
+	data := resp.UserTransOrderResp{}
 	if endTime == 0 {
 		endTime = 10000000000000
 	}
 
 	count_sql := fmt.Sprintf("select count(*) as num from %s o left join %s u on o.uid = u.id  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
-	sql := fmt.Sprintf("SELECT o.id,o.uid,o.currency_id,o.exchange_id,o.updated_at,TRUNCATE(o.balance,6) as value,o.status,o.ratio,u.name,u.email FROM %s o LEFT JOIN %s u on u.id = o.uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
+	sql := fmt.Sprintf("SELECT o.id,o.uid,o.currency_id,o.exchange_id,o.updated_at,o.balance as value,o.status,o.ratio,u.name,u.email FROM %s o LEFT JOIN %s u on u.id = o.uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), OrderTypeChange, startTime, endTime)
 	if key != "" {
-		count_sql += " and u.name like  '%" + key + "%' "
-		sql += " and u.name like  '%" + key + "%' "
+		count_sql += " and  ((u.name like '%" + key + "%') or (u.email like '%" + key + "%') or (u.uid like '%" + key + "%') )  "
+		sql += " and  ((u.name like '%" + key + "%') or (u.email like '%" + key + "%') or (u.uid like '%" + key + "%') )  "
 	}
 	sql = sql + fmt.Sprintf("order by o.id desc limit %d offset %d", pageSize, (page-1)*pageSize)
 	rows, err := o.Raw(sql).Rows()
 	defer rows.Close()
 	var (
-		item  resp.RespUserTransInfoOrder
+		item  resp.UserTransInfoOrderResp
 		timer time.Time
 	)
-	data.Items = make([]resp.RespUserTransInfoOrder, 0)
+	data.Items = make([]resp.UserTransInfoOrderResp, 0)
 
 	if err == nil {
 		currencty := make(map[int]string, 0)
@@ -154,4 +155,41 @@ func (r *Order) UpdateStatusOk(o *gorm.DB) error {
 		return err
 	}
 	return nil
+}
+
+// GetAccountTransferList 获取转账列表
+func (r *Order) GetAccountTransferList(o *gorm.DB, page, pageSize int, endTime, startTime int, key string) (resp.AccountTransferListResp, error) {
+	data := resp.AccountTransferListResp{}
+	if endTime == 0 {
+		endTime = 10000000000000
+	}
+
+	count_sql := fmt.Sprintf("select count(*) as num from %s o left join %s u on o.uid = u.id LEFT JOIN %s us on us.id = o.exchange_uid where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d ", GetOrderTable(), GetUserTable(), GetUserTable(), OrderTypeTransfer, startTime, endTime)
+	sql := fmt.Sprintf("SELECT o.order_uuid as order_id,u.uid as uid,u.name as user_name,u.email as user_email,us.uid as adverse_id,us.name as adverse_name,us.email as adverse_email,o.balance,o.status,o.updated_at,o.symbol FROM %s o LEFT JOIN %s u on u.id = o.uid LEFT JOIN %s us on us.id = o.exchange_uid  where o.type = %d and UNIX_TIMESTAMP(o.updated_at) >= %d and UNIX_TIMESTAMP(o.updated_at) <= %d  ", GetOrderTable(), GetUserTable(), GetUserTable(), OrderTypeTransfer, startTime, endTime)
+	if key != "" {
+		count_sql += " and ((u.name like  '%" + key + "%') or (u.email like  '%" + key + "%') or (u.uid like  '%" + key + "%') or (us.name like  '%" + key + "%') or (us.email like  '%" + key + "%') or (us.uid like  '%" + key + "%')) "
+		sql += " and ((u.name like  '%" + key + "%' )  or (u.email like  '%" + key + "%') or (u.uid like  '%" + key + "%') or (us.name like  '%" + key + "%' ) or (us.email like  '%" + key + "%') or (us.uid like  '%" + key + "%') ) "
+	}
+	sql = sql + fmt.Sprintf("order by o.id desc limit %d offset %d", pageSize, (page-1)*pageSize)
+	rows, err := o.Raw(sql).Rows()
+	defer rows.Close()
+	var (
+		item  resp.AccountTransferInfoResp
+		timer time.Time
+	)
+	data.Items = make([]resp.AccountTransferInfoResp, 0)
+
+	if err == nil {
+		for rows.Next() {
+			if err = o.ScanRows(rows, &item); err == nil {
+				item.UpdatedAt = tools.TimerConvert(timer, item.UpdatedAt)
+				data.Items = append(data.Items, item)
+			}
+		}
+		_ = o.Raw(count_sql).Row().Scan(&data.Page.Count)
+		data.Page.PageSize = len(data.Items)
+		data.Page.CurrentPage = page
+		data.Page.TotalPage = int(math.Ceil(float64(data.Page.Count) / float64(pageSize)))
+	}
+	return data, err
 }

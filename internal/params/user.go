@@ -65,3 +65,10 @@ type UserPayStatusParam struct {
 	Base    *BaseParam `json:"claims" form:"claims"  binding:"required"`
 	OrderId string     `json:"order_id" form:"order_id"   binding:"required"`
 }
+
+// UserSetPaymentMoneyParam 设置付款金额参数解析
+type UserSetPaymentMoneyParam struct {
+	Base    *BaseParam `json:"claims" form:"claims"  binding:"required"`
+	OrderId string     `json:"order_id" form:"order_id"   binding:"required"`
+	Money   float64    `json:"money" form:"money" binding:"gt=0"`
+}

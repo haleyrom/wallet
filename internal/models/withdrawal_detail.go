@@ -33,8 +33,11 @@ type WithdrawalDetail struct {
 	Remark          string  `gorm:"size:200;column:remark;comment:'备注'"`                         // 备注
 	RefundStatus    int8    `gorm:"size:4;column:refund_status;comment:'退款状态0不可退款1可退款2退款成功'"`    //退款状态（0不可退款1可退款2退款成功）
 	CallbackStatus  string  `gorm:"column:callback_status;comment:'回调状态码'"`                      // 回调状态码
-	CallbackJson    string  `gorm:"type(context);column:callback_json;comment:'回调json数据'"`       // 回调json数据
+	CallbackJson    string  `gorm:"type:text;column:callback_json;comment:'回调json数据'"`           // 回调json数据
 	AddressSource   int8    `gorm:"size:3;column:address_source;default:0;commit:'来源0未知1本站2外站'"` // 来源0未知1本站2外站
+	Balance         float64 `gorm:"column:balance;default:0;comment:'当前可用余额';"`                  // 当前可用余额
+	FromAddress     string  `gorm:"column:from_address;comment:'出金地址';"`                         // 出金地址
+	BlockNumber     int     `gorm:"column:block_number;default:0;comment:'区块高度'"`                // 区块高度
 }
 
 const (
@@ -82,7 +85,7 @@ func (w *WithdrawalDetail) CreateWithdrawalDetail(o *gorm.DB) error {
 // GetPageList 获取分页列表
 func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.WithdrawalDetailListResp, error) {
 	data := resp.WithdrawalDetailListResp{}
-	rows, err := o.Raw(fmt.Sprintf("SELECT address,TRUNCATE(value,6) as value,symbol,poundage,status,type,updated_at FROM %s  where uid = ? ORDER BY id desc LIMIT ?,?", GetWithdrawalDetailTable()), w.Uid, (page-1)*pageSize, pageSize).Rows()
+	rows, err := o.Raw(fmt.Sprintf("SELECT address,value,symbol,poundage,status,type,updated_at FROM %s  where uid = ? ORDER BY id desc LIMIT ?,?", GetWithdrawalDetailTable()), w.Uid, (page-1)*pageSize, pageSize).Rows()
 	defer rows.Close()
 
 	if err == nil {
@@ -110,7 +113,7 @@ func (w *WithdrawalDetail) GetPageList(o *gorm.DB, page, pageSize int) (resp.Wit
 // GetAllPageList 获取全部分页列表
 func (w *WithdrawalDetail) GetAllPageList(o *gorm.DB, page, pageSize, start_time, end_timer int, keyword string) (resp.WithdrawalDetailAllListResp, error) {
 	data := resp.WithdrawalDetailAllListResp{}
-	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,TRUNCATE(detail.value,6) as value,detail.status,detail.updated_at,detail.address_source FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
+	sql := fmt.Sprintf("select detail.remark,detail.order_id,detail.id,user.id as uid,user.name,user.email,detail.symbol,detail.financial_status,detail.customer_status,detail.value,detail.status,detail.updated_at,detail.address_source,detail.coin_id,detail.currency_id,detail.type,detail.address,detail.from_address,detail.balance,detail.callback_status,detail.callback_json FROM %s detail LEFT JOIN %s user on user.id = detail.uid WHERE detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 	count_sql := fmt.Sprintf("SELECT count(*) as num FROM %s detail LEFT JOIN %s user ON detail.uid = user.id where detail.id > 0 ", GetWithdrawalDetailTable(), GetUserTable())
 
 	if start_time > 0 && end_timer > 0 {
@@ -119,8 +122,8 @@ func (w *WithdrawalDetail) GetAllPageList(o *gorm.DB, page, pageSize, start_time
 	}
 
 	if len(keyword) > 0 {
-		sql = fmt.Sprintf("%s AND user.name like '%s'", sql, "%"+keyword+"%")
-		count_sql = fmt.Sprintf("%s AND user.name like '%s'", count_sql, "%"+keyword+"%")
+		sql = fmt.Sprintf("%s  AND ((user.name like '%s') or (user.email like '%s') or (user.uid like '%s')) ", sql, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
+		count_sql = fmt.Sprintf("%s  AND ((user.name like '%s') or (user.email like '%s') or (user.uid like '%s')) ", count_sql, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
 	}
 
 	sql = fmt.Sprintf("%s ORDER BY detail.id DESC LIMIT %d,%d", sql, (page-1)*pageSize, pageSize)
@@ -150,8 +153,10 @@ func (w *WithdrawalDetail) GetAllPageList(o *gorm.DB, page, pageSize, start_time
 }
 
 // ReadInfo 读取信息
-func (w *WithdrawalDetail) ReadInfo(o *gorm.DB) error {
-	return o.Table(GetWithdrawalDetailTable()).Where("id = ?", w.ID).Find(w).Error
+func (w *WithdrawalDetail) ReadInfo(o *gorm.DB) (resp.AdminWithdrawalDetailResp, error) {
+	var data resp.AdminWithdrawalDetailResp
+	err := o.Raw(fmt.Sprintf("SELECT id,order_id,symbol,status,customer_status,financial_status,address,value,updated_at FROM %s WHERE id = ?", GetWithdrawalDetailTable()), w.ID).Scan(&data).Error
+	return data, err
 }
 
 // IsAudioCustomer 判断是否客服审核
@@ -188,6 +193,7 @@ func (w *WithdrawalDetail) UpdateRemark(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).
 		Where("id = ? ", w.ID).
 		Update(map[string]interface{}{
+			"from_address":     w.FromAddress,
 			"customer_status":  w.CustomerStatus,
 			"financial_status": w.FinancialStatus,
 			"status":           w.Status,
@@ -214,6 +220,8 @@ func (w *WithdrawalDetail) UpdateStatus(o *gorm.DB) error {
 	return o.Table(GetWithdrawalDetailTable()).
 		Where("id = ? and financial_status = ? and customer_status = ?", w.ID, WithdrawalAudioStatusOk, WithdrawalAudioStatusOk).
 		Update(map[string]interface{}{
+			"callback_status":  w.CallbackStatus,
+			"callback_json":    w.CallbackJson,
 			"block_count":      w.BlockCount,
 			"transaction_hash": w.TransactionHash,
 			"updated_at":       time.Now(),

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/base"
@@ -54,13 +53,13 @@ func HttpInterceptor(j *jwt.JWT) gin.HandlerFunc {
 			claims := &jwt.CustomClaims{}
 			// parseToken 解析token包含的信息
 			if claims, err = j.ParseToken(token); err == nil {
-				fmt.Println(claims, "=======================")
+				//fmt.Println(claims, "=======================")
 				info := core.UserInfoPool.Get().(*params.BaseParam)
 				info.Claims = *claims
 				// 判断用户id是否未空
 				if len(info.Claims.UserID) == core.DefaultNilNum {
 					err = errors.Errorf("%d", resp.CodeIllegalToken)
-				} else if err = base.CreateUser(info); err == nil {
+				} else if err = base.CreateUser(c, info); err == nil {
 					core.UserInfoPool.Put(info)
 				}
 			}

@@ -17,7 +17,7 @@ type AccountTransferParam struct {
 type AccountChangeParam struct {
 	Base       *BaseParam `json:"claims" form:"claims"`
 	CurrencyId uint       `json:"currency_id" form:"currency_id"  binding:"required"`
-	Money      float64    `json:"money" form:"money"  binding:"required,gt=0"`
+	Money      string     `json:"money" form:"money"  binding:"required,gt=0"`
 	ChangeId   uint       `json:"change_id" form:"change_id" binding:"required"`
 	Ratio      string     `json:"ratio" form:"ratio" binding:"required"`
 }
@@ -181,3 +181,6 @@ type AccountChargeDetailParam struct {
 	Page     int        `json:"page" form:"page"  binding:"required"`
 	PageSize int        `json:"pageSize" form:"pageSize" binding:"required"`
 }
+
+// AccountTransferListParam 转账列表解析参数
+type AccountTransferListParam BaseListParam

@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/base"
@@ -12,8 +11,10 @@ import (
 	"github.com/haleyrom/wallet/internal/resp"
 	"github.com/haleyrom/wallet/pkg/consul"
 	"github.com/haleyrom/wallet/pkg/tools"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"strconv"
+	"strings"
 )
 
 // ReadWithdrawalAddrList  读取提币地址列表
@@ -73,9 +74,9 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	}
 
 	o := core.Orm.New()
-	chain := models.NewBlockChain()
-	chain.ID = p.BlockChainId
-	if err := chain.IsExistBlockChain(o); err != nil {
+	coin := models.NewCoin()
+	coin.BlockChainId, coin.CurrencyId = p.BlockChainId, p.CurrencyId
+	if err := coin.GetOrderChainIdByInfo(o); err != nil {
 		core.GResp.Failure(c, resp.CodeNotChain)
 		return
 	}
@@ -88,7 +89,7 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	}
 
 	// 判断地址是否合法
-	if err := consul.IsWalletAddress(p.Address); err != nil {
+	if err := consul.IsWalletAddress(strings.ToLower(p.Address)); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalAddr)
 		return
 	}
@@ -96,10 +97,11 @@ func CreateWithdrawalAddr(c *gin.Context) {
 	withdrawal := &models.WithdrawalAddr{
 		Uid:           p.Base.Uid,
 		BlockChainId:  p.BlockChainId,
-		Address:       p.Address,
+		Address:       strings.ToLower(p.Address),
 		CurrencyId:    p.CurrencyId,
 		Name:          p.Name,
 		AddressSource: models.WithdrawalAddrBack,
+		Type:          coin.Type,
 	}
 
 	deposit := models.NewDepositAddr()
@@ -147,13 +149,13 @@ func UpdateWithdrawalAddr(c *gin.Context) {
 	//}
 
 	// 判断地址是否合法
-	if err := consul.IsWalletAddress(p.Address); err != nil {
+	if err := consul.IsWalletAddress(strings.ToLower(p.Address)); err != nil {
 		core.GResp.Failure(c, resp.CodeIllegalAddr)
 		return
 	}
 
 	withdrawal := models.NewWithdrawalAddr()
-	withdrawal.Name, withdrawal.Address = p.Name, p.Address
+	withdrawal.Name, withdrawal.Address = p.Name, strings.ToLower(p.Address)
 	withdrawal.CurrencyId = withdrawal.CurrencyId
 	withdrawal.ID, withdrawal.Uid = p.WithdrawalAddrId, p.Base.Uid
 	if err := withdrawal.UpdateWithdrawalAddr(o); err != nil {
@@ -276,9 +278,9 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	jsonStr, _ = json.Marshal(c.Request.PostForm)
-	detail.CallbackStatus, detail.CallbackJson = p.Code, string(jsonStr)
-	fmt.Println(data, detail, "============")
+	postStr, _ := json.Marshal(c.Request.PostForm)
+	detail.CallbackStatus, detail.CallbackJson = p.Code, string(postStr)
+	logrus.Info(detail.CallbackJson)
 	switch p.Code {
 	case "105004":
 		// 已提交
@@ -291,7 +293,6 @@ func WithdrawalCallback(c *gin.Context) {
 				return
 			}
 		}
-
 		o.Commit()
 		core.GResp.Success(c, resp.EmptyData())
 		return
@@ -313,9 +314,18 @@ func WithdrawalCallback(c *gin.Context) {
 		return
 	}
 
-	if detail.FinancialStatus != models.WithdrawalAudioStatusOk || detail.CustomerStatus != models.WithdrawalAudioStatusOk || detail.Status != models.WithdrawalStatusSubmit {
+	if detail.FinancialStatus != models.WithdrawalAudioStatusOk || detail.CustomerStatus != models.WithdrawalAudioStatusOk || (detail.Status != models.WithdrawalStatusSubmit && detail.Status != models.WithdrawalStatusThrough) {
 		o.Rollback()
 		core.GResp.CustomFailure(c, errors.New("order status not submit"))
+		return
+	} else if detail.Status == models.WithdrawalStatusThrough {
+		if err := base.AccountInsertDetail(o, detail); err != nil {
+			o.Rollback()
+			core.GResp.CustomFailure(c, err)
+			return
+		}
+		o.Commit()
+		core.GResp.CustomFailure(c, resp.CodeNotData)
 		return
 	}
 
@@ -328,5 +338,37 @@ func WithdrawalCallback(c *gin.Context) {
 	}
 	o.Commit()
 	core.GResp.Success(c, resp.EmptyData())
+	return
+}
+
+// WithdrawalOrderTypeByAddr 根据type获取充值地址
+// @Tags Withdrawal 提现功能
+// @Summary 根据type获取充值地址接口
+// @Description 根据type获取充值地址
+// @Produce json
+// @Security ApiKeyAuth
+// @Param type query string true "类型"
+// @Success 200
+// @Router /withdrawal/type [get]
+func WithdrawalOrderTypeByAddr(c *gin.Context) {
+	p := &params.WithdrawalOrderTypeByAddrParam{
+		Base: core.UserInfoPool.Get().(*params.BaseParam),
+	}
+
+	// 绑定参数
+	if err := c.ShouldBind(p); err != nil {
+		core.GResp.Failure(c, resp.CodeIllegalParam, err)
+		return
+	}
+
+	withdrawal_addr := models.NewWithdrawalAddr()
+	withdrawal_addr.Uid, withdrawal_addr.Type = p.Base.Uid, p.Types
+	if err := withdrawal_addr.GetTypeByInfo(core.Orm.New()); err != nil {
+		core.GResp.Failure(c, resp.CodeNotData, err)
+		return
+	}
+	core.GResp.Success(c, resp.WithdrawalOrderTypeByAddrResp{
+		Address: withdrawal_addr.Address,
+	})
 	return
 }

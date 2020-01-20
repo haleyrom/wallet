@@ -1,5 +1,7 @@
 package resp
 
+import "github.com/shopspring/decimal"
+
 // ReadDepositAddrListResp 充值列表
 type ReadDepositAddrListResp struct {
 	DepositAddrId uint   `json:"deposit_addr_id"` // 充值地址
@@ -21,13 +23,13 @@ type ReadDepositAddrResp struct {
 
 // ReadDepositDetailInfoResp 读取充值明细
 type ReadDepositDetailInfoResp struct {
-	Address    string  `json:"address"`     // 地址
-	Value      float64 `json:"value"`       // 金额
-	Symbol     string  `json:"symbol"`      // 代币代号
-	Type       string  `json:"type"`        // 标识 coin,token
-	Status     int8    `json:"status"`      // 状态 0确认中,1已确定
-	UpdatedAt  string  `json:"updated_at"`  // 更新时间
-	BlockCount int     `json:"block_count"` // 确认次数
+	Address    string          `json:"address"`     // 地址
+	Value      decimal.Decimal `json:"value"`       // 金额
+	Symbol     string          `json:"symbol"`      // 代币代号
+	Type       string          `json:"type"`        // 标识 coin,token
+	Status     int8            `json:"status"`      // 状态 0确认中,1已确定
+	UpdatedAt  string          `json:"updated_at"`  // 更新时间
+	BlockCount int             `json:"block_count"` // 确认次数
 }
 
 // ReadDepositDetailResp 提现详情明细
@@ -38,16 +40,16 @@ type ReadDepositDetailResp struct {
 
 //后台查看全部用户明细
 type ReadAllDepositDetailInfoResp struct {
-	OrderId         int     `json:"order_id"`         // 订单id
-	Name            string  `json:"name"`             //用户名
-	Uid             string  `json:"uid"`              //用户id
-	Value           float64 `json:"value"`            // 金额
-	Status          int8    `json:"status"`           // 状态 0确认中,1已确定
-	UpdatedAt       string  `json:"updated_at"`       // 更新时间
-	TransactionHash string  `json:"transaction_hash"` // hash
-	Symbol          string  `json:"symbol"`           // 代币代号
-	Type            string  `json:"type"`             // 标识 coin,token
-	Source          int8    `json:"source"`           // 来源 0：充值1：后台充值
+	OrderId         int             `json:"order_id"`         // 订单id
+	Name            string          `json:"name"`             //用户名
+	Uid             string          `json:"uid"`              //用户id
+	Value           decimal.Decimal `json:"value"`            // 金额
+	Status          int8            `json:"status"`           // 状态 0确认中,1已确定
+	UpdatedAt       string          `json:"updated_at"`       // 更新时间
+	TransactionHash string          `json:"transaction_hash"` // hash
+	Symbol          string          `json:"symbol"`           // 代币代号
+	Type            string          `json:"type"`             // 标识 coin,token
+	Source          int8            `json:"source"`           // 来源 0：充值1：后台充值
 }
 
 //后台查看全部用户，分页

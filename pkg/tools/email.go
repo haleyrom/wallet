@@ -51,6 +51,7 @@ func SendHttpPost(urls string, api string, data map[string]string, token string)
 	return nil, &rep
 }
 
+// ResponseData 请求数据
 type ResponseData struct {
 	Code int         `json:"code"`
 	Msg  string      `json:"msg"`
