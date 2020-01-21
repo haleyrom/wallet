@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/haleyrom/wallet/core"
 	"github.com/haleyrom/wallet/internal/controllers/base"
@@ -21,10 +22,11 @@ var (
 
 	// NotHandlerToken 不拦截token
 	NotHandlerToken = map[string]struct{}{
-		"/api/v1/wallet/check":                   emptyData,
-		"/api/v1/wallet/deposit/top_up":          emptyData,
-		"/api/v1/wallet/test_data/account/write": emptyData,
-		"/api/v1/wallet/withdrawal/callback":     emptyData,
+		"/api/v1/wallet/check":                              emptyData,
+		"/api/v1/wallet/deposit/top_up":                     emptyData,
+		"/api/v1/wallet/test_data/account/write":            emptyData,
+		"/api/v1/wallet/withdrawal/callback":                emptyData,
+		"/api/v1/wallet/test_data/withdrawal/addr/is_local": emptyData,
 	}
 
 	// Jwt
@@ -43,8 +45,9 @@ func HttpInterceptor(j *jwt.JWT) gin.HandlerFunc {
 
 		token := c.Request.Header.Get(HttpHeadToken)
 		logrus.Infof("request url: %s, ContentType: %s, token: %s, body: %v", c.Request.URL, c.Request.Method, token, c.Request.Body)
+		fmt.Println(c.FullPath())
 		// NotHandlerToken 不拦截token
-		if _, ok := NotHandlerToken[c.Request.RequestURI]; ok == true {
+		if _, ok := NotHandlerToken[c.FullPath()]; ok == true {
 			c.Next()
 			return
 		}

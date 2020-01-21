@@ -10,5 +10,6 @@ func RegisterTestDataRouter(r *gin.RouterGroup) {
 	v1 := r.Group("test_data")
 	{
 		v1.GET("/account/write", test_data.TestDataWriteAccount)
+		v1.GET("/withdrawal/addr/is_local", test_data.TestDataWithdrawalIsLocal)
 	}
 }
